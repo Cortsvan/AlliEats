@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80" width="300" height="80">
+  <!-- Background circle for elegance -->
+  <circle cx="40" cy="40" r="35" fill="#5D4037" opacity="0.1"/>
+  
+  <!-- Main logo text -->
+  <text x="90" y="35" font-family="serif" font-size="28" font-weight="bold" fill="#5D4037">
+    AlliEats
+  </text>
+  
+  <!-- Tagline -->
+  <text x="90" y="55" font-family="serif" font-size="12" fill="#FFD54F">
+    Delicious Experiences
+  </text>
+  
+  <!-- Decorative food icon -->
+  <g transform="translate(40, 40)">
+    <!-- Plate -->
+    <ellipse cx="0" cy="8" rx="25" ry="4" fill="#FFD54F" opacity="0.8"/>
+    
+    <!-- Fork -->
+    <rect x="-20" y="-15" width="2" height="20" fill="#5D4037"/>
+    <rect x="-22" y="-15" width="1" height="8" fill="#5D4037"/>
+    <rect x="-19" y="-15" width="1" height="8" fill="#5D4037"/>
+    <rect x="-18" y="-15" width="1" height="6" fill="#5D4037"/>
+    
+    <!-- Knife -->
+    <rect x="18" y="-15" width="2" height="20" fill="#5D4037"/>
+    <path d="M 18 -10 L 20 -15 L 20 -5 Z" fill="#FFD54F"/>
+    
+    <!-- Food item (stylized) -->
+    <ellipse cx="0" cy="0" rx="8" ry="6" fill="#FFD54F"/>
+    <ellipse cx="0" cy="-2" rx="6" ry="4" fill="#FFF3E0"/>
+  </g>
+</svg>

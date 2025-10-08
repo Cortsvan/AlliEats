@@ -3,64 +3,81 @@
 @using static ASI.Basecode.Resources.Views.Screen
 @section styles {
     <link rel="stylesheet" href="~/css/login.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 }
 @{
     ViewBag.LoginView = true;
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "AlliEats - Register";
 }
 <div>
     @Html.AntiForgeryToken()
 </div>
-<div class="container py-5" style="display:flex; align-content:center;height:calc(100vh - 64px)">
-    <div class="row d-flex justify-content-center align-items-center h-100">
-        <div class="col-xl-10">
-            <div class="card rounded-3 text-black">
-                <div class="row g-0 w-1000px">
-                    <div class="col-lg-6">
-                        <div class="card-body p-md-5 mx-md-4">
-                            <div class="text-center">
-                                <img src="~/img/asi-logo-invert.svg"
-                                     style="width: 185px;" alt="logo">
-                                <h4 class="mt-1 mb-5 pb-1">Create New Account</h4>
+<div class="auth-container">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card auth-card text-black">
+                    <div class="row g-0">
+                        <div class="col-lg-6">
+                            <div class="auth-card-body">
+                                <div class="text-center mb-4">
+                                    <img src="~/img/allieats-logo.png"
+                                         class="auth-logo"
+                                         style="width: 200px; max-width: 100%;" 
+                                         alt="AlliEats Logo">
+                                    <h2 class="auth-title">Join AlliEats</h2>
+                                    <p class="auth-subtitle">Create your account and get your favorite food delivered fast</p>
+                                </div>
+                                <form method="post" action="/Account/Register" id="registerForm">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="userid">Email Address</label>
+                                        <input type="email" id="userid" class="form-control" 
+                                               asp-for="UserId" placeholder="Enter your email address" />
+                                        <span asp-validation-for="UserId" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="name">Full Name</label>
+                                        <input type="text" id="name" class="form-control" 
+                                               asp-for="Name" placeholder="Enter your full name" />
+                                        <span asp-validation-for="Name" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="password">Password</label>
+                                        <input type="password" id="password" class="form-control" 
+                                               asp-for="Password" placeholder="Create a secure password" />
+                                        <span asp-validation-for="Password" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group mb-4">
+                                        <label class="form-label" for="confirmpassword">Confirm Password</label>
+                                        <input type="password" id="confirmpassword" class="form-control" 
+                                               asp-for="ConfirmPassword" placeholder="Confirm your password" />
+                                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                    </div>
+                                    <div class="text-center pt-2 mb-4">
+                                        <button class="btn btn-primary login-btn gradient-custom-2 mb-3" type="submit">
+                                            Create Account
+                                        </button>
+                                        <div>
+                                            <a asp-controller="Account" asp-action="Login" class="back-link">
+                                                ← Already have an account? Sign in
+                                            </a>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                            <form method="post" action="/Account/Register" id="registerForm">
-                                <div class="form-outline mb-4">
-                                    <label class="form-label" for="userid">User ID</label>
-                                    <input type="text" id="userid" class="form-control" 
-                                           asp-for="UserId" placeholder="Enter userid" />
-                                    <span asp-validation-for="UserId" class="text-danger"></span>
-                                </div>
-                                <div class="form-outline mb-4">
-                                    <label class="form-label" for="name">Name</label>
-                                    <input type="text" id="name" class="form-control" 
-                                           asp-for="Name" placeholder="Enter full name" />
-                                    <span asp-validation-for="Name" class="text-danger"></span>
-                                </div>
-                                <div class="form-outline mb-4">
-                                    <label class="form-label" for="password">Password</label>
-                                    <input type="password" id="password" class="form-control" 
-                                           asp-for="Password" placeholder="Enter password" />
-                                    <span asp-validation-for="Password" class="text-danger"></span>
-                                </div>
-                                <div class="form-outline mb-4">
-                                    <label class="form-label" for="confirmpassword">Confirm Password</label>
-                                    <input type="password" id="confirmpassword" class="form-control" 
-                                           asp-for="ConfirmPassword" placeholder="Confirm Password" />
-                                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                                </div>
-                                <div class="text-center pt-1 mb-5 pb-1 d-flex flex-column align-items-center">
-                                    <button class="btn btn-primary btn-block login-btn gradient-custom-2 mb-3" type="submit">
-                                        Register
-                                    </button>
-                                    <a asp-controller="Account" asp-action="Login">
-                                        &#8592 Back to Login
-                                    </a>
-                                </div>
-                            </form>
                         </div>
-                    </div>
-                    <div class="col-lg-6 d-flex">
-                        <img style="width:400px"src="~/img/LiveIT.png" />
+                        <div class="col-lg-6 auth-image-side">
+                            <div class="text-center">
+                                <h1 class="auth-brand-text">Welcome to AlliEats</h1>
+                                <p class="auth-tagline">Your Food Delivery Starts Here</p>
+                                <div class="mt-4">
+                                    <div style="font-size: 64px; color: #FFD54F; opacity: 0.8;">🛵</div>
+                                </div>
+                                <div class="mt-4" style="color: #FFF3E0; font-size: 14px; opacity: 0.9; max-width: 280px; margin: 2rem auto;">
+                                    Join thousands of food lovers ordering from their favorite restaurants with fast, reliable delivery.
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -71,7 +88,7 @@
     <script>
         // Check for error message and display Toastr notification
         var errorMessage = '@TempData["ErrorMessage"]';
-        if (errorMessage) {
+        if (errorMessage && errorMessage.trim() !== '') {
             toastr.error(errorMessage);
         }
         
