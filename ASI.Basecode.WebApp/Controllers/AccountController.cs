@@ -81,32 +81,37 @@ namespace ASI.Basecode.WebApp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             this._session.SetString("HasSession", "Exist");
 
-            //User user = null;
-
-            User user = new() { Id = 0, UserId = "0", Name = "Name", Password = "Password" };
+            User user = null;
             
-            await this._signInManager.SignInAsync(user);
-            this._session.SetString("UserName", model.UserId);
-
-            return RedirectToAction("Index", "Home");
-
-            /*var loginResult = _userService.AuthenticateUser(model.UserId, model.Password, ref user);
-            if (loginResult == LoginResult.Success)
+            // Authenticate user against the database
+            var loginResult = _userService.AuthenticateUser(model.UserId, model.Password, ref user);
+            
+            if (loginResult == LoginResult.Success && user != null)
             {
-                // 認証OK
+                // Authentication successful
                 await this._signInManager.SignInAsync(user);
                 this._session.SetString("UserName", user.Name);
+                
+                // Redirect to return URL if provided, otherwise go to Home
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
                 return RedirectToAction("Index", "Home");
             }
             else
             {
-                // 認証NG
+                // Authentication failed
                 TempData["ErrorMessage"] = "Incorrect UserId or Password";
-                return View();
+                return View(model);
             }
-            return View();*/
         }
 
         [HttpGet]
@@ -120,9 +125,15 @@ namespace ASI.Basecode.WebApp.Controllers
         [AllowAnonymous]
         public IActionResult Register(UserViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             try
             {
                 _userService.AddUser(model);
+                TempData["SuccessMessage"] = "Account created successfully! Please login with your credentials.";
                 return RedirectToAction("Login", "Account");
             }
             catch(InvalidDataException ex)
@@ -133,7 +144,7 @@ namespace ASI.Basecode.WebApp.Controllers
             {
                 TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
             }
-            return View();
+            return View(model);
         }
 
         /// <summary>

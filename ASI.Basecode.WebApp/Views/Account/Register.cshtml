@@ -1,58 +1,66 @@
 ﻿@using ASI.Basecode.Services.ServiceModels
 @model UserViewModel
-@{
-    ViewBag.LoginView = true;
-    ViewData["Title"] = "Register Page";
-}
+@using static ASI.Basecode.Resources.Views.Screen
 @section styles {
     <link rel="stylesheet" href="~/css/login.css" />
 }
-<div class="container py-5 h-100 register-box">
+@{
+    ViewBag.LoginView = true;
+    ViewData["Title"] = "Register";
+}
+<div>
+    @Html.AntiForgeryToken()
+</div>
+<div class="container py-5" style="display:flex; align-content:center;height:calc(100vh - 64px)">
     <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-xl-10">
             <div class="card rounded-3 text-black">
-                <div class="row g-0">
-                    <div class="card-body p-md-5 mx-md-4">
-
-                        <div class="text-center">
-                            <img src="https://www.alliance.com.ph/images/asi-logo-invert.svg"
-                                 style="width: 185px;" alt="logo">
+                <div class="row g-0 w-1000px">
+                    <div class="col-lg-6">
+                        <div class="card-body p-md-5 mx-md-4">
+                            <div class="text-center">
+                                <img src="~/img/asi-logo-invert.svg"
+                                     style="width: 185px;" alt="logo">
+                                <h4 class="mt-1 mb-5 pb-1">Create New Account</h4>
+                            </div>
+                            <form method="post" action="/Account/Register" id="registerForm">
+                                <div class="form-outline mb-4">
+                                    <label class="form-label" for="userid">User ID</label>
+                                    <input type="text" id="userid" class="form-control" 
+                                           asp-for="UserId" placeholder="Enter userid" />
+                                    <span asp-validation-for="UserId" class="text-danger"></span>
+                                </div>
+                                <div class="form-outline mb-4">
+                                    <label class="form-label" for="name">Name</label>
+                                    <input type="text" id="name" class="form-control" 
+                                           asp-for="Name" placeholder="Enter full name" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                                <div class="form-outline mb-4">
+                                    <label class="form-label" for="password">Password</label>
+                                    <input type="password" id="password" class="form-control" 
+                                           asp-for="Password" placeholder="Enter password" />
+                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                </div>
+                                <div class="form-outline mb-4">
+                                    <label class="form-label" for="confirmpassword">Confirm Password</label>
+                                    <input type="password" id="confirmpassword" class="form-control" 
+                                           asp-for="ConfirmPassword" placeholder="Confirm Password" />
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                </div>
+                                <div class="text-center pt-1 mb-5 pb-1 d-flex flex-column align-items-center">
+                                    <button class="btn btn-primary btn-block login-btn gradient-custom-2 mb-3" type="submit">
+                                        Register
+                                    </button>
+                                    <a asp-controller="Account" asp-action="Login">
+                                        &#8592 Back to Login
+                                    </a>
+                                </div>
+                            </form>
                         </div>
-
-                        <form method="post" action="/Account/Register">
-                            <div class="form-outline mb-4">
-                                <label class="form-label" for="userId">UserId</label>
-                                <input type="text" id="userId" class="form-control"
-                                       asp-for="UserId" placeholder="Enter userid" />
-                                <span asp-validation-for="UserId" class="text-danger"></span>
-                            </div>
-                            <div class="form-outline mb-4">
-                                <label class="form-label" for="name">Name</label>
-                                <input type="text" id="name" class="form-control"
-                                       asp-for="Name" placeholder="Enter name" />
-                                <span asp-validation-for="Name" class="text-danger"></span>
-                            </div>
-                            <div class="form-outline mb-4">
-                                <label class="form-label" for="password">Password</label>
-                                <input type="password" id="password" class="form-control"
-                                       asp-for="Password" placeholder="Enter password" />
-                                <span asp-validation-for="Password" class="text-danger"></span>
-                            </div>
-                            <div class="form-outline mb-4">
-                                <label class="form-label" for="confirmpassword">Confirm Password</label>
-                                <input type="password" id="confirmpassword" class="form-control" 
-                                       asp-for="ConfirmPassword" placeholder="Confirm Password" />
-                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                            </div>
-                            <div class="text-center pt-1 mb-5 pb-1 d-flex flex-column align-items-center">
-                                <button class="btn btn-primary btn-block login-btn gradient-custom-2 mb-3" type="submit">
-                                    Register
-                                </button>
-                                <a asp-controller="Account" asp-action="Login">
-                                    &#8592 Back
-                                </a>
-                            </div>
-                        </form>
+                    </div>
+                    <div class="col-lg-6 d-flex">
+                        <img style="width:400px"src="~/img/LiveIT.png" />
                     </div>
                 </div>
             </div>
@@ -66,5 +74,17 @@
         if (errorMessage) {
             toastr.error(errorMessage);
         }
+        
+        // Client-side validation
+        $('#registerForm').on('submit', function(e) {
+            var password = $('#password').val();
+            var confirmPassword = $('#confirmpassword').val();
+            
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                toastr.error('Password and Confirm Password must match.');
+                return false;
+            }
+        });
     </script>
 }
