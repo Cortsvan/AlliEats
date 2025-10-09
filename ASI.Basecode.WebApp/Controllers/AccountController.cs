@@ -98,13 +98,23 @@ namespace ASI.Basecode.WebApp.Controllers
                 // Authentication successful
                 await this._signInManager.SignInAsync(user);
                 this._session.SetString("UserName", user.Name);
+                this._session.SetString("UserRole", user.Role ?? "User");
                 
-                // Redirect to return URL if provided, otherwise go to Home
+                // Role-based redirection
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
                     return Redirect(returnUrl);
                 }
-                return RedirectToAction("Index", "Home");
+                
+                // Redirect based on role
+                if (user.Role == "Admin")
+                {
+                    return RedirectToAction("ViewItems", "AdminMenu");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Home");
+                }
             }
             else
             {

@@ -39,6 +39,7 @@ namespace ASI.Basecode.Services.Services
             {
                 _mapper.Map(model, user);
                 user.Password = PasswordManager.EncryptPassword(model.Password);
+                user.Role = "User"; // Default role for regular users
                 user.CreatedTime = DateTime.Now;
                 user.UpdatedTime = DateTime.Now;
                 user.CreatedBy = System.Environment.UserName;
@@ -49,6 +50,30 @@ namespace ASI.Basecode.Services.Services
             else
             {
                 throw new InvalidDataException(Resources.Messages.Errors.UserExists);
+            }
+        }
+
+        public void CreateDefaultAdmin()
+        {
+            const string adminEmail = "allieatsadmin@gmail.com";
+            const string adminPassword = "@Admin123";
+            const string adminName = "AlliEats Administrator";
+
+            if (!_repository.UserExists(adminEmail))
+            {
+                var adminUser = new User
+                {
+                    UserId = adminEmail,
+                    Name = adminName,
+                    Password = PasswordManager.EncryptPassword(adminPassword),
+                    Role = "Admin",
+                    CreatedTime = DateTime.Now,
+                    UpdatedTime = DateTime.Now,
+                    CreatedBy = "System",
+                    UpdatedBy = "System"
+                };
+
+                _repository.AddUser(adminUser);
             }
         }
     }
