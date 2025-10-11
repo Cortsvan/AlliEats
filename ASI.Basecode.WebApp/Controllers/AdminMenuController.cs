@@ -1,6 +1,7 @@
 using ASI.Basecode.Services.Interfaces;
 using ASI.Basecode.Services.ServiceModels;
 using ASI.Basecode.WebApp.Mvc;
+using ASI.Basecode.WebApp.Attributes;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,7 @@ using System;
 namespace ASI.Basecode.WebApp.Controllers
 {
     [Authorize]
+    [AdminOnly]
     public class AdminMenuController : ControllerBase<AdminMenuController>
     {
         private readonly IMenuService _menuService;
@@ -29,13 +31,6 @@ namespace ASI.Basecode.WebApp.Controllers
         // GET: AdminMenu/ViewItems
         public IActionResult ViewItems()
         {
-            // Check if user is admin
-            var userRole = _session.GetString("UserRole");
-            if (userRole != "Admin")
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
             var menuItems = _menuService.GetAllMenuItems();
             return View(menuItems);
         }
@@ -43,13 +38,6 @@ namespace ASI.Basecode.WebApp.Controllers
         // GET: AdminMenu/AddItem
         public IActionResult AddItem()
         {
-            // Check if user is admin
-            var userRole = _session.GetString("UserRole");
-            if (userRole != "Admin")
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
             return View(new MenuItemViewModel());
         }
 
@@ -58,13 +46,6 @@ namespace ASI.Basecode.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddItem(MenuItemViewModel model)
         {
-            // Check if user is admin
-            var userRole = _session.GetString("UserRole");
-            if (userRole != "Admin")
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -91,13 +72,6 @@ namespace ASI.Basecode.WebApp.Controllers
         // GET: AdminMenu/EditItem/5
         public IActionResult EditItem(int id)
         {
-            // Check if user is admin
-            var userRole = _session.GetString("UserRole");
-            if (userRole != "Admin")
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
             var menuItem = _menuService.GetMenuItemById(id);
             if (menuItem == null)
             {
@@ -113,13 +87,6 @@ namespace ASI.Basecode.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult EditItem(int id, MenuItemViewModel model)
         {
-            // Check if user is admin
-            var userRole = _session.GetString("UserRole");
-            if (userRole != "Admin")
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
             if (id != model.Id)
             {
                 return NotFound();
@@ -153,13 +120,6 @@ namespace ASI.Basecode.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteItem(int id)
         {
-            // Check if user is admin
-            var userRole = _session.GetString("UserRole");
-            if (userRole != "Admin")
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
             try
             {
                 _menuService.DeleteMenuItem(id);

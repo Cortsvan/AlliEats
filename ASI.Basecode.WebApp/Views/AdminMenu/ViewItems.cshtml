@@ -3,9 +3,27 @@
 @{
     ViewData["Title"] = "Menu Management";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var userName = Context.Session.GetString("UserName");
 }
 
 <div class="container-fluid px-4">
+    <!-- Admin Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-primary border-0 shadow-sm">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-user-shield fa-2x text-primary"></i>
+                    </div>
+                    <div>
+                        <h4 class="alert-heading mb-1">Hello Admin</h4>
+                        <p class="mb-0">Welcome to the AlliEats Admin Dashboard. Manage your menu items and monitor your restaurant.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow">
@@ -43,6 +61,7 @@
                                 <thead class="table-dark">
                                     <tr>
                                         <th>Name</th>
+                                        <th>Category</th>
                                         <th>Price</th>
                                         <th>Description</th>
                                         <th>Status</th>
@@ -54,6 +73,9 @@
                                     {
                                         <tr>
                                             <td class="fw-bold">@item.Name</td>
+                                            <td>
+                                                <span class="badge bg-info">@item.Category</span>
+                                            </td>
                                             <td class="text-success fw-bold">$@item.Price.ToString("F2")</td>
                                             <td>@(string.IsNullOrEmpty(item.Description) ? "No description" : item.Description)</td>
                                             <td>
@@ -73,7 +95,7 @@
                                                     </a>
                                                     @if (item.IsActive)
                                                     {
-                                                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                        <button type="button" class="btn btn-sm btn-outline-danger"
                                                                 onclick="confirmDelete(@item.Id, '@item.Name')">
                                                             <i class="fas fa-trash"></i>
                                                         </button>

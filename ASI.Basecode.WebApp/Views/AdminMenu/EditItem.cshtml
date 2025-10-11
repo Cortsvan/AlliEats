@@ -26,11 +26,23 @@
                     <form asp-action="EditItem" asp-controller="AdminMenu" asp-route-id="@Model.Id" method="post">
                         @Html.AntiForgeryToken()
                         <input asp-for="Id" type="hidden" />
-                        
+
                         <div class="mb-3">
                             <label asp-for="Name" class="form-label fw-bold">Item Name</label>
                             <input asp-for="Name" class="form-control" placeholder="Enter item name" />
                             <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Category" class="form-label fw-bold">Category</label>
+                            <select asp-for="Category" class="form-select">
+                                <option value="">-- Select Category --</option>
+                                <option value="Appetizers">Appetizers</option>
+                                <option value="Main Courses">Main Courses</option>
+                                <option value="Desserts">Desserts</option>
+                                <option value="Beverages">Beverages</option>
+                            </select>
+                            <span asp-validation-for="Category" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
@@ -44,7 +56,7 @@
 
                         <div class="mb-3">
                             <label asp-for="Description" class="form-label fw-bold">Description</label>
-                            <textarea asp-for="Description" class="form-control" rows="4" 
+                            <textarea asp-for="Description" class="form-control" rows="4"
                                       placeholder="Enter a description for this menu item (optional)"></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
@@ -75,5 +87,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

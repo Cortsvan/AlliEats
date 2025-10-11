@@ -8,6 +8,7 @@ using ASI.Basecode.WebApp.Extensions.Configuration;
 using ASI.Basecode.WebApp.Models;
 using ASI.Basecode.Resources.Constants;
 using ASI.Basecode.Data.Models;
+using ASI.Basecode.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +23,7 @@ namespace ASI.Basecode.WebApp.Authentication
     {
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUserService _userService;
 
         /// <summary>
         /// Gets or sets the user.
@@ -41,11 +43,13 @@ namespace ASI.Basecode.WebApp.Authentication
         /// <param name="configuration">The configuration.</param>
         /// <param name="accountService">The account service.</param>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
+        /// <param name="userService">The user service.</param>
         public SignInManager(IConfiguration configuration,
-                             IHttpContextAccessor httpContextAccessor)
+                             IHttpContextAccessor httpContextAccessor, IUserService userService)
         {
             this._configuration = configuration;
             this._httpContextAccessor = httpContextAccessor;
+            this._userService = userService;
             user = new LoginUser();
         }
 
@@ -80,14 +84,14 @@ namespace ASI.Basecode.WebApp.Authentication
         public ClaimsIdentity CreateClaimsIdentity(User user)
         {
             var token = _configuration.GetTokenAuthentication();
-            //TODO
             var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserId, ClaimValueTypes.String, Const.Issuer),
                 new Claim(ClaimTypes.Name, user.Name, ClaimValueTypes.String, Const.Issuer),
-
+                new Claim(ClaimTypes.Role, user.Role ?? "User", ClaimValueTypes.String, Const.Issuer), // ✅ Add this line
                 new Claim("UserId", user.UserId, ClaimValueTypes.String, Const.Issuer),
                 new Claim("UserName", user.Name, ClaimValueTypes.String, Const.Issuer),
+                new Claim("UserRole", user.Role ?? "User", ClaimValueTypes.String, Const.Issuer), // ✅ Add this line
             };
             return new ClaimsIdentity(claims, Const.AuthenticationScheme);
         }
@@ -155,6 +159,33 @@ namespace ASI.Basecode.WebApp.Authentication
         {
             var token = _configuration.GetTokenAuthentication();
             await _httpContextAccessor.HttpContext.SignOutAsync(Const.AuthenticationScheme);
+        }
+
+        /// <summary>
+        /// Password sign in async
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="password">The password.</param>
+        /// <param name="isPersistent">if set to <c>true</c> [is persistent].</param>
+        /// <param name="lockoutOnFailure">if set to <c>true</c> [lockout on failure].</param>
+        /// <returns>Claims Identity</returns>
+        public Task<ClaimsIdentity> PasswordSignInAsync(string username, string password, bool isPersistent, bool lockoutOnFailure)
+        {
+            ClaimsIdentity claimsIdentity = null;
+            var user = new LoginUser();
+            User userData = null;
+
+            // ✅ Fix: Use the actual authentication service instead of hardcoded success
+            user.loginResult = this._userService.AuthenticateUser(username, password, ref userData);
+
+            if (user.loginResult == LoginResult.Failed)
+            {
+                return Task.FromResult<ClaimsIdentity>(null);
+            }
+
+            user.userData = userData;
+            claimsIdentity = CreateClaimsIdentity(userData);
+            return Task.FromResult(claimsIdentity);
         }
     }
 }

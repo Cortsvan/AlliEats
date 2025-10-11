@@ -105,16 +105,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 {
                     return Redirect(returnUrl);
                 }
-                
-                // Redirect based on role
-                if (user.Role == "Admin")
-                {
-                    return RedirectToAction("ViewItems", "AdminMenu");
-                }
-                else
-                {
-                    return RedirectToAction("Index", "Home");
-                }
+                return RedirectToAction("Index", "Home");
             }
             else
             {

@@ -17,7 +17,9 @@ namespace ASI.Basecode.Data.Models
         
         [StringLength(500)]
         public string Description { get; set; }
-        
+
+        [StringLength(50)]
+        public string Category { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedTime { get; set; }
         public string UpdatedBy { get; set; }

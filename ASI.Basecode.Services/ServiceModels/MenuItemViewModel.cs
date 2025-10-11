@@ -18,6 +18,10 @@ namespace ASI.Basecode.Services.ServiceModels
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
         public string Description { get; set; }
 
+        [Required(ErrorMessage = "Category is required.")]
+        [StringLength(50, ErrorMessage = "Category cannot exceed 50 characters.")]
+        public string Category { get; set; }
+
         public bool IsActive { get; set; } = true;
     }
 }
