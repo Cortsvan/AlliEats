@@ -127,120 +127,49 @@
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         let currentMenuItemId = null;
 
         function addToCart(menuItemId, itemName) {
             currentMenuItemId = menuItemId;
-            document.getElementById('modalItemName').textContent = itemName;
-            document.getElementById('quantity').value = 1;
-
-            // Use Bootstrap 5 modal properly
-            const modal = new bootstrap.Modal(document.getElementById('addToCartModal'));
-            modal.show();
+            $('#modalItemName').text(itemName);
+            $('#quantity').val(1);
+            $('#addToCartModal').modal('show');
         }
 
-        // Ensure modal closes properly when cancel is clicked
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add event listener for cancel button
-            const cancelButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
-            cancelButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const modalElement = this.closest('.modal');
-                    const modal = bootstrap.Modal.getInstance(modalElement);
-                    if (modal) {
-                        modal.hide();
-                    }
-                });
+        $(document).ready(function() {
+            $('[data-bs-dismiss="modal"]').click(function() {
+                $('#addToCartModal').modal('hide');
             });
 
-            // Add to cart confirmation
-            document.getElementById('confirmAddToCart').addEventListener('click', function() {
-                const quantity = document.getElementById('quantity').value;
+            $('#confirmAddToCart').click(function() {
+                const quantity = $('#quantity').val();
+                const token = $('input[name="__RequestVerificationToken"]').val();
+                const button = $(this);
 
-                // Get the antiforgery token
-                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Adding...');
 
-                // Create form data
-                const formData = new FormData();
-                formData.append('menuItemId', currentMenuItemId);
-                formData.append('quantity', quantity);
-                formData.append('__RequestVerificationToken', token);
-
-                // Show loading state
-                this.disabled = true;
-                this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Adding...';
-
-                fetch('@Url.Action("AddItem", "Cart")', {
-                    method: 'POST',
-                    body: formData
+                $.post('@Url.Action("AddItem", "Cart")', {
+                    menuItemId: currentMenuItemId,
+                    quantity: quantity,
+                    __RequestVerificationToken: token
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
+                .done(function(data) {
                     if (data.success) {
-                        showToast(data.message, 'success');
-                        // Close modal
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('addToCartModal'));
-                        modal.hide();
+                        toastr.success(data.message);
+                        $('#addToCartModal').modal('hide');
                     } else {
-                        showToast(data.message, 'error');
+                        toastr.error(data.message);
                     }
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('An error occurred while adding item to cart.', 'error');
+                .fail(function() {
+                    toastr.error('An error occurred while adding item to cart.');
                 })
-                .finally(() => {
-                    // Reset button state
-                    const button = document.getElementById('confirmAddToCart');
-                    button.disabled = false;
-                    button.innerHTML = '<i class="fas fa-plus me-2"></i>Add to Cart';
+                .always(function() {
+                    button.prop('disabled', false).html('<i class="fas fa-plus me-2"></i>Add to Cart');
                 });
             });
         });
-
-        function showToast(message, type) {
-            const toastContainer = document.getElementById('toastContainer') || createToastContainer();
-            const toastId = 'toast-' + Date.now();
-            const bgClass = type === 'success' ? 'bg-success' : 'bg-danger';
-
-            const toastHtml = `
-                <div id="${toastId}" class="toast ${bgClass} text-white" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="toast-body">
-                        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
-                        ${message}
-                    </div>
-                </div>
-            `;
-
-            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
-            const toastElement = document.getElementById(toastId);
-            const toast = new bootstrap.Toast(toastElement, {
-                autohide: true,
-                delay: 3000
-            });
-            toast.show();
-
-            // Remove toast element after it's hidden
-            toastElement.addEventListener('hidden.bs.toast', function() {
-                this.remove();
-            });
-        }
-
-        function createToastContainer() {
-            const container = document.createElement('div');
-            container.id = 'toastContainer';
-            container.className = 'toast-container position-fixed top-0 end-0 p-3';
-            container.style.zIndex = '9999';
-            document.body.appendChild(container);
-            return container;
-        }
     </script>
     @Html.AntiForgeryToken()
 }

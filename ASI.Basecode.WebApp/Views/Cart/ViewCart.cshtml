@@ -208,35 +208,84 @@
 
 @section Scripts {
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add event listeners for cancel buttons
-            const cancelButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
-            cancelButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const modalElement = this.closest('.modal');
-                    const modal = bootstrap.Modal.getInstance(modalElement);
-                    if (modal) {
-                        modal.hide();
-                    }
-                });
-            });
-        });
+        let currentCartItemId = null;
 
         function confirmRemove(cartItemId, itemName) {
-            document.getElementById('removeItemName').textContent = itemName;
-            document.getElementById('removeForm').action = '@Url.Action("RemoveItem", "Cart")';
-            document.getElementById('removeForm').innerHTML =
-                '@Html.AntiForgeryToken()' +
-                '<input type="hidden" name="cartItemId" value="' + cartItemId + '" />' +
-                '<button type="submit" class="btn btn-warning"><i class="fas fa-trash me-2"></i>Remove</button>';
-
-            const modal = new bootstrap.Modal(document.getElementById('removeModal'));
-            modal.show();
+            currentCartItemId = cartItemId;
+            $('#removeItemName').text(itemName);
+            $('#removeModal').modal('show');
         }
 
         function confirmClearCart() {
-            const modal = new bootstrap.Modal(document.getElementById('clearModal'));
-            modal.show();
+            $('#clearModal').modal('show');
         }
+
+        $(document).ready(function() {
+            // Handle modal close buttons - same pattern as Browse
+            $('[data-bs-dismiss="modal"]').click(function() {
+                $('#removeModal').modal('hide');
+                $('#clearModal').modal('hide');
+            });
+
+            // Handle remove item confirmation - AJAX like Browse
+            $('#removeForm button[type="submit"]').click(function(e) {
+                e.preventDefault();
+                const token = $('input[name="__RequestVerificationToken"]').val();
+                const button = $(this);
+
+                button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Removing...');
+
+                $.post('@Url.Action("RemoveItem", "Cart")', {
+                    cartItemId: currentCartItemId,
+                    __RequestVerificationToken: token
+                })
+                .done(function(data) {
+                    if (data.success) {
+                        toastr.success(data.message);
+                        $('#removeModal').modal('hide');
+                        // Reload page to update cart
+                        location.reload();
+                    } else {
+                        toastr.error(data.message);
+                    }
+                })
+                .fail(function() {
+                    toastr.error('An error occurred while removing item from cart.');
+                })
+                .always(function() {
+                    button.prop('disabled', false).html('<i class="fas fa-trash me-2"></i>Remove');
+                });
+            });
+
+            // Handle clear cart confirmation - AJAX like Browse
+            $('#clearForm button[type="submit"]').click(function(e) {
+                e.preventDefault();
+                const token = $('input[name="__RequestVerificationToken"]').val();
+                const button = $(this);
+
+                button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Clearing...');
+
+                $.post('@Url.Action("Clear", "Cart")', {
+                    __RequestVerificationToken: token
+                })
+                .done(function(data) {
+                    if (data.success) {
+                        toastr.success(data.message);
+                        $('#clearModal').modal('hide');
+                        // Reload page to update cart
+                        location.reload();
+                    } else {
+                        toastr.error(data.message);
+                    }
+                })
+                .fail(function() {
+                    toastr.error('An error occurred while clearing cart.');
+                })
+                .always(function() {
+                    button.prop('disabled', false).html('<i class="fas fa-trash me-2"></i>Clear Cart');
+                });
+            });
+        });
     </script>
+    @Html.AntiForgeryToken()
 }
