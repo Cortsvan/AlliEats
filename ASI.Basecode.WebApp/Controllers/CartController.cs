@@ -111,10 +111,23 @@ namespace ASI.Basecode.WebApp.Controllers
             try
             {
                 _cartService.RemoveFromCart(cartItemId);
+
+                // Check if this is an AJAX request
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = true, message = "Item removed from cart!" });
+                }
+
                 TempData["SuccessMessage"] = "Item removed from cart!";
             }
             catch (Exception ex)
             {
+                // Check if this is an AJAX request
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = false, message = ex.Message });
+                }
+
                 TempData["ErrorMessage"] = ex.Message;
             }
 
@@ -135,15 +148,34 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 if (string.IsNullOrEmpty(userId))
                 {
+                    // Check if this is an AJAX request
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        return Json(new { success = false, message = "User session expired. Please login again." });
+                    }
+
                     TempData["ErrorMessage"] = "User session expired. Please login again.";
                     return RedirectToAction("Login", "Account");
                 }
 
                 _cartService.ClearCart(userId);
+
+                // Check if this is an AJAX request
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = true, message = "Cart cleared successfully!" });
+                }
+
                 TempData["SuccessMessage"] = "Cart cleared successfully!";
             }
             catch (Exception ex)
             {
+                // Check if this is an AJAX request
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = false, message = ex.Message });
+                }
+
                 TempData["ErrorMessage"] = ex.Message;
             }
 

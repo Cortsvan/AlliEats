@@ -1,0 +1,121 @@
+﻿@model ASI.Basecode.Services.ServiceModels.OrderViewModel
+
+@{
+    ViewData["Title"] = "Order Confirmation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Success Header -->
+            <div class="text-center mb-4">
+                <div class="alert alert-success border-0 shadow-lg">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <div class="me-3">
+                            <i class="fas fa-check-circle fa-3x text-success"></i>
+                        </div>
+                        <div>
+                            <h3 class="alert-heading mb-1">Order Placed Successfully!</h3>
+                            <p class="mb-0">Thank you for your order. We'll start preparing it right away!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Details Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h4 class="mb-0">
+                                <i class="fas fa-receipt me-2"></i>Order Details
+                            </h4>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge @Model.StatusBadgeClass fs-6">@Model.Status</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Order Number:</strong> @Model.OrderNumber
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Order Date:</strong> @Model.CreatedTime.ToString("MMM dd, yyyy h:mm tt")
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Payment Method:</strong> @Model.PaymentMethod
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Total Amount:</strong> <span class="text-success fw-bold">$@Model.TotalAmount.ToString("F2")</span>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <strong>Notes:</strong> @Model.Notes
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Order Items (@Model.TotalItems items)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @foreach (var item in Model.OrderItems)
+                    {
+                        <div class="row align-items-center border-bottom py-3">
+                            <div class="col-md-6">
+                                <h6 class="mb-0">@item.MenuItemName</h6>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <span class="text-muted">$@item.Price.ToString("F2")</span>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <span class="badge bg-primary">@item.Quantity</span>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <span class="fw-bold">$@item.TotalPrice.ToString("F2")</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center">
+                <a href="@Url.Action("TrackOrder", "Order", new { orderNumber = Model.OrderNumber })" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-search me-2"></i>Track Order
+                </a>
+                <a href="@Url.Action("Browse", "Menu")" class="btn btn-outline-success btn-lg me-3">
+                    <i class="fas fa-utensils me-2"></i>Order More Food
+                </a>
+                <a href="@Url.Action("MyOrders", "Order")" class="btn btn-outline-info btn-lg">
+                    <i class="fas fa-history me-2"></i>View All Orders
+                </a>
+            </div>
+
+            <!-- Estimated Delivery Time -->
+            <div class="alert alert-info mt-4">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-clock me-3 fa-2x"></i>
+                    <div>
+                        <h6 class="mb-1">Estimated Delivery Time</h6>
+                        <p class="mb-0">Your order will be ready in approximately <strong>25-35 minutes</strong>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

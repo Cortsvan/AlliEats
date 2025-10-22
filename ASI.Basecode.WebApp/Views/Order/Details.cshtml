@@ -1,0 +1,185 @@
+﻿@model ASI.Basecode.Services.ServiceModels.OrderViewModel
+
+@{
+    ViewData["Title"] = "Order Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info border-0 shadow-sm">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-receipt fa-2x text-info"></i>
+                    </div>
+                    <div>
+                        <h4 class="alert-heading mb-1">Order Details</h4>
+                        <p class="mb-0">Complete information about order @Model.OrderNumber</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Order Information -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>Order Information
+                        </h5>
+                        <span class="badge @Model.StatusBadgeClass fs-6">@Model.Status</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Order Number:</strong> @Model.OrderNumber
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Order Date:</strong> @Model.CreatedTime.ToString("MMMM dd, yyyy h:mm tt")
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Payment Method:</strong> @Model.PaymentMethod
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Total Amount:</strong> <span class="text-success fw-bold">$@Model.TotalAmount.ToString("F2")</span>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="row">
+                            <div class="col-12">
+                                <strong>Order Notes:</strong>
+                                <div class="mt-2 p-3 bg-light rounded">
+                                    @Model.Notes
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Ordered Items (@Model.TotalItems items)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @foreach (var item in Model.OrderItems)
+                    {
+                        <div class="row align-items-center border-bottom py-3">
+                            <div class="col-md-6">
+                                <h6 class="mb-0">@item.MenuItemName</h6>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <span class="text-muted">$@item.Price.ToString("F2")</span>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <span class="badge bg-primary">@item.Quantity</span>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <span class="fw-bold">$@item.TotalPrice.ToString("F2")</span>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="row mt-3 pt-3 border-top">
+                        <div class="col-md-8">
+                            <h6>Total Items: @Model.TotalItems</h6>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <h5 class="text-success">Total: $@Model.TotalAmount.ToString("F2")</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Status & Actions -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-truck me-2"></i>Order Status
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-circle-check fa-3x @(Model.Status == "Delivered" ? "text-success" : "text-muted")"></i>
+                    </div>
+                    <h4 class="mb-3">
+                        <span class="badge @Model.StatusBadgeClass">@Model.Status</span>
+                    </h4>
+
+                    <!-- Status Progress -->
+                    <div class="progress mb-3" style="height: 8px;">
+                        @{
+                            var progressWidth = Model.Status switch
+                            {
+                                "Pending" => "20%",
+                                "Confirmed" => "40%",
+                                "Preparing" => "60%",
+                                "Ready" => "80%",
+                                "Delivered" => "100%",
+                                "Cancelled" => "100%",
+                                _ => "0%"
+                            };
+                            var progressColor = Model.Status == "Cancelled" ? "bg-danger" : "bg-success";
+                        }
+                        <div class="progress-bar @progressColor" style="width: @progressWidth"></div>
+                    </div>
+
+                    @if (Model.Status == "Ready")
+                    {
+                        <div class="alert alert-warning">
+                            <i class="fas fa-bell me-2"></i>Your order is ready for pickup!
+                        </div>
+                    }
+                    else if (Model.Status == "Preparing")
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-clock me-2"></i>Your order is being prepared
+                        </div>
+                    }
+                    else if (Model.Status == "Delivered")
+                    {
+                        <div class="alert alert-success">
+                            <i class="fas fa-check me-2"></i>Order delivered successfully!
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <div class="d-grid gap-2">
+                        <a href="@Url.Action("MyOrders", "Order")" class="btn btn-outline-info">
+                            <i class="fas fa-history me-2"></i>Back to Order History
+                        </a>
+                        <a href="@Url.Action("Browse", "Menu")" class="btn btn-success">
+                            <i class="fas fa-utensils me-2"></i>Order More Food
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
