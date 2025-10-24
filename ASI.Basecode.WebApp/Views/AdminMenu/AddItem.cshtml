@@ -5,16 +5,56 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<style>
+    body {
+        font-family: Georgia, serif;
+        background-color: #FFF3E0;
+    }
+
+    .custom-card-bg {
+        background-color: white;
+        border: 1px solid rgba(255, 243, 224, 0.5);
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px -2px rgba(240, 98, 72, 0.1), 0 2px 4px -2px rgba(240, 98, 72, 0.05);
+    }
+
+    .btn-accent-orange {
+        background-color: #5D4037;
+        border-color: #5D4037;
+        color: white;
+    }
+
+        .btn-accent-orange:hover {
+            background-color: #5D4037;
+            border-color: #5D4037;
+            color: white;
+            opacity: 0.9;
+        }
+
+    .text-deep-maroon {
+        color: #5D4037 !important;
+    }
+
+    .form-label {
+        color: #5D4037;
+    }
+
+    .text-price-green {
+        color: #FFD54F !important;
+    }
+</style>
+
 <div class="container-fluid px-4">
-    <div class="row justify-content-center">
+    <div class="row my-4 justify-content-center">
         <div class="col-lg-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
+            <div class="card custom-card-bg">
+                <div class="card-header text-white" style="background-color: #5D4037; border-bottom: 0;">
                     <h4 class="mb-0">
-                        <i class="fas fa-plus-circle me-2"></i>Add New Menu Item
+                        <i class="fas fa-plus-circle me-2"></i> Add New Menu Item
                     </h4>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
+
                     @if (TempData["ErrorMessage"] != null)
                     {
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -61,14 +101,15 @@
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <a href="@Url.Action("ViewItems", "AdminMenu")" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>Back to Menu
+                            <a href="@Url.Action("ViewItems", "AdminMenu")" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Back to Menu
                             </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i>Add Item
+                            <button type="submit" class="btn btn-accent-orange">
+                                <i class="fas fa-save me-2"></i> Add Item
                             </button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
