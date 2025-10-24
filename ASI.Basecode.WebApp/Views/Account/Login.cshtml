@@ -5,84 +5,268 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 }
 @{
-    ViewBag.LoginView = true;
-    ViewData["Title"] = "AlliEats - Login";
+    ViewData["Title"] = "Login";
+    Layout = null;
 }
-<div>
-    @Html.AntiForgeryToken()
-</div>
-<div class="auth-container">
-    <div class="container-fluid">
-        <div class="row justify-content-center">
-            <div class="col-12">
-                <div class="card auth-card text-black">
-                    <div class="row g-0">
-                        <div class="col-lg-6">
-                            <div class="auth-card-body">
-                                <div class="text-center mb-4">
-                                    <img src="~/img/allieats-logo.png"
-                                         class="auth-logo"
-                                         style="width: 220px; max-width: 100%;" 
-                                         alt="AlliEats Logo">
-                                    <h2 class="auth-title">Welcome Back</h2>
-                                    <p class="auth-subtitle">Sign in to your account to start ordering delicious food</p>
-                                </div>
-                                <form method="post" action="/Account/Login" id="loginForm">
-                                    <div class="form-group mb-4">
-                                        <label class="form-label" for="form2Example11">Email Address</label>
-                                        <input type="email" id="form2Example11" class="form-control"
-                                               asp-for="UserId" placeholder="Enter your email address" />
-                                        <span asp-validation-for="UserId" class="text-danger"></span>
-                                    </div>
-                                    <div class="form-group mb-4">
-                                        <label class="form-label" for="form2Example22">Password</label>
-                                        <input type="password" id="form2Example22" class="form-control"
-                                               asp-for="Password" placeholder="Enter your password" />
-                                        <span asp-validation-for="Password" class="text-danger"></span>
-                                    </div>
-                                    <div class="text-center pt-3 mb-4">
-                                        <button class="btn btn-primary login-btn gradient-custom-2 mb-3" type="submit">
-                                            Sign In
-                                        </button>
-                                        <div class="mb-3">
-                                            <a class="auth-link" href="#!">Forgot your password?</a>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center justify-content-center pb-4">
-                                        <p class="mb-0 me-2 mr-2" style="color: var(--text-charcoal);">Don't have an account?</p>
-                                        <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary">Create Account</a>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 auth-image-side">
-                            <div class="text-center">
-                                <h1 class="auth-brand-text">AlliEats</h1>
-                                <p class="auth-tagline">Order. Enjoy. Repeat.</p>
-                                <div class="mt-4">
-                                    <div style="font-size: 64px; color: #FFD54F; opacity: 0.8;">🍽️</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - AllieEats</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: linear-gradient(135deg, #5D4037 0%, #3E2723 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: #FFF3E0;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 100%;
+            padding: 50px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 213, 79, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-header h1 {
+            font-family: 'Playfair Display', serif;
+            color: #5D4037;
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .auth-header p {
+            color: #212121;
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            color: #5D4037;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #5D4037;
+            border-radius: 10px;
+            font-size: 15px;
+            color: #212121;
+            background: #FFFFFF;
+            transition: all 0.3s ease;
+            font-family: 'Lato', sans-serif;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #FFD54F;
+            box-shadow: 0 0 0 3px rgba(255, 213, 79, 0.2);
+        }
+
+        .form-control::placeholder {
+            color: #9E9E9E;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #FFD54F;
+        }
+
+        .remember-me label {
+            color: #212121;
+            font-size: 14px;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .forgot-link {
+            color: #5D4037;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-link:hover {
+            color: #FFD54F;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FFD54F 0%, #FFC107 100%);
+            color: #5D4037;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 213, 79, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .auth-footer p {
+            color: #212121;
+            font-size: 15px;
+        }
+
+        .auth-footer a {
+            color: #5D4037;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .auth-footer a:hover {
+            color: #FFD54F;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-danger {
+            background: #FFEBEE;
+            color: #C62828;
+            border: 1px solid #EF5350;
+        }
+
+        @media (max-width: 576px) {
+            .auth-container {
+                padding: 40px 25px;
+            }
+
+            .auth-header h1 {
+                font-size: 32px;
+            }
+
+            .form-options {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>Welcome Back</h1>
+            <p>Sign in to your account</p>
+        </div>
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
             </div>
+        }
+
+        <form asp-action="Login" method="post">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" class="form-control" id="email" name="Email" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="Password" placeholder="Enter your password" required>
+            </div>
+
+            <div class="form-options">
+                <div class="remember-me">
+                    <input type="checkbox" id="rememberMe" name="RememberMe">
+                    <label for="rememberMe">Remember me</label>
+                </div>
+                <a href="@Url.Action("ForgotPassword", "Account")" class="forgot-link">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn-primary">Sign In</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="@Url.Action("Register", "Account")">Register Now</a></p>
         </div>
     </div>
-</div>
-
-@section scripts {
-    <script>
-        // Check for error message and display Toastr notification
-        var errorMessage = '@TempData["ErrorMessage"]';
-        if (errorMessage && errorMessage.trim() !== '') {
-            toastr.error(errorMessage);
-        }
-        
-        // Check for success message and display Toastr notification
-        var successMessage = '@TempData["SuccessMessage"]';
-        if (successMessage && successMessage.trim() !== '') {
-            toastr.success(successMessage);
-        }
-    </script>
-}
+</body>
+</html>
