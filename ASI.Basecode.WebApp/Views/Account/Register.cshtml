@@ -6,102 +6,283 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 }
 @{
-    ViewBag.LoginView = true;
-    ViewData["Title"] = "AlliEats - Register";
+    ViewData["Title"] = "Register";
+    Layout = null;
 }
-<div>
-    @Html.AntiForgeryToken()
-</div>
-<div class="auth-container">
-    <div class="container-fluid">
-        <div class="row justify-content-center">
-            <div class="col-12">
-                <div class="card auth-card text-black">
-                    <div class="row g-0">
-                        <div class="col-lg-6">
-                            <div class="auth-card-body">
-                                <div class="text-center mb-4">
-                                    <img src="~/img/allieats-logo.png"
-                                         class="auth-logo"
-                                         style="width: 200px; max-width: 100%;" 
-                                         alt="AlliEats Logo">
-                                    <h2 class="auth-title">Join AlliEats</h2>
-                                    <p class="auth-subtitle">Create your account and get your favorite food delivered fast</p>
-                                </div>
-                                <form method="post" action="/Account/Register" id="registerForm">
-                                    <div class="form-group mb-3">
-                                        <label class="form-label" for="userid">Email Address</label>
-                                        <input type="email" id="userid" class="form-control" 
-                                               asp-for="UserId" placeholder="Enter your email address" />
-                                        <span asp-validation-for="UserId" class="text-danger"></span>
-                                    </div>
-                                    <div class="form-group mb-3">
-                                        <label class="form-label" for="name">Full Name</label>
-                                        <input type="text" id="name" class="form-control" 
-                                               asp-for="Name" placeholder="Enter your full name" />
-                                        <span asp-validation-for="Name" class="text-danger"></span>
-                                    </div>
-                                    <div class="form-group mb-3">
-                                        <label class="form-label" for="password">Password</label>
-                                        <input type="password" id="password" class="form-control" 
-                                               asp-for="Password" placeholder="Create a secure password" />
-                                        <span asp-validation-for="Password" class="text-danger"></span>
-                                    </div>
-                                    <div class="form-group mb-4">
-                                        <label class="form-label" for="confirmpassword">Confirm Password</label>
-                                        <input type="password" id="confirmpassword" class="form-control" 
-                                               asp-for="ConfirmPassword" placeholder="Confirm your password" />
-                                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                                    </div>
-                                    <div class="text-center pt-2 mb-4">
-                                        <button class="btn btn-primary login-btn gradient-custom-2 mb-3" type="submit">
-                                            Create Account
-                                        </button>
-                                        <div>
-                                            <a asp-controller="Account" asp-action="Login" class="back-link">
-                                                ← Already have an account? Sign in
-                                            </a>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 auth-image-side">
-                            <div class="text-center">
-                                <h1 class="auth-brand-text">Welcome to AlliEats</h1>
-                                <p class="auth-tagline">Your Food Delivery Starts Here</p>
-                                <div class="mt-4">
-                                    <div style="font-size: 64px; color: #FFD54F; opacity: 0.8;">🛵</div>
-                                </div>
-                                <div class="mt-4" style="color: #FFF3E0; font-size: 14px; opacity: 0.9; max-width: 280px; margin: 2rem auto;">
-                                    Join thousands of food lovers ordering from their favorite restaurants with fast, reliable delivery.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - AllieEats</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: linear-gradient(135deg, #5D4037 0%, #3E2723 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: #FFF3E0;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            max-width: 480px;
+            width: 100%;
+            padding: 50px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 213, 79, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-header h1 {
+            font-family: 'Playfair Display', serif;
+            color: #5D4037;
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .auth-header p {
+            color: #212121;
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            color: #5D4037;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #5D4037;
+            border-radius: 10px;
+            font-size: 15px;
+            color: #212121;
+            background: #FFFFFF;
+            transition: all 0.3s ease;
+            font-family: 'Lato', sans-serif;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #FFD54F;
+            box-shadow: 0 0 0 3px rgba(255, 213, 79, 0.2);
+        }
+
+        .form-control::placeholder {
+            color: #9E9E9E;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FFD54F 0%, #FFC107 100%);
+            color: #5D4037;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            text-transform: uppercase;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 213, 79, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: #5D4037;
+            opacity: 0.2;
+        }
+
+        .divider span {
+            background: #FFF3E0;
+            padding: 0 15px;
+            color: #5D4037;
+            font-size: 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .auth-footer p {
+            color: #212121;
+            font-size: 15px;
+        }
+
+        .auth-footer a {
+            color: #5D4037;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .auth-footer a:hover {
+            color: #FFD54F;
+        }
+
+        .password-requirements {
+            font-size: 12px;
+            color: #757575;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+        .validation-error {
+            color: #D32F2F;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        @media (max-width: 576px) {
+            .auth-container {
+                padding: 40px 25px;
+            }
+
+            .auth-header h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>Create Account</h1>
+            <p>Join AllieEats today</p>
+        </div>
+
+        <form asp-action="Register" method="post">
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" class="form-control" id="fullName" name="FullName" placeholder="Enter your full name" required>
+                <span class="validation-error" id="nameError">Please enter your full name</span>
             </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" class="form-control" id="email" name="Email" placeholder="Enter your email" required>
+                <span class="validation-error" id="emailError">Please enter a valid email address</span>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="Password" placeholder="Create a password" required>
+                <div class="password-requirements">
+                    Password must be at least 8 characters with uppercase, lowercase, and number
+                </div>
+                <span class="validation-error" id="passwordError">Password does not meet requirements</span>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" class="form-control" id="confirmPassword" name="ConfirmPassword" placeholder="Confirm your password" required>
+                <span class="validation-error" id="confirmError">Passwords do not match</span>
+            </div>
+
+            <button type="submit" class="btn-primary">Register</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Already have an account? <a href="@Url.Action("Login", "Account")">Sign In</a></p>
         </div>
     </div>
-</div>
-@section scripts {
+
     <script>
-        // Check for error message and display Toastr notification
-        var errorMessage = '@TempData["ErrorMessage"]';
-        if (errorMessage && errorMessage.trim() !== '') {
-            toastr.error(errorMessage);
-        }
-        
-        // Client-side validation
-        $('#registerForm').on('submit', function(e) {
-            var password = $('#password').val();
-            var confirmPassword = $('#confirmpassword').val();
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
             
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+            let isValid = true;
+
+            if (!passwordRegex.test(password)) {
+                document.getElementById('passwordError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('passwordError').style.display = 'none';
+            }
+
             if (password !== confirmPassword) {
-                e.preventDefault();
-                toastr.error('Password and Confirm Password must match.');
-                return false;
+                document.getElementById('confirmError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('confirmError').style.display = 'none';
+            }
+
+            if (isValid) {
+                this.submit();
             }
         });
     </script>
-}
+</body>
+</html>
