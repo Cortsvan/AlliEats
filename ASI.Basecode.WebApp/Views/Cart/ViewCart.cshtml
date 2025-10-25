@@ -6,19 +6,97 @@
     var userName = Context.Session.GetString("UserName");
 }
 
+<style>
+
+    body {
+        font-family: Georgia, serif;
+        background-color: #FFF3E0;
+    }
+
+    .bg-deep-maroon {
+        background-color: #5D4037 !important;
+    }
+
+    .text-deep-maroon {
+        color: #5D4037 !important;
+    }
+
+    .bg-accent-gold {
+        background-color: #FFD54F !important;
+    }
+
+    .text-dark-charcoal {
+        color: #212121 !important;
+    }
+
+    .btn-maroon-dark {
+        background-color: #5D4037;
+        border-color: #5D4037;
+        color: white;
+    }
+
+        .btn-maroon-dark:hover {
+            background-color: #4e342e;
+            border-color: #4e342e;
+            color: white;
+        }
+
+    .cart-alert-header {
+        background-color: #FFF3E0;
+        border: none;
+        padding-top: 1rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .cart-alert-icon {
+        color: #5D4037;
+    }
+
+    .cart-item-card {
+        border: none;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .cart-item-badge {
+        background-color: #FFD54F;
+        color: #212121;
+        font-weight: 500;
+        padding: 0.25em 0.5em;
+        border-radius: 0.25rem;
+    }
+
+    .item-row:not(:last-child) {
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .quantity-input {
+        width: 80px; 
+        height: 45px; 
+    }
+
+    .btn-delete-lg {
+        width: 45px;
+        height: 45px;
+        padding: 0; 
+        line-height: 45px; 
+    }
+
+    .btn-close-lg {
+        font-size: 1.5rem; 
+        padding: 0.5rem; 
+    }
+
+</style>
+
 <div class="container-fluid px-4">
-    <!-- Welcome Section -->
-    <div class="row mb-4">
+    <div class="row mb-4 cart-alert-header">
         <div class="col-12">
-            <div class="alert alert-info border-0 shadow-sm">
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <i class="fas fa-shopping-cart fa-2x text-info"></i>
-                    </div>
-                    <div>
-                        <h4 class="alert-heading mb-1">Your Shopping Cart</h4>
-                        <p class="mb-0">Review your items and proceed to checkout when ready.</p>
-                    </div>
+            <div class="d-flex align-items-center">
+                <i class="fas fa-shopping-cart fa-3x me-3 cart-alert-icon"></i>
+                <div>
+                    <h2 class="text-deep-maroon" style="font-weight: bold; margin-bottom: 0.1rem;">Your Shopping Cart</h2>
+                    <p class="text-dark-charcoal mb-0">Review your items and proceed to checkout when ready.</p>
                 </div>
             </div>
         </div>
@@ -26,14 +104,14 @@
 
     <div class="row">
         <div class="col-lg-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
+            <div class="card shadow cart-item-card">
+                <div class="card-header bg-deep-maroon text-white" style="border-radius: 0.5rem 0.5rem 0 0;">
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">
-                            <i class="fas fa-list me-2"></i>Cart Items
+                            <i class="fas fa-list me-2"></i> Cart Items
                         </h4>
-                        <a href="@Url.Action("Browse", "Menu")" class="btn btn-light">
-                            <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                        <a href="@Url.Action("Browse", "Menu")" class="btn btn-light btn-sm text-deep-maroon">
+                            <i class="fas fa-arrow-left me-2"></i> Continue Shopping
                         </a>
                     </div>
                 </div>
@@ -45,7 +123,6 @@
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     }
-
                     @if (TempData["ErrorMessage"] != null)
                     {
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -58,34 +135,33 @@
                     {
                         @foreach (var item in Model.CartItems)
                         {
-                            <div class="row align-items-center border-bottom py-3">
-                                <div class="col-md-6">
-                                    <h6 class="mb-1">@item.MenuItemName</h6>
+                            <div class="row align-items-center py-3 item-row">
+                                <div class="col-md-7">
+                                    <h5 class="mb-1 text-dark-charcoal" style="font-weight: bold;">@item.MenuItemName</h5>
                                     <p class="text-muted small mb-1">@item.MenuItemDescription</p>
-                                    <span class="badge bg-info">@item.MenuItemCategory</span>
+                                    <span class="cart-item-badge">@item.MenuItemCategory</span>
                                 </div>
-                                <div class="col-md-2 text-center">
-                                    <span class="text-success fw-bold">$@item.Price.ToString("F2")</span>
-                                </div>
-                                <div class="col-md-2">
+
+                                <div class="col-md-5 text-end d-flex align-items-center justify-content-end gap-3">
+                                    <div class="text-start" style="width: 85px;">
+                                        <p class="mb-0 text-dark-charcoal" style="font-weight: bold;">$@item.Price.ToString("F2")</p>
+                                        <p class="text-muted small mb-0">$@item.Price.ToString("F2") each</p>
+                                    </div>
+
                                     <form method="post" action="@Url.Action("UpdateItem", "Cart")" class="d-inline">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="cartItemId" value="@item.Id" />
-                                        <div class="input-group input-group-sm">
-                                            <input type="number" name="quantity" value="@item.Quantity"
-                                                   min="1" max="50" class="form-control text-center"
-                                                   onchange="this.form.submit()">
-                                        </div>
+                                        <input type="number" name="quantity" value="@item.Quantity"
+                                               min="1" max="50" class="form-control text-center quantity-input"
+                                               onchange="this.form.submit()">
                                     </form>
-                                </div>
-                                <div class="col-md-2 text-center">
-                                    <span class="fw-bold">$@item.TotalPrice.ToString("F2")</span>
-                                    <form method="post" action="@Url.Action("RemoveItem", "Cart")" class="d-inline mt-1">
+
+                                    <form method="post" action="@Url.Action("RemoveItem", "Cart")" class="d-inline">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="cartItemId" value="@item.Id" />
-                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                        <button type="button" class="btn btn-danger btn-delete-lg"
                                                 onclick="confirmRemove(@item.Id, '@item.MenuItemName')">
-                                            <i class="fas fa-trash"></i>
+                                            <i class="fas fa-trash fa-lg"></i>
                                         </button>
                                     </form>
                                 </div>
@@ -93,13 +169,10 @@
                         }
 
                         <div class="row mt-3">
-                            <div class="col-12 text-end">
-                                <form method="post" action="@Url.Action("Clear", "Cart")" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <button type="button" class="btn btn-outline-danger" onclick="confirmClearCart()">
-                                        <i class="fas fa-trash me-2"></i>Clear Cart
-                                    </button>
-                                </form>
+                            <div class="col-12 text-start">
+                                <button type="button" class="btn btn-outline-danger" onclick="confirmClearCart()">
+                                    <i class="fas fa-trash me-2"></i> Clear Cart
+                                </button>
                             </div>
                         </div>
                     }
@@ -109,8 +182,8 @@
                             <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
                             <h5 class="text-muted">Your cart is empty</h5>
                             <p class="text-muted">Add some delicious items from our menu!</p>
-                            <a href="@Url.Action("Browse", "Menu")" class="btn btn-primary">
-                                <i class="fas fa-utensils me-2"></i>Browse Menu
+                            <a href="@Url.Action("Browse", "Menu")" class="btn btn-maroon-dark">
+                                <i class="fas fa-utensils me-2"></i> Browse Menu
                             </a>
                         </div>
                     }
@@ -122,28 +195,28 @@
         {
             <div class="col-lg-4">
                 <div class="card shadow">
-                    <div class="card-header bg-success text-white">
+                    <div class="card-header bg-accent-gold text-dark-charcoal" style="border-radius: 0.5rem 0.5rem 0 0;">
                         <h5 class="mb-0">
-                            <i class="fas fa-receipt me-2"></i>Order Summary
+                            <i class="fas fa-receipt me-2"></i> Order Summary
                         </h5>
                     </div>
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-2">
-                            <span>Total Items:</span>
-                            <span class="fw-bold">@Model.TotalItems</span>
+                            <span class="text-dark-charcoal">Total Items:</span>
+                            <span class="fw-bold text-dark-charcoal">@Model.TotalItems</span>
                         </div>
                         <div class="d-flex justify-content-between mb-3">
-                            <span>Subtotal:</span>
-                            <span class="fw-bold">$@Model.TotalAmount.ToString("F2")</span>
+                            <span class="text-dark-charcoal">Subtotal:</span>
+                            <span class="fw-bold text-dark-charcoal">$@Model.TotalAmount.ToString("F2")</span>
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between mb-3">
-                            <span class="h5">Total:</span>
-                            <span class="h5 text-success">$@Model.TotalAmount.ToString("F2")</span>
+                            <span class="h5 text-deep-maroon">Total:</span>
+                            <span class="h5 text-accent-gold">$@Model.TotalAmount.ToString("F2")</span>
                         </div>
 
-                        <a href="@Url.Action("Index", "Checkout")" class="btn btn-success w-100 btn-lg">
-                            <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+                        <a href="@Url.Action("Index", "Checkout")" class="btn btn-maroon-dark w-100 btn-lg">
+                            <i class="fas fa-credit-card me-2"></i> Proceed to Checkout
                         </a>
                     </div>
                 </div>
@@ -152,15 +225,14 @@
     </div>
 </div>
 
-<!-- Update the Remove Item Modal -->
 <div class="modal fade" id="removeModal" tabindex="-1" aria-labelledby="removeModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-warning text-dark">
+            <div class="modal-header bg-deep-maroon text-white">
                 <h5 class="modal-title" id="removeModalLabel">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Remove Item
+                    <i class="fas fa-exclamation-triangle me-2"></i> Remove Item
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white btn-close-lg" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>Are you sure you want to remove <strong id="removeItemName"></strong> from your cart?</p>
@@ -169,8 +241,8 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <form id="removeForm" method="post" class="d-inline">
                     @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-warning">
-                        <i class="fas fa-trash me-2"></i>Remove
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i> Remove
                     </button>
                 </form>
             </div>
@@ -178,15 +250,14 @@
     </div>
 </div>
 
-<!-- Update the Clear Cart Modal -->
 <div class="modal fade" id="clearModal" tabindex="-1" aria-labelledby="clearModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="clearModalLabel">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Clear Cart
+                    <i class="fas fa-exclamation-triangle me-2"></i> Clear Cart
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white btn-close-lg" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>Are you sure you want to clear your entire cart?</p>
@@ -197,7 +268,7 @@
                 <form id="clearForm" method="post" action="@Url.Action("Clear", "Cart")" class="d-inline">
                     @Html.AntiForgeryToken()
                     <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash me-2"></i>Clear Cart
+                        <i class="fas fa-trash me-2"></i> Clear Cart
                     </button>
                 </form>
             </div>
@@ -220,13 +291,11 @@
         }
 
         $(document).ready(function() {
-            // Handle modal close buttons - same pattern as Browse
             $('[data-bs-dismiss="modal"]').click(function() {
                 $('#removeModal').modal('hide');
                 $('#clearModal').modal('hide');
             });
 
-            // Handle remove item confirmation - AJAX like Browse
             $('#removeForm button[type="submit"]').click(function(e) {
                 e.preventDefault();
                 const token = $('input[name="__RequestVerificationToken"]').val();
@@ -242,7 +311,6 @@
                     if (data.success) {
                         toastr.success(data.message);
                         $('#removeModal').modal('hide');
-                        // Reload page to update cart
                         location.reload();
                     } else {
                         toastr.error(data.message);
@@ -256,7 +324,6 @@
                 });
             });
 
-            // Handle clear cart confirmation - AJAX like Browse
             $('#clearForm button[type="submit"]').click(function(e) {
                 e.preventDefault();
                 const token = $('input[name="__RequestVerificationToken"]').val();
@@ -271,7 +338,7 @@
                     if (data.success) {
                         toastr.success(data.message);
                         $('#clearModal').modal('hide');
-                        // Reload page to update cart
+
                         location.reload();
                     } else {
                         toastr.error(data.message);
