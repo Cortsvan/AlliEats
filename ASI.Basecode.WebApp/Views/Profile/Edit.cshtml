@@ -1,0 +1,124 @@
+﻿@model ASI.Basecode.Services.ServiceModels.ProfileViewModel
+
+@{
+    ViewData["Title"] = "Edit Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-warning border-0 shadow-sm">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-edit fa-2x text-warning"></i>
+                    </div>
+                    <div>
+                        <h4 class="alert-heading mb-1">Edit Profile</h4>
+                        <p class="mb-0">Update your personal information and delivery preferences</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user me-2"></i>Profile Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="UserId" />
+
+                        <!-- Personal Information -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Name" class="form-label"></label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Phone" class="form-label"></label>
+                                <input asp-for="Phone" class="form-control" placeholder="e.g., +1 (555) 123-4567" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DateOfBirth" class="form-label"></label>
+                                <input asp-for="DateOfBirth" class="form-control" type="date" />
+                                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" value="@Model.UserId" class="form-control" readonly />
+                                <small class="form-text text-muted">Email cannot be changed</small>
+                            </div>
+                        </div>
+
+                        <!-- Address Information -->
+                        <h6 class="mt-4 mb-3 text-primary">
+                            <i class="fas fa-map-marker-alt me-2"></i>Address Information
+                        </h6>
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label asp-for="Address" class="form-label"></label>
+                                <input asp-for="Address" class="form-control" placeholder="Street address, apartment, suite, etc." />
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <label asp-for="City" class="form-label"></label>
+                                <input asp-for="City" class="form-control" />
+                                <span asp-validation-for="City" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="PostalCode" class="form-label"></label>
+                                <input asp-for="PostalCode" class="form-control" />
+                                <span asp-validation-for="PostalCode" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Delivery Preferences -->
+                        <h6 class="mt-4 mb-3 text-success">
+                            <i class="fas fa-truck me-2"></i>Delivery Preferences
+                        </h6>
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label asp-for="PreferredDeliveryAddress" class="form-label"></label>
+                                <input asp-for="PreferredDeliveryAddress" class="form-control" placeholder="If different from your address above" />
+                                <span asp-validation-for="PreferredDeliveryAddress" class="text-danger"></span>
+                                <small class="form-text text-muted">Leave blank to use your address above</small>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label asp-for="DeliveryInstructions" class="form-label"></label>
+                                <textarea asp-for="DeliveryInstructions" class="form-control" rows="3"
+                                          placeholder="e.g., Leave at door, Ring doorbell, Call upon arrival"></textarea>
+                                <span asp-validation-for="DeliveryInstructions" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="@Url.Action("Index")" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

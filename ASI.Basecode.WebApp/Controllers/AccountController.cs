@@ -89,17 +89,20 @@ namespace ASI.Basecode.WebApp.Controllers
             this._session.SetString("HasSession", "Exist");
 
             User user = null;
-            
+
             // Authenticate user against the database
             var loginResult = _userService.AuthenticateUser(model.UserId, model.Password, ref user);
-            
+
             if (loginResult == LoginResult.Success && user != null)
             {
                 // Authentication successful
                 await this._signInManager.SignInAsync(user);
-                this._session.SetString("UserName", user.Name);
+
+                // ✅ FIXED: Store both the UserId (email) AND UserName (display name)
+                this._session.SetString("UserId", user.UserId);        // Store EMAIL for profile lookup
+                this._session.SetString("UserName", user.Name);        // Store NAME for display
                 this._session.SetString("UserRole", user.Role ?? "User");
-                
+
                 // Role-based redirection
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {

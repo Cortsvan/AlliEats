@@ -1,0 +1,244 @@
+﻿@model IEnumerable<ASI.Basecode.Services.ServiceModels.OrderViewModel>
+
+@{
+    ViewData["Title"] = "Manage Orders";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <!-- Admin Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-primary border-0 shadow-sm">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-clipboard-list fa-2x text-primary"></i>
+                    </div>
+                    <div>
+                        <h4 class="alert-heading mb-1">Order Management</h4>
+                        <p class="mb-0">View and update the status of customer orders.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="fas fa-shopping-bag me-2"></i>Customer Orders
+                        </h4>
+                        <div>
+                            <span class="badge bg-light text-dark">@Model.Count() Total Orders</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (Model.Any())
+                    {
+                        <!-- Order Summary Stats -->
+                        <div class="row mb-4">
+                            <div class="col-md-2">
+                                <div class="card border-warning">
+                                    <div class="card-body text-center">
+                                        <h5 class="text-warning">@Model.Count(o => o.Status == "Pending")</h5>
+                                        <small>Pending</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card border-info">
+                                    <div class="card-body text-center">
+                                        <h5 class="text-info">@Model.Count(o => o.Status == "Confirmed")</h5>
+                                        <small>Confirmed</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card border-primary">
+                                    <div class="card-body text-center">
+                                        <h5 class="text-primary">@Model.Count(o => o.Status == "Preparing")</h5>
+                                        <small>Preparing</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card border-success">
+                                    <div class="card-body text-center">
+                                        <h5 class="text-success">@Model.Count(o => o.Status == "Ready")</h5>
+                                        <small>Ready</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card border-success">
+                                    <div class="card-body text-center">
+                                        <h5 class="text-success">@Model.Count(o => o.Status == "Delivered")</h5>
+                                        <small>Delivered</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card border-danger">
+                                    <div class="card-body text-center">
+                                        <h5 class="text-danger">@Model.Count(o => o.Status == "Cancelled")</h5>
+                                        <small>Cancelled</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Customer</th>
+                                        <th>Date</th>
+                                        <th>Items</th>
+                                        <th>Total</th>
+                                        <th>Payment</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model)
+                                    {
+                                        <tr class="@(order.Status == "Delivered" ? "table-success" : "")">
+                                            <td>
+                                                <strong>@order.OrderNumber</strong>
+                                            </td>
+                                            <td>
+                                                <small>@order.UserId</small>
+                                            </td>
+                                            <td>
+                                                <div>@order.CreatedTime.ToString("MMM dd, yyyy")</div>
+                                                <small class="text-muted">@order.CreatedTime.ToString("h:mm tt")</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">@order.TotalItems items</span>
+                                            </td>
+                                            <td>
+                                                <span class="fw-bold text-success">$@order.TotalAmount.ToString("F2")</span>
+                                            </td>
+                                            <td>
+                                                <small>@order.PaymentMethod</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge @order.StatusBadgeClass">@order.Status</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="@Url.Action("OrderDetails", "AdminOrder", new { id = order.Id })"
+                                                       class="btn btn-sm btn-outline-primary" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    @if (order.Status != "Delivered" && order.Status != "Cancelled")
+                                                    {
+                                                        <button type="button" class="btn btn-sm btn-outline-success"
+                                                                onclick="showUpdateStatusModal(@order.Id, '@order.OrderNumber', '@order.Status')"
+                                                                title="Update Status">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Orders Found</h5>
+                            <p class="text-muted">No customer orders have been placed yet.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Status Modal -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="updateStatusModalLabel">
+                    <i class="fas fa-edit me-2"></i>Update Order Status
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="updateStatusForm" method="post" action="@Url.Action("UpdateStatus", "AdminOrder")">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <input type="hidden" id="orderId" name="orderId" />
+                    <div class="mb-3">
+                        <label for="orderNumber" class="form-label">Order Number:</label>
+                        <input type="text" id="orderNumber" class="form-control" readonly />
+                    </div>
+                    <div class="mb-3">
+                        <label for="status" class="form-label">New Status:</label>
+                        <select id="status" name="status" class="form-select" required>
+                            <option value="">Select Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Confirmed">Confirmed</option>
+                            <option value="Preparing">Preparing</option>
+                            <option value="Ready">Ready</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Update Status
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showUpdateStatusModal(orderId, orderNumber, currentStatus) {
+            document.getElementById('orderId').value = orderId;
+            document.getElementById('orderNumber').value = orderNumber;
+            document.getElementById('status').value = currentStatus;
+
+            var updateModal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
+            updateModal.show();
+        }
+
+        // Auto refresh page every 30 seconds for real-time updates
+        setTimeout(function() {
+            location.reload();
+        }, 30000);
+    </script>
+}

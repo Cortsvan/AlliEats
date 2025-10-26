@@ -1,0 +1,294 @@
+﻿@model ASI.Basecode.Services.ServiceModels.OrderViewModel
+
+@{
+    ViewData["Title"] = "Order Details - Admin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info border-0 shadow-sm">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-receipt fa-2x text-info"></i>
+                    </div>
+                    <div>
+                        <h4 class="alert-heading mb-1">Order Details - Admin View</h4>
+                        <p class="mb-0">Complete information about order @Model.OrderNumber</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Order Information -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>Order Information
+                        </h5>
+                        <span class="badge @Model.StatusBadgeClass fs-6">@Model.Status</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Order Number:</strong> @Model.OrderNumber
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Customer ID:</strong> @Model.UserId
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Order Date:</strong> @Model.CreatedTime.ToString("MMMM dd, yyyy h:mm tt")
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Last Updated:</strong>
+                            @(Model.UpdatedTime?.ToString("MMMM dd, yyyy h:mm tt") ?? "Not updated")
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Payment Method:</strong> @Model.PaymentMethod
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Total Amount:</strong> <span class="text-success fw-bold">$@Model.TotalAmount.ToString("F2")</span>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="row">
+                            <div class="col-12">
+                                <strong>Customer Notes:</strong>
+                                <div class="mt-2 p-3 bg-light rounded">
+                                    @Model.Notes
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Ordered Items (@Model.TotalItems items)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @foreach (var item in Model.OrderItems)
+                    {
+                        <div class="row align-items-center border-bottom py-3">
+                            <div class="col-md-6">
+                                <h6 class="mb-0">@item.MenuItemName</h6>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <span class="text-muted">$@item.Price.ToString("F2")</span>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <span class="badge bg-primary">@item.Quantity</span>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <span class="fw-bold">$@item.TotalPrice.ToString("F2")</span>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="row mt-3 pt-3 border-top">
+                        <div class="col-md-8">
+                            <h6>Total Items: @Model.TotalItems</h6>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <h5 class="text-success">Total: $@Model.TotalAmount.ToString("F2")</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Actions -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cogs me-2"></i>Admin Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Status != "Delivered" && Model.Status != "Cancelled")
+                    {
+                        <div class="d-grid gap-2 mb-3">
+                            <button type="button" class="btn btn-primary"
+                                    onclick="showUpdateStatusModal(@Model.Id, '@Model.OrderNumber', '@Model.Status')">
+                                <i class="fas fa-edit me-2"></i>Update Status
+                            </button>
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <strong>Quick Status Updates:</strong>
+                    </div>
+
+                    @if (Model.Status == "Pending")
+                    {
+                        <div class="d-grid gap-1 mb-2">
+                            <button onclick="updateStatus(@Model.Id, 'Confirmed')" class="btn btn-sm btn-info">
+                                <i class="fas fa-check me-1"></i>Confirm Order
+                            </button>
+                        </div>
+                    }
+
+                    @if (Model.Status == "Confirmed")
+                    {
+                        <div class="d-grid gap-1 mb-2">
+                            <button onclick="updateStatus(@Model.Id, 'Preparing')" class="btn btn-sm btn-primary">
+                                <i class="fas fa-utensils me-1"></i>Start Preparing
+                            </button>
+                        </div>
+                    }
+
+                    @if (Model.Status == "Preparing")
+                    {
+                        <div class="d-grid gap-1 mb-2">
+                            <button onclick="updateStatus(@Model.Id, 'Ready')" class="btn btn-sm btn-success">
+                                <i class="fas fa-bell me-1"></i>Mark as Ready
+                            </button>
+                        </div>
+                    }
+
+                    @if (Model.Status == "Ready")
+                    {
+                        <div class="d-grid gap-1 mb-2">
+                            <button onclick="updateStatus(@Model.Id, 'Delivered')" class="btn btn-sm btn-success">
+                                <i class="fas fa-truck me-1"></i>Mark as Delivered
+                            </button>
+                        </div>
+                    }
+
+                    @if (Model.Status != "Delivered" && Model.Status != "Cancelled")
+                    {
+                        <div class="d-grid gap-1">
+                            <button onclick="updateStatus(@Model.Id, 'Cancelled')" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-times me-1"></i>Cancel Order
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <div class="d-grid gap-2">
+                        <a href="@Url.Action("ManageOrders", "AdminOrder")" class="btn btn-outline-info">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Status Modal -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="updateStatusModalLabel">
+                    <i class="fas fa-edit me-2"></i>Update Order Status
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="updateStatusForm" method="post" action="@Url.Action("UpdateStatus", "AdminOrder")">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <input type="hidden" id="orderId" name="orderId" />
+                    <div class="mb-3">
+                        <label for="orderNumber" class="form-label">Order Number:</label>
+                        <input type="text" id="orderNumber" class="form-control" readonly />
+                    </div>
+                    <div class="mb-3">
+                        <label for="status" class="form-label">New Status:</label>
+                        <select id="status" name="status" class="form-select" required>
+                            <option value="">Select Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Confirmed">Confirmed</option>
+                            <option value="Preparing">Preparing</option>
+                            <option value="Ready">Ready</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Update Status
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showUpdateStatusModal(orderId, orderNumber, currentStatus) {
+            document.getElementById('orderId').value = orderId;
+            document.getElementById('orderNumber').value = orderNumber;
+            document.getElementById('status').value = currentStatus;
+
+            var updateModal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
+            updateModal.show();
+        }
+
+        function updateStatus(orderId, status) {
+            if (confirm(`Are you sure you want to update this order to ${status}?`)) {
+                // Create a form and submit it
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("UpdateStatus", "AdminOrder")';
+
+                // Add CSRF token
+                var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                var tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '__RequestVerificationToken';
+                tokenInput.value = token;
+                form.appendChild(tokenInput);
+
+                // Add order ID
+                var orderIdInput = document.createElement('input');
+                orderIdInput.type = 'hidden';
+                orderIdInput.name = 'orderId';
+                orderIdInput.value = orderId;
+                form.appendChild(orderIdInput);
+
+                // Add status
+                var statusInput = document.createElement('input');
+                statusInput.type = 'hidden';
+                statusInput.name = 'status';
+                statusInput.value = status;
+                form.appendChild(statusInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+}

@@ -69,8 +69,46 @@ namespace ASI.Basecode.Services.Services
 
         public IEnumerable<OrderViewModel> GetAllOrders()
         {
-            var orders = _orderRepository.GetAllOrders();
-            return _mapper.Map<IEnumerable<OrderViewModel>>(orders);
+            try
+            {
+                var orders = _orderRepository.GetAllOrders();
+
+                if (orders == null || !orders.Any())
+                {
+                    return new List<OrderViewModel>();
+                }
+
+                // Manual mapping to avoid AutoMapper issues
+                var orderViewModels = orders.Select(order => new OrderViewModel
+                {
+                    Id = order.Id,
+                    UserId = order.UserId,
+                    OrderNumber = order.OrderNumber,
+                    TotalAmount = order.TotalAmount,
+                    PaymentMethod = order.PaymentMethod,
+                    Status = order.Status,
+                    Notes = order.Notes,
+                    CreatedTime = order.CreatedTime,
+                    UpdatedTime = order.UpdatedTime,
+                    OrderItems = order.OrderItems?.Select(oi => new OrderItemViewModel
+                    {
+                        Id = oi.Id,
+                        OrderId = oi.OrderId,
+                        MenuItemId = oi.MenuItemId,
+                        MenuItemName = oi.MenuItemName,
+                        Price = oi.Price,
+                        Quantity = oi.Quantity,
+                        TotalPrice = oi.TotalPrice,
+                        CreatedTime = oi.CreatedTime
+                    }).ToList() ?? new List<OrderItemViewModel>()
+                }).ToList();
+
+                return orderViewModels;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error retrieving all orders: {ex.Message}", ex);
+            }
         }
 
         public OrderViewModel GetOrderById(int id)
