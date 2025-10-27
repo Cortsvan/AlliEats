@@ -180,6 +180,33 @@ namespace ASI.Basecode.Services.Services
             _repository.UpdateUser(user);
             return true;
         }
+        public bool ChangePassword(string email, string currentPassword, string newPassword)
+        {
+            try
+            {
+                var user = _repository.GetUserById(email);
+                if (user == null || !user.IsEmailVerified) return false;
 
+                // Verify current password
+                var encryptedCurrentPassword = PasswordManager.EncryptPassword(currentPassword);
+                if (user.Password != encryptedCurrentPassword)
+                {
+                    return false; // Current password is incorrect
+                }
+
+                // Update to new password
+                user.Password = PasswordManager.EncryptPassword(newPassword);
+                user.UpdatedTime = DateTime.Now;
+                user.UpdatedBy = user.UserId;
+
+                _repository.UpdateUser(user);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception if you have logging configured
+                return false;
+            }
+        }
     }
 }

@@ -16,5 +16,7 @@ namespace ASI.Basecode.Services.Interfaces
         Task<bool> SendPasswordResetOtpAsync(string email);
         bool VerifyPasswordResetOtp(string email, string otp);
         bool ResetPassword(string email, string otp, string newPassword);
+        bool ChangePassword(string email, string currentPassword, string newPassword);
+
     }
 }
