@@ -20,8 +20,9 @@
         /// </summary>
         public enum LoginResult
         {
-            Success = 0,
-            Failed = 1,
+            Success,
+            Failed,
+            EmailNotVerified
         }
     }
 }

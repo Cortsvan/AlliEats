@@ -109,6 +109,11 @@ namespace ASI.Basecode.WebApp.Controllers
                     return Redirect(returnUrl);
                 }
                 return RedirectToAction("Index", "Home");
+            } else if (loginResult == LoginResult.EmailNotVerified)
+            {
+                TempData["ErrorMessage"] = "Please verify your email address before logging in.";
+                TempData["UnverifiedEmail"] = model.UserId;
+                return RedirectToAction("VerifyEmail", new { email = model.UserId });
             }
             else
             {
@@ -127,7 +132,7 @@ namespace ASI.Basecode.WebApp.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult Register(UserViewModel model)
+        public async Task<IActionResult> Register(UserViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -136,9 +141,17 @@ namespace ASI.Basecode.WebApp.Controllers
 
             try
             {
-                _userService.AddUser(model);
-                TempData["SuccessMessage"] = "Account created successfully! Please login with your credentials.";
-                return RedirectToAction("Login", "Account");
+                var emailSent = await _userService.AddUserAsync(model);
+                if (emailSent)
+                {
+                    TempData["SuccessMessage"] = "Account created successfully! Please check your email for the OTP verification code.";
+                    return RedirectToAction("VerifyEmail", new { email = model.UserId });
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Account created but email could not be sent. Please contact support.";
+                    return View(model);
+                }
             }
             catch(InvalidDataException ex)
             {
@@ -160,6 +173,164 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             await this._signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult VerifyEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return RedirectToAction("Register");
+            }
+
+            var model = new EmailVerificationViewModel
+            {
+                Email = email
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult VerifyEmail(EmailVerificationViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var isVerified = _userService.VerifyOtp(model.Email, model.Otp);
+
+            if (isVerified)
+            {
+                TempData["SuccessMessage"] = "Email verified successfully! You can now login with your credentials.";
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Invalid or expired OTP. Please try again.";
+                return View(model);
+            }
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResendOtp(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return Json(new { success = false, message = "Email is required." });
+            }
+
+            var success = await _userService.ResendOtpAsync(email);
+
+            if (success)
+            {
+                return Json(new { success = true, message = "OTP resent successfully. Please check your email." });
+            }
+            else
+            {
+                return Json(new { success = false, message = "Failed to resend OTP. Please try again later." });
+            }
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var emailSent = await _userService.SendPasswordResetOtpAsync(model.Email);
+                if (emailSent)
+                {
+                    TempData["SuccessMessage"] = "Password reset code sent to your email. Please check your inbox.";
+                    return RedirectToAction("ResetPassword", new { email = model.Email });
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Email not found or not verified. Please check your email address.";
+                    return View(model);
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "An error occurred. Please try again later.";
+                return View(model);
+            }
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return RedirectToAction("ForgotPassword");
+            }
+
+            var model = new ResetPasswordViewModel
+            {
+                Email = email
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var isReset = _userService.ResetPassword(model.Email, model.Otp, model.NewPassword);
+
+            if (isReset)
+            {
+                TempData["SuccessMessage"] = "Password reset successfully! You can now login with your new password.";
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Invalid or expired verification code. Please try again.";
+                return View(model);
+            }
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResendPasswordResetOtp(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return Json(new { success = false, message = "Email is required." });
+            }
+
+            var success = await _userService.SendPasswordResetOtpAsync(email);
+
+            if (success)
+            {
+                return Json(new { success = true, message = "Password reset code resent successfully. Please check your email." });
+            }
+            else
+            {
+                return Json(new { success = false, message = "Failed to resend code. Please try again later." });
+            }
         }
     }
 }

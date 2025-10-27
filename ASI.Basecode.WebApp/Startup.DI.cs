@@ -39,6 +39,7 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<ICartService, CartService>();
             this._services.AddScoped<IOrderService, OrderService>();
             this._services.AddScoped<IProfileService, ProfileService>();
+            this._services.AddScoped<IOtpService, OtpService>();
 
             // Repositories
             this._services.AddScoped<IUserRepository, UserRepository>();

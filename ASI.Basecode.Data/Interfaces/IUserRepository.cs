@@ -14,5 +14,7 @@ namespace ASI.Basecode.Data.Interfaces
         void AddUser(User user);
         void UpdateUser(User user);
         User GetUserById(string userId);
+        User GetUserByVerificationToken(string token);
+        void UpdateUserVerification(string userId, bool isVerified);
     }
 }

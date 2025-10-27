@@ -1,0 +1,135 @@
+﻿@model ASI.Basecode.Services.ServiceModels.EmailVerificationViewModel
+@section styles {
+    <link rel="stylesheet" href="~/css/login.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+}
+@{
+    ViewBag.LoginView = true;
+    ViewData["Title"] = "AlliEats - Verify Email";
+}
+<div>
+    @Html.AntiForgeryToken()
+</div>
+<div class="auth-container">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card auth-card text-black">
+                    <div class="row g-0">
+                        <div class="col-lg-6">
+                            <div class="auth-card-body">
+                                <div class="text-center mb-4">
+                                    <img src="~/img/allieats-logo.png"
+                                         class="auth-logo"
+                                         style="width: 200px; max-width: 100%;"
+                                         alt="AlliEats Logo">
+                                    <h2 class="auth-title">Verify Your Email</h2>
+                                    <p class="auth-subtitle">We've sent a 6-digit OTP to <strong>@Model.Email</strong></p>
+                                </div>
+                                <form method="post" action="/Account/VerifyEmail" id="verifyForm">
+                                    <input type="hidden" asp-for="Email" />
+                                    <div class="form-group mb-4">
+                                        <label class="form-label" for="otp">Enter OTP Code</label>
+                                        <input type="text" id="otp" class="form-control text-center"
+                                               asp-for="Otp" placeholder="Enter 6-digit code"
+                                               maxlength="6" style="font-size: 1.5rem; letter-spacing: 0.5rem;" />
+                                        <span asp-validation-for="Otp" class="text-danger"></span>
+                                    </div>
+                                    <div class="text-center pt-2 mb-4">
+                                        <button class="btn btn-primary login-btn gradient-custom-2 mb-3" type="submit">
+                                            Verify Email
+                                        </button>
+                                        <div class="mb-3">
+                                            <button type="button" id="resendBtn" class="btn btn-link text-decoration-none">
+                                                Didn't receive the code? Resend OTP
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <a asp-controller="Account" asp-action="Login" class="back-link">
+                                                ← Back to Login
+                                            </a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 auth-image-side">
+                            <div class="text-center">
+                                <h1 class="auth-brand-text">Almost There!</h1>
+                                <p class="auth-tagline">Just one more step to join AlliEats</p>
+                                <div class="mt-4">
+                                    <div style="font-size: 64px; color: #FFD54F; opacity: 0.8;">📧</div>
+                                </div>
+                                <div class="mt-4" style="color: #FFF3E0; font-size: 14px; opacity: 0.9; max-width: 280px; margin: 2rem auto;">
+                                    Check your email and enter the 6-digit verification code to complete your registration.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script>
+        // Check for error message and display Toastr notification
+        var errorMessage = '@TempData["ErrorMessage"]';
+        if (errorMessage && errorMessage.trim() !== '') {
+            toastr.error(errorMessage);
+        }
+
+        // Check for success message and display Toastr notification
+        var successMessage = '@TempData["SuccessMessage"]';
+        if (successMessage && successMessage.trim() !== '') {
+            toastr.success(successMessage);
+        }
+
+        // Auto-focus OTP input
+        $('#otp').focus();
+
+        // Only allow numbers in OTP input
+        $('#otp').on('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Resend OTP functionality
+        $('#resendBtn').on('click', function() {
+            var email = '@Model.Email';
+            var button = $(this);
+
+            button.prop('disabled', true).text('Sending...');
+
+            $.ajax({
+                url: '/Account/ResendOtp',
+                type: 'POST',
+                data: { email: email },
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        // Start countdown
+                        var countdown = 60;
+                        var timer = setInterval(function() {
+                            button.text('Resend OTP in ' + countdown + 's');
+                            countdown--;
+                            if (countdown < 0) {
+                                clearInterval(timer);
+                                button.prop('disabled', false).text("Didn't receive the code? Resend OTP");
+                            }
+                        }, 1000);
+                    } else {
+                        toastr.error(response.message);
+                        button.prop('disabled', false).text("Didn't receive the code? Resend OTP");
+                    }
+                },
+                error: function() {
+                    toastr.error('Failed to resend OTP. Please try again.');
+                    button.prop('disabled', false).text("Didn't receive the code? Resend OTP");
+                }
+            });
+        });
+    </script>
+}

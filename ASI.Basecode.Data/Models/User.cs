@@ -23,6 +23,11 @@ namespace ASI.Basecode.Data.Models
         public string PreferredDeliveryAddress { get; set; }
         public string DeliveryInstructions { get; set; }
 
+        // Email OTP Verification fields
+        public bool IsEmailVerified { get; set; } = false;
+        public string EmailVerificationToken { get; set; }
+        public DateTime? EmailVerificationTokenExpiry { get; set; }
+
         // System fields
         public string CreatedBy { get; set; }
         public DateTime CreatedTime { get; set; }

@@ -41,6 +41,21 @@ namespace ASI.Basecode.Data.Repositories
         {
             return this.GetDbSet<User>().FirstOrDefault(x => x.UserId == userId);
         }
+        public User GetUserByVerificationToken(string token)
+        {
+            return this.GetDbSet<User>().FirstOrDefault(x => x.EmailVerificationToken == token);
+        }
 
+        public void UpdateUserVerification(string userId, bool isVerified)
+        {
+            var user = GetUserById(userId);
+            if (user != null)
+            {
+                user.IsEmailVerified = isVerified;
+                user.EmailVerificationToken = null;
+                user.EmailVerificationTokenExpiry = null;
+                UpdateUser(user);
+            }
+        }
     }
 }
