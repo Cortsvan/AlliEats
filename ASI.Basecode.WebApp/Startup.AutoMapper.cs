@@ -38,7 +38,8 @@ namespace ASI.Basecode.WebApp
                 CreateMap<CartItem, CartItemViewModel>()
                     .ForMember(dest => dest.MenuItemName, opt => opt.MapFrom(src => src.MenuItem.Name))
                     .ForMember(dest => dest.MenuItemDescription, opt => opt.MapFrom(src => src.MenuItem.Description))
-                    .ForMember(dest => dest.MenuItemCategory, opt => opt.MapFrom(src => src.MenuItem.Category));
+                    .ForMember(dest => dest.MenuItemCategory, opt => opt.MapFrom(src => src.MenuItem.Category))
+                    .ForMember(dest => dest.MenuItemImagePath, opt => opt.MapFrom(src => src.MenuItem.ImagePath));
                 CreateMap<CartItemViewModel, CartItem>()
                     .ForMember(dest => dest.MenuItem, opt => opt.Ignore());
 

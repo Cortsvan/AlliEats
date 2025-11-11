@@ -58,36 +58,77 @@
                     {
                         @foreach (var item in Model.CartItems)
                         {
-                            <div class="row align-items-center border-bottom py-3">
-                                <div class="col-md-6">
-                                    <h6 class="mb-1">@item.MenuItemName</h6>
-                                    <p class="text-muted small mb-1">@item.MenuItemDescription</p>
-                                    <span class="badge bg-info">@item.MenuItemCategory</span>
-                                </div>
-                                <div class="col-md-2 text-center">
-                                    <span class="text-success fw-bold">$@item.Price.ToString("F2")</span>
-                                </div>
-                                <div class="col-md-2">
-                                    <form method="post" action="@Url.Action("UpdateItem", "Cart")" class="d-inline">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="cartItemId" value="@item.Id" />
-                                        <div class="input-group input-group-sm">
-                                            <input type="number" name="quantity" value="@item.Quantity"
-                                                   min="1" max="50" class="form-control text-center"
-                                                   onchange="this.form.submit()">
+                            <div class="cart-item-card mb-3">
+                                <div class="row g-0 align-items-center">
+                                    <!-- NEW: Food Image -->
+                                    <div class="col-md-3 col-lg-2">
+                                        <div class="cart-item-image">
+                                            @if (!string.IsNullOrEmpty(item.MenuItemImagePath))
+                                            {
+                                                <img src="@item.MenuItemImagePath" alt="@item.MenuItemName" 
+                                                     class="img-fluid rounded" 
+                                                     style="width: 100%; height: 100px; object-fit: cover;"
+                                                     onerror="this.src='/images/placeholder-food.jpg'; this.onerror=null;">
+                                            }
+                                            else
+                                            {
+                                                <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height: 100px;">
+                                                    <i class="fas fa-utensils fa-2x text-muted"></i>
+                                                </div>
+                                            }
                                         </div>
-                                    </form>
-                                </div>
-                                <div class="col-md-2 text-center">
-                                    <span class="fw-bold">$@item.TotalPrice.ToString("F2")</span>
-                                    <form method="post" action="@Url.Action("RemoveItem", "Cart")" class="d-inline mt-1">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="cartItemId" value="@item.Id" />
-                                        <button type="button" class="btn btn-sm btn-outline-danger"
-                                                onclick="confirmRemove(@item.Id, '@item.MenuItemName')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
+                                    </div>
+
+                                    <!-- Item Details -->
+                                    <div class="col-md-6 col-lg-6">
+                                        <div class="cart-item-details">
+                                            <h5 class="mb-1">@item.MenuItemName</h5>
+                                            @if (!string.IsNullOrEmpty(item.MenuItemDescription))
+                                            {
+                                                <p class="text-muted small mb-1">
+                                                    @(item.MenuItemDescription.Length > 80 ? item.MenuItemDescription.Substring(0, 80) + "..." : item.MenuItemDescription)
+                                                </p>
+                                            }
+                                            <span class="badge bg-info">@item.MenuItemCategory</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Price -->
+                                    <div class="col-6 col-md-1 col-lg-2">
+                                        <div class="text-center">
+                                            <span class="text-success fw-bold fs-6">$@item.Price.ToString("F2")</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Quantity Controls -->
+                                    <div class="col-6 col-md-1 col-lg-1">
+                                        <div class="quantity-controls">
+                                            <form method="post" action="@Url.Action("UpdateItem", "Cart")" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="cartItemId" value="@item.Id" />
+                                                <div class="input-group input-group-sm" style="max-width: 120px;">
+                                                    <input type="number" name="quantity" value="@item.Quantity"
+                                                           min="1" max="50" class="form-control text-center"
+                                                           onchange="this.form.submit()">
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <!-- Total & Actions -->
+                                    <div class="col-12 col-md-1 col-lg-1">
+                                        <div class="text-center">
+                                            <div class="fw-bold fs-6 mb-1">$@item.TotalPrice.ToString("F2")</div>
+                                            <form method="post" action="@Url.Action("RemoveItem", "Cart")" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="cartItemId" value="@item.Id" />
+                                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                                        onclick="confirmRemove(@item.Id, '@item.MenuItemName')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         }
@@ -152,7 +193,7 @@
     </div>
 </div>
 
-<!-- Update the Remove Item Modal -->
+<!-- Remove Item Modal -->
 <div class="modal fade" id="removeModal" tabindex="-1" aria-labelledby="removeModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -178,7 +219,7 @@
     </div>
 </div>
 
-<!-- Update the Clear Cart Modal -->
+<!-- Clear Cart Modal -->
 <div class="modal fade" id="clearModal" tabindex="-1" aria-labelledby="clearModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -220,13 +261,11 @@
         }
 
         $(document).ready(function() {
-            // Handle modal close buttons - same pattern as Browse
             $('[data-bs-dismiss="modal"]').click(function() {
                 $('#removeModal').modal('hide');
                 $('#clearModal').modal('hide');
             });
 
-            // Handle remove item confirmation - AJAX like Browse
             $('#removeForm button[type="submit"]').click(function(e) {
                 e.preventDefault();
                 const token = $('input[name="__RequestVerificationToken"]').val();
@@ -242,7 +281,6 @@
                     if (data.success) {
                         toastr.success(data.message);
                         $('#removeModal').modal('hide');
-                        // Reload page to update cart
                         location.reload();
                     } else {
                         toastr.error(data.message);
@@ -256,7 +294,6 @@
                 });
             });
 
-            // Handle clear cart confirmation - AJAX like Browse
             $('#clearForm button[type="submit"]').click(function(e) {
                 e.preventDefault();
                 const token = $('input[name="__RequestVerificationToken"]').val();
@@ -271,7 +308,6 @@
                     if (data.success) {
                         toastr.success(data.message);
                         $('#clearModal').modal('hide');
-                        // Reload page to update cart
                         location.reload();
                     } else {
                         toastr.error(data.message);
@@ -287,4 +323,37 @@
         });
     </script>
     @Html.AntiForgeryToken()
+}
+
+@section Styles {
+    <style>
+        .cart-item-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .cart-item-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .cart-item-image {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .cart-item-details h5 {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 }

@@ -57,6 +57,7 @@ namespace ASI.Basecode.Services.ServiceModels
         public int Quantity { get; set; }
         public decimal TotalPrice { get; set; }
         public DateTime CreatedTime { get; set; }
+        public string MenuItemImagePath { get; set; }
     }
 
     public class CheckoutViewModel

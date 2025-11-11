@@ -23,7 +23,7 @@
                         </div>
                     }
 
-                    <form asp-action="AddItem" asp-controller="AdminMenu" method="post">
+                    <form asp-action="AddItem" asp-controller="AdminMenu" method="post" enctype="multipart/form-data">
                         @Html.AntiForgeryToken()
 
                         <div class="mb-3">
@@ -53,6 +53,19 @@
                             <span asp-validation-for="Price" class="text-danger"></span>
                         </div>
 
+                        <!-- NEW: Image Upload Section -->
+                        <div class="mb-3">
+                            <label asp-for="ImageFile" class="form-label fw-bold">Food Image</label>
+                            <input asp-for="ImageFile" class="form-control" type="file" accept="image/*" onchange="previewImage(this)" />
+                            <div class="form-text">Upload a photo of the food item (JPG, PNG, GIF). Max size: 5MB</div>
+                            <span asp-validation-for="ImageFile" class="text-danger"></span>
+
+                            <!-- Image Preview -->
+                            <div id="imagePreview" class="mt-2" style="display: none;">
+                                <img id="preview" src="#" alt="Preview" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+                            </div>
+                        </div>
+
                         <div class="mb-4">
                             <label asp-for="Description" class="form-label fw-bold">Description</label>
                             <textarea asp-for="Description" class="form-control" rows="4"
@@ -79,4 +92,23 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        function previewImage(input) {
+            const preview = document.getElementById('preview');
+            const previewDiv = document.getElementById('imagePreview');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    previewDiv.style.display = 'block';
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                previewDiv.style.display = 'none';
+            }
+        }
+    </script>
 }

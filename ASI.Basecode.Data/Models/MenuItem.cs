@@ -20,6 +20,9 @@ namespace ASI.Basecode.Data.Models
 
         [StringLength(50)]
         public string Category { get; set; }
+
+        [StringLength(255)]
+        public string ImagePath { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedTime { get; set; }
         public string UpdatedBy { get; set; }

@@ -21,6 +21,10 @@ namespace ASI.Basecode.Services.ServiceModels
         public string MenuItemDescription { get; set; }
         public string MenuItemCategory { get; set; }
 
+        //image path
+        public string MenuItemImagePath { get; set; }
+
+        //timestamps
         public DateTime CreatedTime { get; set; }
         public DateTime UpdatedTime { get; set; }
     }

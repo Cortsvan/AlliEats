@@ -1,8 +1,10 @@
 ﻿using ASI.Basecode.Data.Interfaces;
 using ASI.Basecode.Data.Models;
+using ASI.Basecode.Data.Repositories;
 using ASI.Basecode.Services.Interfaces;
 using ASI.Basecode.Services.ServiceModels;
 using AutoMapper;
+using Hangfire.Dashboard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,12 +14,14 @@ namespace ASI.Basecode.Services.Services
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IMenuRepository _menuRepository;
         private readonly ICartService _cartService;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository orderRepository, ICartService cartService, IMapper mapper)
+        public OrderService(IOrderRepository orderRepository, IMenuRepository menuRepository, ICartService cartService, IMapper mapper)
         {
             _orderRepository = orderRepository;
+            _menuRepository = menuRepository;
             _cartService = cartService;
             _mapper = mapper;
         }
@@ -33,7 +37,7 @@ namespace ASI.Basecode.Services.Services
                     return new List<OrderViewModel>();
                 }
 
-                // Manual mapping to avoid AutoMapper issues
+                // Manual mapping to include menu item image paths
                 var orderViewModels = orders.Select(order => new OrderViewModel
                 {
                     Id = order.Id,
@@ -45,16 +49,21 @@ namespace ASI.Basecode.Services.Services
                     Notes = order.Notes,
                     CreatedTime = order.CreatedTime,
                     UpdatedTime = order.UpdatedTime,
-                    OrderItems = order.OrderItems?.Select(oi => new OrderItemViewModel
+                    OrderItems = order.OrderItems?.Select(oi =>
                     {
-                        Id = oi.Id,
-                        OrderId = oi.OrderId,
-                        MenuItemId = oi.MenuItemId,
-                        MenuItemName = oi.MenuItemName,
-                        Price = oi.Price,
-                        Quantity = oi.Quantity,
-                        TotalPrice = oi.TotalPrice,
-                        CreatedTime = oi.CreatedTime
+                        var menuItem = _menuRepository.GetMenuItemById(oi.MenuItemId);
+                        return new OrderItemViewModel
+                        {
+                            Id = oi.Id,
+                            OrderId = oi.OrderId,
+                            MenuItemId = oi.MenuItemId,
+                            MenuItemName = oi.MenuItemName,
+                            Price = oi.Price,
+                            Quantity = oi.Quantity,
+                            TotalPrice = oi.TotalPrice,
+                            CreatedTime = oi.CreatedTime,
+                            MenuItemImagePath = menuItem?.ImagePath
+                        };
                     }).ToList() ?? new List<OrderItemViewModel>()
                 }).ToList();
 
@@ -78,7 +87,7 @@ namespace ASI.Basecode.Services.Services
                     return new List<OrderViewModel>();
                 }
 
-                // Manual mapping to avoid AutoMapper issues
+                // Manual mapping to include menu item image paths
                 var orderViewModels = orders.Select(order => new OrderViewModel
                 {
                     Id = order.Id,
@@ -90,16 +99,21 @@ namespace ASI.Basecode.Services.Services
                     Notes = order.Notes,
                     CreatedTime = order.CreatedTime,
                     UpdatedTime = order.UpdatedTime,
-                    OrderItems = order.OrderItems?.Select(oi => new OrderItemViewModel
+                    OrderItems = order.OrderItems?.Select(oi =>
                     {
-                        Id = oi.Id,
-                        OrderId = oi.OrderId,
-                        MenuItemId = oi.MenuItemId,
-                        MenuItemName = oi.MenuItemName,
-                        Price = oi.Price,
-                        Quantity = oi.Quantity,
-                        TotalPrice = oi.TotalPrice,
-                        CreatedTime = oi.CreatedTime
+                        var menuItem = _menuRepository.GetMenuItemById(oi.MenuItemId);
+                        return new OrderItemViewModel
+                        {
+                            Id = oi.Id,
+                            OrderId = oi.OrderId,
+                            MenuItemId = oi.MenuItemId,
+                            MenuItemName = oi.MenuItemName,
+                            Price = oi.Price,
+                            Quantity = oi.Quantity,
+                            TotalPrice = oi.TotalPrice,
+                            CreatedTime = oi.CreatedTime,
+                            MenuItemImagePath = menuItem?.ImagePath
+                        };
                     }).ToList() ?? new List<OrderItemViewModel>()
                 }).ToList();
 
@@ -118,7 +132,7 @@ namespace ASI.Basecode.Services.Services
                 var order = _orderRepository.GetOrderById(id);
                 if (order == null) return null;
 
-                // Manual mapping to avoid AutoMapper issues
+                // Manual mapping to include menu item image paths
                 return new OrderViewModel
                 {
                     Id = order.Id,
@@ -130,16 +144,21 @@ namespace ASI.Basecode.Services.Services
                     Notes = order.Notes,
                     CreatedTime = order.CreatedTime,
                     UpdatedTime = order.UpdatedTime,
-                    OrderItems = order.OrderItems?.Select(oi => new OrderItemViewModel
+                    OrderItems = order.OrderItems?.Select(oi =>
                     {
-                        Id = oi.Id,
-                        OrderId = oi.OrderId,
-                        MenuItemId = oi.MenuItemId,
-                        MenuItemName = oi.MenuItemName,
-                        Price = oi.Price,
-                        Quantity = oi.Quantity,
-                        TotalPrice = oi.TotalPrice,
-                        CreatedTime = oi.CreatedTime
+                        var menuItem = _menuRepository.GetMenuItemById(oi.MenuItemId);
+                        return new OrderItemViewModel
+                        {
+                            Id = oi.Id,
+                            OrderId = oi.OrderId,
+                            MenuItemId = oi.MenuItemId,
+                            MenuItemName = oi.MenuItemName,
+                            Price = oi.Price,
+                            Quantity = oi.Quantity,
+                            TotalPrice = oi.TotalPrice,
+                            CreatedTime = oi.CreatedTime,
+                            MenuItemImagePath = menuItem?.ImagePath
+                        };
                     }).ToList() ?? new List<OrderItemViewModel>()
                 };
             }

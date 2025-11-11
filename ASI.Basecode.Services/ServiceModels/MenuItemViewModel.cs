@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace ASI.Basecode.Services.ServiceModels
@@ -23,5 +24,10 @@ namespace ASI.Basecode.Services.ServiceModels
         public string Category { get; set; }
 
         public bool IsActive { get; set; } = true;
+
+        public string ImagePath { get; set; }
+
+        [Display(Name = "Food Image")]
+        public IFormFile ImageFile { get; set; }
     }
 }
