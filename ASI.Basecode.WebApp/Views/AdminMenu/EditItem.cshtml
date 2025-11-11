@@ -23,9 +23,10 @@
                         </div>
                     }
 
-                    <form asp-action="EditItem" asp-controller="AdminMenu" asp-route-id="@Model.Id" method="post">
+                    <form asp-action="EditItem" asp-controller="AdminMenu" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
                         @Html.AntiForgeryToken()
                         <input asp-for="Id" type="hidden" />
+                        <input asp-for="ImagePath" type="hidden" />
 
                         <div class="mb-3">
                             <label asp-for="Name" class="form-label fw-bold">Item Name</label>
@@ -59,6 +60,27 @@
                             <textarea asp-for="Description" class="form-control" rows="4"
                                       placeholder="Enter a description for this menu item (optional)"></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Current Image</label>
+                            <div>
+                                @if (!string.IsNullOrEmpty(Model.ImagePath))
+                                {
+                                    <img src="@Model.ImagePath" alt="Current Image" class="img-thumbnail mb-2" style="max-height: 150px;" />
+                                }
+                                else
+                                {
+                                    <p class="text-muted">No image uploaded.</p>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ImageFile" class="form-label fw-bold">Upload New Image</label>
+                            <input asp-for="ImageFile" class="form-control" type="file" />
+                            <div class="form-text">Leave blank to keep the current image.</div>
+                            <span asp-validation-for="ImageFile" class="text-danger"></span>
                         </div>
 
                         <div class="mb-4">
