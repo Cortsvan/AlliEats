@@ -11,7 +11,7 @@ namespace ASI.Basecode.Data.Repositories
 {
     public class UserRepository : BaseRepository, IUserRepository
     {
-        public UserRepository(IUnitOfWork unitOfWork) : base(unitOfWork) 
+        public UserRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
 
         }
@@ -31,6 +31,31 @@ namespace ASI.Basecode.Data.Repositories
             this.GetDbSet<User>().Add(user);
             UnitOfWork.SaveChanges();
         }
+        public void UpdateUser(User user)
+        {
+            this.GetDbSet<User>().Update(user);
+            UnitOfWork.SaveChanges();
+        }
 
+        public User GetUserById(string userId)
+        {
+            return this.GetDbSet<User>().FirstOrDefault(x => x.UserId == userId);
+        }
+        public User GetUserByVerificationToken(string token)
+        {
+            return this.GetDbSet<User>().FirstOrDefault(x => x.EmailVerificationToken == token);
+        }
+
+        public void UpdateUserVerification(string userId, bool isVerified)
+        {
+            var user = GetUserById(userId);
+            if (user != null)
+            {
+                user.IsEmailVerified = isVerified;
+                user.EmailVerificationToken = null;
+                user.EmailVerificationTokenExpiry = null;
+                UpdateUser(user);
+            }
+        }
     }
 }

@@ -72,10 +72,10 @@ namespace ASI.Basecode.Data
             {
                 // Ignore errors and return null
             }
-            
+
             return null;
         }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>(entity =>
