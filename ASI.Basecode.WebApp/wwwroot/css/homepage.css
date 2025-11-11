@@ -1,58 +1,6 @@
-﻿/* General body styling for the new design */
-body.new-design {
-    background-color: #FAF3E8; /* Light cream background */
-    color: #5C4033; /* Dark brown text */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* Remove top margin from the header to fix the white bar issue */
-header {
+﻿header {
     margin-top: 0 !important;
 }
-
-/* New Navbar styling - Made selector more specific */
-.navbar.navbar-new {
-    background-color: #FAF3E8 !important; /* Use !important to ensure override */
-    border-bottom: 1px solid #EAE0D5;
-    padding: 1rem 2rem;
-}
-
-.navbar-new .navbar-brand {
-    color: #5C4033;
-    font-weight: bold;
-    font-size: 1.75rem;
-}
-
-.navbar-new .nav-link {
-    color: #5C4033;
-    font-size: 1rem;
-    margin-left: 15px;
-}
-
-    .navbar-new .nav-link:hover {
-        color: #3d2b22;
-    }
-
-/* Ensure icons are visible and have the correct color */
-.navbar-new .navbar-nav .nav-item i {
-    color: #5C4033 !important;
-    font-size: 1.2rem;
-}
-
-/* Align dropdown menu to the right */
-.navbar-new .dropdown-menu {
-    background-color: #FAF3E8;
-    border-color: #EAE0D5;
-}
-
-.navbar-new .dropdown-item {
-    color: #5C4033;
-}
-
-    .navbar-new .dropdown-item:hover {
-        background-color: #EAE0D5;
-        color: #3d2b22;
-    }
 
 /* Homepage specific styles */
 .homepage-container {
