@@ -139,7 +139,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         // POST: AdminMenu/DeleteItem/5
-        [HttpPost]
+        [HttpPost("AdminMenu/DeleteItem/{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteItem(int id)
         {

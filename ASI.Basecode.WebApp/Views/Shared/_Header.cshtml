@@ -17,9 +17,8 @@
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
                 @if (isAuthenticated)
                 {
-                    if (isAdmin)
+                    @if (isAdmin)
                     {
-                        // Admin Navbar
                         <ul class="navbar-nav">
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
@@ -31,10 +30,10 @@
                                 <a class="nav-link" asp-area="" asp-controller="AdminOrder" asp-action="ManageOrders">Manage Orders</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fa-solid fa-user"></i>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
                                     <li><a class="dropdown-item" asp-controller="Account" asp-action="SignOutUser">Logout</a></li>
                                 </ul>
                             </li>
@@ -57,10 +56,10 @@
                                 <a class="nav-link" asp-area="" asp-controller="Order" asp-action="MyOrders">Orders</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fa-solid fa-user"></i>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                     <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index">Profile</a></li>
                                     <li><a class="dropdown-item" asp-controller="Settings" asp-action="Index">Settings</a></li>
                                     <li><a class="dropdown-item" asp-controller="Account" asp-action="SignOutUser">Logout</a></li>
