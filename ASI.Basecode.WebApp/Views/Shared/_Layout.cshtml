@@ -7,14 +7,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!--
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/main.css" />
-    <link rel="stylesheet" href="~/css/style.css" />
+    -->
+    <link rel="stylesheet" href="~/css/homepage.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
     @RenderSection("Styles", required: false)
 </head>
-<body>
-    @Html.Partial("_Header")
+@{
+                var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+                var action = ViewContext.RouteData.Values["action"]?.ToString();
+                var isHomePage = controller == "Home" && action == "Index";
+                var isAccountPage = controller == "Account" && (action == "Login" || action == "Register");
+                var bodyClass = isHomePage ? "new-design" : "";
+}
+<body class="@bodyClass">
+    @if (!isAccountPage)
+    {
+        @Html.Partial("_Header")
+    }
     <div class="container">
         <main role="main">
             @RenderBody()
@@ -41,6 +52,14 @@
             closeButton: true,
             progressBar: true
         };
+
+        // Manually initialize Bootstrap dropdowns to ensure they work
+        document.addEventListener('DOMContentLoaded', function () {
+            var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+            var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+                return new bootstrap.Dropdown(dropdownToggleEl);
+            });
+        });
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

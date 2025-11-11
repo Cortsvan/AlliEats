@@ -1,0 +1,117 @@
+﻿/* General body styling for the new design */
+body.new-design {
+    background-color: #FAF3E8; /* Light cream background */
+    color: #5C4033; /* Dark brown text */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Remove top margin from the header to fix the white bar issue */
+header {
+    margin-top: 0 !important;
+}
+
+/* New Navbar styling - Made selector more specific */
+.navbar.navbar-new {
+    background-color: #FAF3E8 !important; /* Use !important to ensure override */
+    border-bottom: 1px solid #EAE0D5;
+    padding: 1rem 2rem;
+}
+
+.navbar-new .navbar-brand {
+    color: #5C4033;
+    font-weight: bold;
+    font-size: 1.75rem;
+}
+
+.navbar-new .nav-link {
+    color: #5C4033;
+    font-size: 1rem;
+    margin-left: 15px;
+}
+
+    .navbar-new .nav-link:hover {
+        color: #3d2b22;
+    }
+
+/* Ensure icons are visible and have the correct color */
+.navbar-new .navbar-nav .nav-item i {
+    color: #5C4033 !important;
+    font-size: 1.2rem;
+}
+
+/* Align dropdown menu to the right */
+.navbar-new .dropdown-menu {
+    background-color: #FAF3E8;
+    border-color: #EAE0D5;
+}
+
+.navbar-new .dropdown-item {
+    color: #5C4033;
+}
+
+    .navbar-new .dropdown-item:hover {
+        background-color: #EAE0D5;
+        color: #3d2b22;
+    }
+
+/* Homepage specific styles */
+.homepage-container {
+    text-align: center;
+    padding-top: 80px;
+    padding-bottom: 80px;
+}
+
+    .homepage-container h1 {
+        font-size: 3.5rem;
+        font-weight: bold;
+        color: #5C4033;
+    }
+
+    .homepage-container p {
+        font-size: 1.25rem;
+        color: #6c584c;
+        margin-top: 20px;
+        margin-bottom: 40px;
+    }
+
+    .homepage-container .btn-primary {
+        background-color: #5C4033;
+        border-color: #5C4033;
+        color: #fff;
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border-radius: 8px;
+        transition: background-color 0.3s;
+    }
+
+        .homepage-container .btn-primary:hover {
+            background-color: #4a3126;
+            border-color: #4a3126;
+        }
+
+/* Universal Footer Styles */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px; /* Vertically center the text */
+    background-color: #FAF3E8; /* Match the new design */
+    border-top: 1px solid #EAE0D5 !important; /* Ensure border is visible */
+    color: #5C4033; /* Match text color */
+}
+
+body:not(.new-design) .footer {
+    background-color: #fff; /* Fallback for non-homepage views */
+    color: #212529;
+}
