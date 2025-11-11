@@ -3,66 +3,185 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 py-4">
     <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="alert alert-primary border-0 shadow-sm">
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <i class="fas fa-cog fa-2x text-primary"></i>
-                    </div>
-                    <div>
-                        <h4 class="alert-heading mb-1">Account Settings</h4>
-                        <p class="mb-0">Manage your account preferences and security settings</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="settings-header text-center">
+        <h1 class="display-5 fw-bold"><i class="fas fa-cog me-3"></i>Account Settings</h1>
+        <p class="lead">Manage your account preferences and security settings</p>
     </div>
 
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <!-- Security Settings Card -->
-            <div class="card shadow mb-4">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">
-                        <i class="fas fa-shield-alt me-2"></i>Security Settings
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <h6 class="fw-bold">Password</h6>
-                            <p class="text-muted mb-0">Change your account password</p>
-                            <small class="text-muted">Last updated: Never</small>
+        <div class="col-lg-10">
+            <div class="row">
+                <!-- Security Settings -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm settings-card security-card mb-4">
+                        <div class="card-body">
+                            <div class="settings-card-header mb-4">
+                                <div class="settings-icon security-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <h5 class="settings-card-title">Security Settings</h5>
+                                <p class="settings-card-subtitle">Keep your account secure</p>
+                            </div>
+
+                            <div class="settings-item">
+                                <div class="settings-item-info">
+                                    <h6 class="settings-item-title">Password</h6>
+                                    <p class="settings-item-description">Change your account password</p>
+                                    <span class="settings-item-status">Last updated: Never</span>
+                                </div>
+                                <div class="settings-item-action">
+                                    <a href="@Url.Action("ChangePassword", "Settings")" class="btn btn-outline-primary settings-action-btn">
+                                        <i class="fas fa-key me-2"></i>Change Password
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-4 text-end">
-                            <a href="@Url.Action("ChangePassword", "Settings")" class="btn btn-outline-warning">
-                                <i class="fas fa-key me-1"></i>Change Password
-                            </a>
+                    </div>
+                </div>
+
+                <!-- Account Information -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm settings-card account-card mb-4">
+                        <div class="card-body">
+                            <div class="settings-card-header mb-4">
+                                <div class="settings-icon account-icon">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <h5 class="settings-card-title">Account Information</h5>
+                                <p class="settings-card-subtitle">Manage your personal details</p>
+                            </div>
+
+                            <div class="settings-item">
+                                <div class="settings-item-info">
+                                    <h6 class="settings-item-title">Profile Information</h6>
+                                    <p class="settings-item-description">Update your personal information and preferences</p>
+                                    <span class="settings-item-status">Keep your info up to date</span>
+                                </div>
+                                <div class="settings-item-action">
+                                    <a href="@Url.Action("Index", "Profile")" class="btn btn-outline-primary settings-action-btn">
+                                        <i class="fas fa-edit me-2"></i>Edit Profile
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preferences -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm settings-card preferences-card mb-4">
+                        <div class="card-body">
+                            <div class="settings-card-header mb-4">
+                                <div class="settings-icon preferences-icon">
+                                    <i class="fas fa-sliders-h"></i>
+                                </div>
+                                <h5 class="settings-card-title">Preferences</h5>
+                                <p class="settings-card-subtitle">Customize your experience</p>
+                            </div>
+
+                            <div class="settings-item">
+                                <div class="settings-item-info">
+                                    <h6 class="settings-item-title">Delivery Preferences</h6>
+                                    <p class="settings-item-description">Set your delivery address and instructions</p>
+                                    <span class="settings-item-status">Enhance your ordering experience</span>
+                                </div>
+                                <div class="settings-item-action">
+                                    <a href="@Url.Action("Edit", "Profile")" class="btn btn-outline-primary settings-action-btn">
+                                        <i class="fas fa-truck me-2"></i>Update Delivery
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order History -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm settings-card history-card mb-4">
+                        <div class="card-body">
+                            <div class="settings-card-header mb-4">
+                                <div class="settings-icon history-icon">
+                                    <i class="fas fa-history"></i>
+                                </div>
+                                <h5 class="settings-card-title">Order Management</h5>
+                                <p class="settings-card-subtitle">View your order history</p>
+                            </div>
+
+                            <div class="settings-item">
+                                <div class="settings-item-info">
+                                    <h6 class="settings-item-title">Order History</h6>
+                                    <p class="settings-item-description">View and track all your past orders</p>
+                                    <span class="settings-item-status">Stay updated on your orders</span>
+                                </div>
+                                <div class="settings-item-action">
+                                    <a href="@Url.Action("MyOrders", "Order")" class="btn btn-outline-primary settings-action-btn">
+                                        <i class="fas fa-list me-2"></i>View Orders
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Account Information Card -->
-            <div class="card shadow mb-4">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-user me-2"></i>Account Information
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-md-8">
-                            <h6 class="fw-bold">Profile Information</h6>
-                            <p class="text-muted mb-0">Update your personal information and preferences</p>
-                        </div>
-                        <div class="col-md-4 text-end">
-                            <a href="@Url.Action("Index", "Profile")" class="btn btn-outline-info">
-                                <i class="fas fa-edit me-1"></i>Edit Profile
-                            </a>
+            <!-- Quick Actions Row -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm quick-actions-settings-card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center mb-4">
+                                <i class="fas fa-bolt me-2"></i>Quick Actions
+                            </h5>
+
+                            <div class="quick-actions-grid">
+                                <a href="@Url.Action("ViewCart", "Cart")" class="quick-action-item">
+                                    <div class="quick-action-icon cart-icon">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </div>
+                                    <span class="quick-action-text">My Cart</span>
+                                </a>
+
+                                <a href="@Url.Action("Browse", "Menu")" class="quick-action-item">
+                                    <div class="quick-action-icon menu-icon">
+                                        <i class="fas fa-utensils"></i>
+                                    </div>
+                                    <span class="quick-action-text">Browse Menu</span>
+                                </a>
+                                <!--
+                                <a href="@Url.Action("TrackOrder", "Order")" class="quick-action-item">
+                                                                    <div class="quick-action-icon track-icon">
+                                                                        <i class="fas fa-search"></i>
+                                                                    </div>
+                                                                    <span class="quick-action-text">Track Order</span>
+                                                                </a>
+                                -->
+                                
+
+                                <a href="@Url.Action("Index", "Home")" class="quick-action-item">
+                                    <div class="quick-action-icon home-icon">
+                                        <i class="fas fa-home"></i>
+                                    </div>
+                                    <span class="quick-action-text">Home</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -72,17 +191,9 @@
 </div>
 
 @section Scripts {
-    <script>
-        // Check for success message and display Toastr notification
-        var successMessage = '@TempData["SuccessMessage"]';
-        if (successMessage && successMessage.trim() !== '') {
-            toastr.success(successMessage);
-        }
+    <script src="~/js/settings.js"></script>
+}
 
-        // Check for error message and display Toastr notification
-        var errorMessage = '@TempData["ErrorMessage"]';
-        if (errorMessage && errorMessage.trim() !== '') {
-            toastr.error(errorMessage);
-        }
-    </script>
+@section Styles {
+    <link rel="stylesheet" href="~/css/settings.css" />
 }

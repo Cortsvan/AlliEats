@@ -5,22 +5,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 py-4">
     <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="alert alert-primary border-0 shadow-sm">
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <i class="fas fa-user fa-2x text-primary"></i>
-                    </div>
-                    <div>
-                        <h4 class="alert-heading mb-1">My Profile</h4>
-                        <p class="mb-0">Manage your personal information and delivery preferences</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="profile-header text-center">
+        <h1 class="display-5 fw-bold"><i class="fas fa-user me-3"></i>My Profile</h1>
+        <p class="lead">Manage your personal information and delivery preferences</p>
     </div>
 
     @if (TempData["SuccessMessage"] != null)
@@ -40,56 +29,51 @@
     }
 
     <div class="row">
+        <!-- Profile Information -->
         <div class="col-lg-8">
             <!-- Profile Information Card -->
-            <div class="card shadow mb-4">
-                <div class="card-header bg-primary text-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
+            <div class="card shadow-sm profile-info-card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="card-title mb-0">
                             <i class="fas fa-user me-2"></i>Profile Information
-                        </h5>
-                        <a href="@Url.Action("Edit")" class="btn btn-light btn-sm">
+                        </h4>
+                        <a href="@Url.Action("Edit")" class="btn btn-checkout">
                             <i class="fas fa-edit me-2"></i>Edit Profile
                         </a>
                     </div>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <strong>Full Name:</strong>
-                            <div class="text-muted">@Model.Name</div>
+
+                    <div class="profile-info-grid">
+                        <div class="profile-info-item">
+                            <span class="profile-info-label">Full Name:</span>
+                            <span class="profile-info-value">@Model.Name</span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Email:</strong>
-                            <div class="text-muted">@Model.UserId</div>
+                        <div class="profile-info-item">
+                            <span class="profile-info-label">Email:</span>
+                            <span class="profile-info-value">@Model.UserId</span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Phone:</strong>
-                            <div class="text-muted">@(string.IsNullOrEmpty(Model.Phone) ? "Not provided" : Model.Phone)</div>
+                        <div class="profile-info-item">
+                            <span class="profile-info-label">Phone:</span>
+                            <span class="profile-info-value">@(string.IsNullOrEmpty(Model.Phone) ? "Not provided" : Model.Phone)</span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Date of Birth:</strong>
-                            <div class="text-muted">@(Model.DateOfBirth?.ToString("MMMM dd, yyyy") ?? "Not provided")</div>
+                        <div class="profile-info-item">
+                            <span class="profile-info-label">Date of Birth:</span>
+                            <span class="profile-info-value">@(Model.DateOfBirth?.ToString("MMMM dd, yyyy") ?? "Not provided")</span>
                         </div>
-                        <div class="col-12 mb-3">
-                            <strong>Address:</strong>
-                            <div class="text-muted">
+                        <div class="profile-info-item full-width">
+                            <span class="profile-info-label">Address:</span>
+                            <div class="profile-address">
                                 @if (!string.IsNullOrEmpty(Model.Address))
                                 {
-                                    @Model.Address
+                                    <div>@Model.Address</div>
                                     @if (!string.IsNullOrEmpty(Model.City))
                                     {
-                                        <br />
-                                        @Model.City
-                                        @if (!string.IsNullOrEmpty(Model.PostalCode))
-                                        {
-                                            @Model.PostalCode
-                                        }
+                                        <div>@Model.City @Model.PostalCode</div>
                                     }
                                 }
                                 else
                                 {
-                                    <text>Not provided</text>
+                                    <span class="text-muted">Not provided</span>
                                 }
                             </div>
                         </div>
@@ -98,50 +82,63 @@
             </div>
 
             <!-- Delivery Preferences Card -->
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">
+            <div class="card shadow-sm delivery-preferences-card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
                         <i class="fas fa-truck me-2"></i>Delivery Preferences
                     </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-12 mb-3">
-                            <strong>Preferred Delivery Address:</strong>
-                            <div class="text-muted">@(string.IsNullOrEmpty(Model.PreferredDeliveryAddress) ? "Not set" : Model.PreferredDeliveryAddress)</div>
+
+                    <div class="delivery-info">
+                        <div class="delivery-info-item">
+                            <span class="delivery-info-label">Preferred Delivery Address:</span>
+                            <div class="delivery-info-value">
+                                @(string.IsNullOrEmpty(Model.PreferredDeliveryAddress) ?
+                                                                Html.Raw("<span class='text-muted'>Not set - Using your profile address</span>") :
+                                                                Html.Raw(Model.PreferredDeliveryAddress))
+                            </div>
                         </div>
-                        <div class="col-12">
-                            <strong>Delivery Instructions:</strong>
-                            <div class="text-muted">@(string.IsNullOrEmpty(Model.DeliveryInstructions) ? "No special instructions" : Model.DeliveryInstructions)</div>
+                        <div class="delivery-info-item">
+                            <span class="delivery-info-label">Delivery Instructions:</span>
+                            <div class="delivery-info-value">
+                                @(string.IsNullOrEmpty(Model.DeliveryInstructions) ?
+                                                                Html.Raw("<span class='text-muted'>No special instructions</span>") :
+                                                                Html.Raw(Model.DeliveryInstructions))
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Sidebar -->
         <div class="col-lg-4">
             <!-- Profile Completion Card -->
-            <div class="card shadow mb-4">
-                <div class="card-header bg-info text-white">
-                    <h6 class="mb-0">Profile Completion</h6>
-                </div>
+            <div class="card shadow-sm completion-card mb-4">
                 <div class="card-body text-center">
-                    <div class="mb-3">
-                        <div class="progress" style="height: 12px;">
-                            <div class="progress-bar bg-success" style="width: @Model.ProfileCompletionPercentage%"></div>
+                    <h6 class="card-title mb-3">
+                        <i class="fas fa-chart-pie me-2"></i>Profile Completion
+                    </h6>
+
+                    <div class="completion-circle mb-3">
+                        <div class="progress-ring">
+                            <div class="progress-value">@Model.ProfileCompletionPercentage%</div>
                         </div>
-                        <small class="text-muted mt-2 d-block">@Model.ProfileCompletionPercentage% Complete</small>
                     </div>
+
+                    <div class="progress mb-3" style="height: 8px;">
+                        <div class="progress-bar" style="width: @Model.ProfileCompletionPercentage%"></div>
+                    </div>
+
                     @if (!Model.IsProfileComplete)
                     {
-                        <p class="text-muted small">Complete your profile to get better delivery experience!</p>
-                        <a href="@Url.Action("Edit")" class="btn btn-info btn-sm">
+                        <p class="text-muted small mb-3">Complete your profile to get better delivery experience!</p>
+                        <a href="@Url.Action("Edit")" class="btn btn-outline-primary btn-sm">
                             <i class="fas fa-plus me-2"></i>Complete Profile
                         </a>
                     }
                     else
                     {
-                        <p class="text-success small">
+                        <p class="text-success small mb-0">
                             <i class="fas fa-check-circle me-1"></i>Profile Complete!
                         </p>
                     }
@@ -149,20 +146,24 @@
             </div>
 
             <!-- Quick Actions Card -->
-            <div class="card shadow">
-                <div class="card-header bg-warning text-dark">
-                    <h6 class="mb-0">Quick Actions</h6>
-                </div>
+            <div class="card shadow-sm quick-actions-card">
                 <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a href="@Url.Action("MyOrders", "Order")" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-history me-2"></i>Order History
+                    <h6 class="card-title mb-3">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h6>
+
+                    <div class="quick-actions">
+                        <a href="@Url.Action("MyOrders", "Order")" class="quick-action-btn">
+                            <i class="fas fa-history"></i>
+                            <span>Order History</span>
                         </a>
-                        <a href="@Url.Action("ViewCart", "Cart")" class="btn btn-outline-success btn-sm">
-                            <i class="fas fa-shopping-cart me-2"></i>My Cart
+                        <a href="@Url.Action("ViewCart", "Cart")" class="quick-action-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>My Cart</span>
                         </a>
-                        <a href="@Url.Action("Browse", "Menu")" class="btn btn-outline-info btn-sm">
-                            <i class="fas fa-utensils me-2"></i>Browse Menu
+                        <a href="@Url.Action("Browse", "Menu")" class="quick-action-btn">
+                            <i class="fas fa-utensils"></i>
+                            <span>Browse Menu</span>
                         </a>
                     </div>
                 </div>
@@ -170,3 +171,11 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/profile.js"></script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/profile.css" />
+}

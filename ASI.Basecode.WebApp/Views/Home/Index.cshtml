@@ -7,38 +7,257 @@
     var isAdmin = user.IsInRole("Admin");
 }
 
-<div class="homepage-container">
+<div class="container-fluid px-4 py-4">
     @if (isAuthenticated)
     {
         if (isAdmin)
         {
-            <h1>Hello Admin</h1>
-            <p>Welcome to the AlliEats Admin Dashboard.</p>
-            <div class="mt-4">
-                <a asp-controller="AdminMenu" asp-action="ViewItems" class="btn btn-primary">Manage Menu</a>
-                <a asp-controller="AdminOrder" asp-action="ManageOrders" class="btn btn-primary">Manage Orders</a>
+            <!-- Admin Dashboard -->
+            <div class="admin-welcome-header text-center">
+                <div class="admin-avatar mb-3">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h1 class="display-4 fw-bold">Hello Admin</h1>
+                <p class="lead">Welcome to the AlliEats Admin Dashboard</p>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="row">
+                        <!-- Menu Management -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card shadow-sm admin-action-card">
+                                <div class="card-body text-center">
+                                    <div class="admin-action-icon menu-management-icon mb-3">
+                                        <i class="fas fa-utensils"></i>
+                                    </div>
+                                    <h5 class="admin-action-title">Menu Management</h5>
+                                    <p class="admin-action-description">Add, edit, and organize menu items</p>
+                                    <a asp-controller="AdminMenu" asp-action="ViewItems" class="btn btn-admin-primary">
+                                        <i class="fas fa-cog me-2"></i>Manage Menu
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Management -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card shadow-sm admin-action-card">
+                                <div class="card-body text-center">
+                                    <div class="admin-action-icon order-management-icon mb-3">
+                                        <i class="fas fa-clipboard-list"></i>
+                                    </div>
+                                    <h5 class="admin-action-title">Order Management</h5>
+                                    <p class="admin-action-description">View and manage customer orders</p>
+                                    <a asp-controller="AdminOrder" asp-action="ManageOrders" class="btn btn-admin-primary">
+                                        <i class="fas fa-tasks me-2"></i>Manage Orders
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Admin Quick Stats -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card shadow-sm admin-stats-card">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center mb-4">
+                                        <i class="fas fa-chart-bar me-2"></i>Quick Overview
+                                    </h6>
+                                    <div class="admin-stats-grid">
+                                        <div class="admin-stat-item">
+                                            <i class="fas fa-shopping-bag stat-icon"></i>
+                                            <span class="stat-label">Today's Orders</span>
+                                        </div>
+                                        <div class="admin-stat-item">
+                                            <i class="fas fa-users stat-icon"></i>
+                                            <span class="stat-label">Active Customers</span>
+                                        </div>
+                                        <div class="admin-stat-item">
+                                            <i class="fas fa-dollar-sign stat-icon"></i>
+                                            <span class="stat-label">Revenue</span>
+                                        </div>
+                                        <div class="admin-stat-item">
+                                            <i class="fas fa-star stat-icon"></i>
+                                            <span class="stat-label">Popular Items</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         }
         else
         {
-            <h1>Hello @user.Identity.Name</h1>
-            <p>Welcome back! Ready to order some delicious food?</p>
-            <div class="mt-4">
-                <a asp-controller="Menu" asp-action="Browse" class="btn btn-primary">Browse Menu</a>
-                <a asp-controller="Order" asp-action="MyOrders" class="btn btn-primary">My Orders & Tracking</a>
+            <!-- User Welcome -->
+            <div class="user-welcome-header text-center">
+                <div class="user-avatar mb-3">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <h1 class="display-4 fw-bold">Hello @user.Identity.Name!</h1>
+                <p class="lead">Welcome back! Ready to order some delicious food?</p>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="row">
+                        <!-- Browse Menu -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card shadow-sm user-action-card">
+                                <div class="card-body">
+                                    <div class="user-action-header text-center mb-4">
+                                        <div class="user-action-icon browse-menu-icon">
+                                            <i class="fas fa-utensils"></i>
+                                        </div>
+                                        <h5 class="user-action-title">Browse Menu</h5>
+                                        <p class="user-action-description">Explore our delicious food options</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <a asp-controller="Menu" asp-action="Browse" class="btn btn-user-primary">
+                                            <i class="fas fa-search me-2"></i>Browse Menu
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- My Orders -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card shadow-sm user-action-card">
+                                <div class="card-body">
+                                    <div class="user-action-header text-center mb-4">
+                                        <div class="user-action-icon orders-icon">
+                                            <i class="fas fa-history"></i>
+                                        </div>
+                                        <h5 class="user-action-title">My Orders</h5>
+                                        <p class="user-action-description">Track and view your order history</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <a asp-controller="Order" asp-action="MyOrders" class="btn btn-user-secondary">
+                                            <i class="fas fa-list me-2"></i>My Orders & Tracking
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions for Users -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card shadow-sm user-quick-actions-card">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center mb-4">
+                                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                                    </h6>
+
+                                    <div class="user-quick-actions-grid">
+                                        <a href="@Url.Action("ViewCart", "Cart")" class="user-quick-action-item">
+                                            <div class="user-quick-action-icon cart-icon">
+                                                <i class="fas fa-shopping-cart"></i>
+                                            </div>
+                                            <span class="user-quick-action-text">My Cart</span>
+                                        </a>
+
+                                        <a href="@Url.Action("Index", "Profile")" class="user-quick-action-item">
+                                            <div class="user-quick-action-icon profile-icon">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <span class="user-quick-action-text">My Profile</span>
+                                        </a>
+
+                                        <a href="@Url.Action("TrackOrder", "Order")" class="user-quick-action-item">
+                                            <div class="user-quick-action-icon track-icon">
+                                                <i class="fas fa-search"></i>
+                                            </div>
+                                            <span class="user-quick-action-text">Track Order</span>
+                                        </a>
+
+                                        <a href="@Url.Action("Index", "Settings")" class="user-quick-action-item">
+                                            <div class="user-quick-action-icon settings-icon">
+                                                <i class="fas fa-cog"></i>
+                                            </div>
+                                            <span class="user-quick-action-text">Settings</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         }
     }
     else
     {
-        <h1>Welcome to AlliEats</h1>
-        <p>Your favorite food, delivered fast!</p>
-        <div class="mt-4">
-            <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Sign In</a>
-            <a asp-controller="Account" asp-action="Register" class="btn btn-primary" style="margin-left: 10px;">Register</a>
+        <!-- Guest Welcome -->
+        <div class="guest-welcome-section text-center">
+            <div class="guest-welcome-header">
+                <div class="brand-logo mb-4">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <h1 class="display-3 fw-bold brand-title">Welcome to AlliEats</h1>
+                <p class="lead brand-subtitle">Your favorite food, delivered fast!</p>
+            </div>
+
+            <div class="row justify-content-center mt-5">
+                <div class="col-lg-8">
+                    <!-- Features Section -->
+                    <div class="row mb-5">
+                        <div class="col-md-4 mb-4">
+                            <div class="feature-card">
+                                <div class="feature-icon fast-delivery-icon">
+                                    <i class="fas fa-shipping-fast"></i>
+                                </div>
+                                <h5 class="feature-title">Fast Delivery</h5>
+                                <p class="feature-description">Quick and reliable delivery to your doorstep</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="feature-card">
+                                <div class="feature-icon fresh-food-icon">
+                                    <i class="fas fa-leaf"></i>
+                                </div>
+                                <h5 class="feature-title">Fresh Food</h5>
+                                <p class="feature-description">Made with the freshest ingredients daily</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="feature-card">
+                                <div class="feature-icon easy-order-icon">
+                                    <i class="fas fa-mouse-pointer"></i>
+                                </div>
+                                <h5 class="feature-title">Easy Ordering</h5>
+                                <p class="feature-description">Simple and intuitive ordering process</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Call to Action -->
+                    <div class="cta-section">
+                        <div class="cta-buttons">
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-guest-primary btn-lg me-3">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                            </a>
+                            <a asp-controller="Account" asp-action="Register" class="btn btn-guest-secondary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Register
+                            </a>
+                        </div>
+                        <p class="cta-text mt-3">Join thousands of satisfied customers!</p>
+                    </div>
+                </div>
+            </div>
         </div>
     }
 </div>
+
+@section Scripts {
+    <script src="~/js/home.js"></script>
+}
+
 @section Styles {
-    <link rel="stylesheet" href="~/css/homepage.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/home.css" />
 }
