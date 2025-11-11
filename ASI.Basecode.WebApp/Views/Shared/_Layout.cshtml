@@ -15,7 +15,7 @@
 @{
         var controller = ViewContext.RouteData.Values["controller"]?.ToString();
         var action = ViewContext.RouteData.Values["action"]?.ToString();
-        var isAccountPage = controller == "Account" && (action == "Login" || action == "Register");
+        var isAccountPage = controller == "Account" && (action == "Login" || action == "Register" || action == "ForgotPassword");
 }
 <body>
     @if (!isAccountPage)
@@ -29,7 +29,7 @@
     </div>
     <footer class="border-top footer text-muted">
         <div class="container">
-            @Copyright
+            &copy; @DateTime.Now.Year - AlliEats University of Cebu - Banilad - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 

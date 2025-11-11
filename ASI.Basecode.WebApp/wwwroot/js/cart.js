@@ -143,6 +143,32 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         });
     }
+    document.querySelectorAll('.btn-quantity').forEach(button => {
+        button.addEventListener('click', function () {
+            const action = this.dataset.action;
+            const form = this.closest('form');
+            const input = form.querySelector('.quantity-input');
+            let currentValue = parseInt(input.value);
+            const min = parseInt(input.min);
+            const max = parseInt(input.max);
+
+            let shouldSubmit = false;
+
+            if (action === 'increase' && currentValue < max) {
+                input.value = currentValue + 1;
+                shouldSubmit = true;
+            } else if (action === 'decrease' && currentValue > min) {
+                input.value = currentValue - 1;
+                shouldSubmit = true;
+            }
+
+            if (shouldSubmit) {
+                // This submits the form and reloads the page,
+                // which is what your controller expects.
+                form.submit();
+            }
+        });
+    });
 
     // Handle quantity updates
     document.querySelectorAll('.quantity-input').forEach(input => {

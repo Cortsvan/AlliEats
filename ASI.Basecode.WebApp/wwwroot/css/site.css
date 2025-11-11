@@ -29,6 +29,10 @@ body {
     bottom: 0;
     width: 100%;
     white-space: nowrap;
+    line-height: 60px; 
+    background-color: #FAF3E8;
+    border-top: 1px solid #EAE0D5 !important;
+    color: #5C4033;
 }
 
 #footer {

@@ -1,0 +1,39 @@
+﻿/* Styles for the Privacy Policy page */
+.privacy-container {
+    background-color: #FFFFFF; /* White background for the content area */
+    color: #5C4033; /* Brown text color from your theme */
+    border-radius: 8px;
+    padding: 40px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+    .privacy-container h1 {
+        color: #5C4033; /* Brown heading color */
+        font-weight: bold;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .privacy-container h2 {
+        color: #3d2b22; /* Darker brown for subheadings */
+        margin-top: 30px;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #EAE0D5; /* Light border to match theme */
+        padding-bottom: 10px;
+    }
+
+    .privacy-container p {
+        line-height: 1.8;
+        text-align: justify;
+    }
+
+    .privacy-container ul {
+        list-style-type: disc;
+        padding-left: 40px;
+    }
+
+    .privacy-container li {
+        margin-bottom: 10px;
+    }

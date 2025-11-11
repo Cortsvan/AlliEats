@@ -36,30 +36,3 @@
             background-color: #4a3126;
             border-color: #4a3126;
         }
-
-/* Universal Footer Styles */
-html {
-    position: relative;
-    min-height: 100%;
-}
-
-body {
-    /* Margin bottom by footer height */
-    margin-bottom: 60px;
-}
-
-.footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    white-space: nowrap;
-    line-height: 60px; /* Vertically center the text */
-    background-color: #FAF3E8; /* Match the new design */
-    border-top: 1px solid #EAE0D5 !important; /* Ensure border is visible */
-    color: #5C4033; /* Match text color */
-}
-
-body:not(.new-design) .footer {
-    background-color: #fff; /* Fallback for non-homepage views */
-    color: #212529;
-}

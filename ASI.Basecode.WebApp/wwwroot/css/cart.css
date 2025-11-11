@@ -148,3 +148,58 @@ body {
     background: linear-gradient(135deg, #ffc107, #e0a800) !important;
     color: #212529 !important;
 }
+
+/* Styling for new quantity buttons */
+.quantity-controls .input-group {
+    width: 130px;
+    flex-wrap: nowrap;
+}
+
+.quantity-controls .form-control {
+    border-radius: 0 !important;
+    height: 40px; /* Standard height */
+}
+
+.quantity-controls .btn-quantity {
+    width: 40px;
+    height: 40px;
+    border-color: #ced4da;
+    z-index: 1;
+}
+
+/* Style for the input (remove default spinner) */
+.quantity-input {
+    -moz-appearance: textfield;
+}
+
+    .quantity-input::-webkit-outer-spin-button,
+    .quantity-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+/* Loading state for item cards */
+.cart-item-card.is-loading {
+    opacity: 0.5;
+    pointer-events: none;
+    position: relative;
+}
+
+    .cart-item-card.is-loading::after {
+        content: "\f110"; /* Font Awesome spinner */
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2rem;
+        color: var(--primary-color);
+        animation: fa-spin 1s infinite linear;
+        z-index: 10;
+    }
+
+/* Hide/Show for empty cart */
+.hidden {
+    display: none !important;
+}

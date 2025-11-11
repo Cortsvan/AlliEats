@@ -5,7 +5,6 @@
     --accent-gold: #FFD54F;
     --text-charcoal: #212121;
     --light-beige: #FEFEFE;
-    --shadow-color: rgba(93, 64, 55, 0.15);
 }
 
 /* Main container for perfect centering */
@@ -23,14 +22,12 @@
     background: var(--primary-maroon);
     background: -webkit-linear-gradient(135deg, var(--primary-maroon) 0%, #6D4C41 50%, var(--accent-gold) 100%);
     background: linear-gradient(135deg, var(--primary-maroon) 0%, #6D4C41 50%, var(--accent-gold) 100%);
-    box-shadow: 0 4px 15px var(--shadow-color);
     border: none;
     transition: all 0.3s ease;
 }
 
 .gradient-custom-2:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px var(--shadow-color);
 }
 
 .login-btn {
@@ -60,13 +57,11 @@
     border-color: var(--primary-maroon);
     color: var(--light-beige);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .auth-card {
     background: var(--light-beige);
     border-radius: 20px;
-    box-shadow: 0 10px 30px var(--shadow-color);
     border: 1px solid rgba(93, 64, 55, 0.1);
     overflow: hidden;
     width: 100%;
@@ -327,5 +322,23 @@
         margin-bottom: 0.5rem !important;
         display: block;
         text-align: center;
+    }
+}
+/* Fix centering on large screens */
+.auth-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-card {
+    margin: 0 auto;
+    max-width: 1000px;
+    width: 100%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+@media (min-width: 1400px) {
+    .auth-card {
+        transform: scale(1.05);
     }
 }

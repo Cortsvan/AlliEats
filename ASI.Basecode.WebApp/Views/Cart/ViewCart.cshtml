@@ -8,16 +8,13 @@
 <div class="container-fluid px-4 py-4">
     <!-- Header -->
     <div class="cart-header text-center">
-        <h1 class="display-5 fw-bold"><i class="fas fa-shopping-cart me-3"></i>Your Shopping Cart</h1>
+        <h1 class="display-5 fw-bold"><i class="fas fa-shopping-basket me-3"></i>Your Food Basket</h1>
         <p class="lead">Review your items and proceed to checkout.</p>
     </div>
 
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
+        
     }
 
     @if (TempData["ErrorMessage"] != null)
@@ -28,21 +25,20 @@
         </div>
     }
 
-    <div class="row">
-        @if (Model.CartItems.Any())
-        {
-            <!-- Cart Items -->
-            <div class="col-lg-8">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="mb-0">Cart Items (@Model.TotalItems)</h4>
-                    <a href="@Url.Action("Browse", "Menu")" class="btn btn-outline-primary">
-                        <i class="fas fa-arrow-left me-2"></i>Continue Shopping
-                    </a>
-                </div>
+    <div class="row @(Model.CartItems.Any() ? "" : "hidden")" id="cart-content-wrapper">
 
+        <div class="col-lg-8" id="cart-items-container">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0" id="cart-item-count">Cart Items (@Model.TotalItems)</h4>
+                <a href="@Url.Action("Browse", "Menu")" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                </a>
+            </div>
+
+            <div id="cart-items-list">
                 @foreach (var item in Model.CartItems)
                 {
-                    <div class="cart-item-card mb-3">
+                    <div class="cart-item-card mb-3" data-item-id="@item.Id">
                         <div class="cart-item-image">
                             <img src="@(string.IsNullOrEmpty(item.MenuItemImagePath) ? "/images/placeholder-food.jpg" : item.MenuItemImagePath)"
                                  alt="@item.MenuItemName"
@@ -55,19 +51,30 @@
                             </p>
                             <span class="badge badge-category">@item.MenuItemCategory</span>
                         </div>
-                        <div class="text-center px-3" style="min-width: 100px;">
-                            <span class="item-price">$@item.Price.ToString("F2")</span>
+                        <div classtext-center px-3" style="min-width: 100px;">
+                            <span class="item-price" data-unit-price="@item.Price.ToString("F2")">@("P" + item.Price.ToString("F2"))</span>
                         </div>
+
                         <div class="quantity-controls px-3">
-                            <form method="post" action="@Url.Action("UpdateItem", "Cart")" class="d-inline">
+                            <form method="post" action="@Url.Action("UpdateItem", "Cart")">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="cartItemId" value="@item.Id" />
-                                <input type="number" name="quantity" value="@item.Quantity"
-                                       min="1" max="50" class="form-control quantity-input">
+                                <div class="input-group">
+                                    <button class="btn btn-outline-secondary btn-quantity" type="button" data-action="decrease">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" name="quantity" value="@item.Quantity"
+                                           min="1" max="50" class="form-control quantity-input"
+                                           data-item-id="@item.Id" data-last-valid="@item.Quantity">
+                                    <button class="btn btn-outline-secondary btn-quantity" type="button" data-action="increase">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
                             </form>
                         </div>
+
                         <div class="text-center px-3" style="min-width: 120px;">
-                            <span class="item-total">$@item.TotalPrice.ToString("F2")</span>
+                            <span class="item-total">@("P" + item.Price.ToString("F2"))</span>
                         </div>
                         <div class="text-center">
                             <button type="button" class="remove-btn" onclick="confirmRemove(@item.Id, '@item.MenuItemName')">
@@ -76,58 +83,57 @@
                         </div>
                     </div>
                 }
-
-                <div class="text-end mt-3">
-                    <button type="button" class="btn btn-outline-danger" onclick="confirmClearCart()">
-                        <i class="fas fa-times-circle me-2"></i>Clear Cart
-                    </button>
-                </div>
             </div>
 
-            <!-- Order Summary -->
-            <div class="col-lg-4">
-                <div class="card shadow-sm order-summary-card">
-                    <div class="card-body">
-                        <h4 class="card-title text-center mb-4">
-                            <i class="fas fa-receipt me-2"></i>Order Summary
-                        </h4>
-                        <ul class="list-group list-group-flush">
+            <div class="text-end mt-3">
+                <button type="button" class="btn btn-outline-danger" onclick="confirmClearCart()">
+                    <i class="fas fa-times-circle me-2"></i>Clear Cart
+                </button>
+            </div>
+        </div>
+
+        <div class="col-lg-4" id="order-summary-container">
+            <div class="card shadow-sm order-summary-card">
+                <div class="card-body">
+                    <h4 class="card-title text-center mb-4">
+                        <i class="fas fa-receipt me-2"></i>Order Summary
+                    </h4>
+                    <ul class="list-group list-group-flush">
+                        @foreach (var item in Model.CartItems)
+                        {
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Subtotal
-                                <span>$@Model.TotalAmount.ToString("F2")</span>
+                                <div>
+                                    @item.MenuItemName
+                                    <span class="text-muted small"> (x @item.Quantity)</span>
+                                </div>
+                                <span class="fw-bold">
+                                    @("P" + (item.Price * item.Quantity).ToString("F2"))
+                                </span>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Shipping
-                                <span>FREE</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center fw-bold h5">
-                                Total
-                                <span class="text-success">$@Model.TotalAmount.ToString("F2")</span>
-                            </li>
-                        </ul>
-                        <div class="d-grid mt-4">
-                            <a href="@Url.Action("Index", "Checkout")" class="btn btn-checkout btn-lg">
-                                <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
-                            </a>
-                        </div>
+                        }
+                        <li class="list-group-item d-flex justify-content-between align-items-center fw-bold h5">
+                            Total
+                            <span class="text-success" id="summary-total">@("P" + Model.TotalAmount.ToString("F2"))</span>
+                        </li>
+                    </ul>
+                    <div class="d-grid mt-4">
+                        <a href="@Url.Action("Index", "Checkout")" class="btn btn-checkout btn-lg">
+                            <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+                        </a>
                     </div>
                 </div>
             </div>
-        }
-        else
-        {
-            <!-- Empty Cart -->
-            <div class="col-12">
-                <div class="empty-cart-container">
-                    <div class="icon"><i class="fas fa-shopping-bag"></i></div>
-                    <h3 class="mt-4">Your cart is empty</h3>
-                    <p class="text-muted">Looks like you haven't added anything to your cart yet.</p>
-                    <a href="@Url.Action("Browse", "Menu")" class="btn btn-primary btn-lg mt-3">
-                        <i class="fas fa-utensils me-2"></i>Browse Menu
-                    </a>
-                </div>
-            </div>
-        }
+        </div>
+
+    </div> <div class="col-12 @(Model.CartItems.Any() ? "hidden" : "")" id="empty-cart-container">
+        <div class="empty-cart-container">
+            <div class="icon"><i class="fas fa-shopping-bag"></i></div>
+            <h3 class="mt-4">Your cart is empty</h3>
+            <p class="text-muted">Looks like you haven't added anything to your cart yet.</p>
+            <a href="@Url.Action("Browse", "Menu")" class="btn btn-primary btn-lg mt-3">
+                <i class="fas fa-utensils me-2"></i>Browse Menu
+            </a>
+        </div>
     </div>
 </div>
 
