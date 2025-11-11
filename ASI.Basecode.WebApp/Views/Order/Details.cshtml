@@ -5,22 +5,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 py-4">
     <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="alert alert-info border-0 shadow-sm">
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <i class="fas fa-receipt fa-2x text-info"></i>
-                    </div>
-                    <div>
-                        <h4 class="alert-heading mb-1">Order Details</h4>
-                        <p class="mb-0">Complete information about order @Model.OrderNumber</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="order-header text-center">
+        <h1 class="display-5 fw-bold"><i class="fas fa-receipt me-3"></i>Order Details</h1>
+        <p class="lead">Complete information about order @Model.OrderNumber</p>
     </div>
 
     @if (TempData["ErrorMessage"] != null)
@@ -32,110 +21,92 @@
     }
 
     <div class="row">
-        <!-- Order Information -->
+        <!-- Order Information & Items -->
         <div class="col-lg-8">
-            <div class="card shadow mb-4">
-                <div class="card-header bg-primary text-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="fas fa-info-circle me-2"></i>Order Information
-                        </h5>
-                        <span class="badge @Model.StatusBadgeClass fs-6">@Model.Status</span>
-                    </div>
-                </div>
+            <!-- Order Information Card -->
+            <div class="card shadow-sm order-info-card mb-4">
                 <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Order Number:</strong> @Model.OrderNumber
+                    <h4 class="card-title text-center mb-4">
+                        <i class="fas fa-info-circle me-2"></i>Order Information
+                        <span class="badge @Model.StatusBadgeClass ms-2">@Model.Status</span>
+                    </h4>
+
+                    <div class="order-info-grid">
+                        <div class="order-info-item">
+                            <span class="order-info-label">Order Number:</span>
+                            <span class="order-info-value">@Model.OrderNumber</span>
                         </div>
-                        <div class="col-md-6">
-                            <strong>Order Date:</strong> @Model.CreatedTime.ToString("MMMM dd, yyyy h:mm tt")
+                        <div class="order-info-item">
+                            <span class="order-info-label">Order Date:</span>
+                            <span class="order-info-value">@Model.CreatedTime.ToString("MMMM dd, yyyy h:mm tt")</span>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Payment Method:</strong> @Model.PaymentMethod
+                        <div class="order-info-item">
+                            <span class="order-info-label">Payment Method:</span>
+                            <span class="order-info-value">@Model.PaymentMethod</span>
                         </div>
-                        <div class="col-md-6">
-                            <strong>Total Amount:</strong> <span class="text-success fw-bold">$@Model.TotalAmount.ToString("F2")</span>
+                        <div class="order-info-item">
+                            <span class="order-info-label">Total Amount:</span>
+                            <span class="order-info-value text-success fw-bold">@("P" + Model.TotalAmount.ToString("F2"))</span>
                         </div>
-                    </div>
-                    @if (!string.IsNullOrEmpty(Model.Notes))
-                    {
-                        <div class="row">
-                            <div class="col-12">
-                                <strong>Order Notes:</strong>
-                                <div class="mt-2 p-3 bg-light rounded">
-                                    @Model.Notes
-                                </div>
+                        @if (!string.IsNullOrEmpty(Model.Notes))
+                        {
+                            <div class="order-info-item full-width">
+                                <span class="order-info-label">Order Notes:</span>
+                                <div class="order-notes">@Model.Notes</div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
             </div>
 
-            <!-- Order Items with Images -->
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">
+            <!-- Order Items Card -->
+            <div class="card shadow-sm order-items-card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
                         <i class="fas fa-list me-2"></i>Ordered Items (@Model.TotalItems items)
                     </h5>
-                </div>
-                <div class="card-body">
-                    @foreach (var item in Model.OrderItems)
-                    {
-                        <div class="order-item-card mb-3">
-                            <div class="row g-0 align-items-center">
-                                <!-- NEW: Food Image -->
-                                <div class="col-md-2">
-                                    <div class="order-item-image">
-                                        @if (!string.IsNullOrEmpty(item.MenuItemImagePath))
-                                        {
-                                            <img src="@item.MenuItemImagePath" alt="@item.MenuItemName"
-                                                 class="img-fluid rounded"
-                                                 style="width: 100%; height: 80px; object-fit: cover;"
-                                                 onerror="this.src='/images/placeholder-food.jpg'; this.onerror=null;">
-                                        }
-                                        else
-                                        {
-                                            <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height: 80px;">
-                                                <i class="fas fa-utensils fa-lg text-muted"></i>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
 
-                                <!-- Item Details -->
-                                <div class="col-md-6">
-                                    <div class="order-item-details">
-                                        <h6 class="mb-0">@item.MenuItemName</h6>
-                                    </div>
+                    <div>
+                        @foreach (var item in Model.OrderItems)
+                        {
+                            <div class="order-item-card mb-3">
+                                <div class="order-item-image">
+                                    @if (!string.IsNullOrEmpty(item.MenuItemImagePath))
+                                    {
+                                        <img src="@item.MenuItemImagePath" alt="@item.MenuItemName"
+                                             onerror="this.src='/images/placeholder-food.jpg'; this.onerror=null;">
+                                    }
+                                    else
+                                    {
+                                        <div class="placeholder-icon">
+                                            <i class="fas fa-utensils"></i>
+                                        </div>
+                                    }
                                 </div>
-
-                                <!-- Price -->
-                                <div class="col-md-2 text-center">
-                                    <span class="text-muted">$@item.Price.ToString("F2")</span>
+                                <div class="order-item-details">
+                                    <h6 class="mb-1">@item.MenuItemName</h6>
                                 </div>
-
-                                <!-- Quantity -->
-                                <div class="col-md-1 text-center">
-                                    <span class="badge bg-primary">@item.Quantity</span>
+                                <div class="text-center px-3" style="min-width: 100px;">
+                                    <span class="item-price">@("P" + item.Price.ToString("F2"))</span>
                                 </div>
-
-                                <!-- Total -->
-                                <div class="col-md-1 text-center">
-                                    <span class="fw-bold">$@item.TotalPrice.ToString("F2")</span>
+                                <div class="text-center px-3" style="min-width: 80px;">
+                                    <span class="quantity-badge">x @item.Quantity</span>
+                                </div>
+                                <div class="text-center px-3" style="min-width: 120px;">
+                                    <span class="item-total">@("P" + item.TotalPrice.ToString("F2"))</span>
                                 </div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
 
-                    <div class="row mt-3 pt-3 border-top">
-                        <div class="col-md-8">
-                            <h6>Total Items: @Model.TotalItems</h6>
-                        </div>
-                        <div class="col-md-4 text-end">
-                            <h5 class="text-success">Total: $@Model.TotalAmount.ToString("F2")</h5>
+                    <div class="order-summary-footer">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="mb-0">Total Items: @Model.TotalItems</h6>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <h5 class="text-success mb-0">Total: @("P" + Model.TotalAmount.ToString("F2"))</h5>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -144,22 +115,22 @@
 
         <!-- Order Status & Actions -->
         <div class="col-lg-4">
-            <div class="card shadow mb-4">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">
+            <div class="card shadow-sm order-status-card mb-4">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-4">
                         <i class="fas fa-truck me-2"></i>Order Status
                     </h5>
-                </div>
-                <div class="card-body text-center">
-                    <div class="mb-3">
+
+                    <div class="status-icon mb-3">
                         <i class="fas fa-circle-check fa-3x @(Model.Status == "Delivered" ? "text-success" : "text-muted")"></i>
                     </div>
+
                     <h4 class="mb-3">
-                        <span class="badge @Model.StatusBadgeClass">@Model.Status</span>
+                        <span class="badge @Model.StatusBadgeClass status-badge">@Model.Status</span>
                     </h4>
 
                     <!-- Status Progress -->
-                    <div class="progress mb-3" style="height: 8px;">
+                    <div class="progress mb-3 status-progress">
                         @{
                             var progressWidth = Model.Status switch
                             {
@@ -176,35 +147,37 @@
                         <div class="progress-bar @progressColor" style="width: @progressWidth"></div>
                     </div>
 
-                    @if (Model.Status == "Ready")
-                    {
-                        <div class="alert alert-warning">
-                            <i class="fas fa-bell me-2"></i>Your order is ready for pickup!
-                        </div>
-                    }
-                    else if (Model.Status == "Preparing")
-                    {
-                        <div class="alert alert-info">
-                            <i class="fas fa-clock me-2"></i>Your order is being prepared
-                        </div>
-                    }
-                    else if (Model.Status == "Delivered")
-                    {
-                        <div class="alert alert-success">
-                            <i class="fas fa-check me-2"></i>Order delivered successfully!
-                        </div>
-                    }
+                    <div class="status-message">
+                        @if (Model.Status == "Ready")
+                        {
+                            <div class="alert alert-warning">
+                                <i class="fas fa-bell me-2"></i>Your order is ready for pickup!
+                            </div>
+                        }
+                        else if (Model.Status == "Preparing")
+                        {
+                            <div class="alert alert-info">
+                                <i class="fas fa-clock me-2"></i>Your order is being prepared
+                            </div>
+                        }
+                        else if (Model.Status == "Delivered")
+                        {
+                            <div class="alert alert-success">
+                                <i class="fas fa-check me-2"></i>Order delivered successfully!
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="card shadow">
-                <div class="card-body text-center">
-                    <div class="d-grid gap-2">
-                        <a href="@Url.Action("MyOrders", "Order")" class="btn btn-outline-info">
+            <!-- Action Buttons Card -->
+            <div class="card shadow-sm action-buttons-card">
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        <a href="@Url.Action("MyOrders", "Order")" class="btn btn-outline-primary">
                             <i class="fas fa-history me-2"></i>Back to Order History
                         </a>
-                        <a href="@Url.Action("Browse", "Menu")" class="btn btn-success">
+                        <a href="@Url.Action("Browse", "Menu")" class="btn btn-checkout">
                             <i class="fas fa-utensils me-2"></i>Order More Food
                         </a>
                     </div>
@@ -214,24 +187,10 @@
     </div>
 </div>
 
+@section Scripts {
+    <script src="~/js/order-details.js"></script>
+}
+
 @section Styles {
-    <style>
-        .order-item-card {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 15px;
-        }
-
-        .order-item-image {
-            position: relative;
-            overflow: hidden;
-            border-radius: 6px;
-        }
-
-        .order-item-details h6 {
-            color: #2c3e50;
-            font-weight: 600;
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/order-details.css" />
 }

@@ -5,22 +5,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 py-4">
     <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="alert alert-primary border-0 shadow-sm">
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <i class="fas fa-credit-card fa-2x text-primary"></i>
-                    </div>
-                    <div>
-                        <h4 class="alert-heading mb-1">Checkout</h4>
-                        <p class="mb-0">Review your order and complete your purchase.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="checkout-header text-center">
+        <h1 class="display-5 fw-bold"><i class="fas fa-credit-card me-3"></i>Checkout</h1>
+        <p class="lead">Review your order and complete your purchase.</p>
     </div>
 
     @if (TempData["ErrorMessage"] != null)
@@ -32,94 +21,56 @@
     }
 
     <div class="row">
-        <!-- Order Summary with Images -->
-        <div class="col-lg-8">
-            <div class="card shadow mb-4">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-list me-2"></i>Order Summary
-                    </h5>
-                </div>
-                <div class="card-body">
-                    @foreach (var item in Model.Cart.CartItems)
-                    {
-                        <div class="checkout-item-card mb-3">
-                            <div class="row g-0 align-items-center">
-                                <!-- NEW: Food Image -->
-                                <div class="col-md-2">
-                                    <div class="checkout-item-image">
-                                        @if (!string.IsNullOrEmpty(item.MenuItemImagePath))
-                                        {
-                                            <img src="@item.MenuItemImagePath" alt="@item.MenuItemName"
-                                                 class="img-fluid rounded"
-                                                 style="width: 100%; height: 80px; object-fit: cover;"
-                                                 onerror="this.src='/images/placeholder-food.jpg'; this.onerror=null;">
-                                        }
-                                        else
-                                        {
-                                            <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height: 80px;">
-                                                <i class="fas fa-utensils fa-lg text-muted"></i>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
+        <!-- Order Items -->
+        <div class="col-lg-8" id="checkout-items-container">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0" id="checkout-item-count">Order Summary (@Model.Cart.TotalItems items)</h4>
+                <a href="@Url.Action("ViewCart", "Cart")" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Cart
+                </a>
+            </div>
 
-                                <!-- Item Details -->
-                                <div class="col-md-6">
-                                    <div class="checkout-item-details">
-                                        <h6 class="mb-1">@item.MenuItemName</h6>
-                                        @if (!string.IsNullOrEmpty(item.MenuItemDescription))
-                                        {
-                                            <p class="text-muted small mb-1">
-                                                @(item.MenuItemDescription.Length > 60 ? item.MenuItemDescription.Substring(0, 60) + "..." : item.MenuItemDescription)
-                                            </p>
-                                        }
-                                        <span class="badge bg-info">@item.MenuItemCategory</span>
-                                    </div>
-                                </div>
-
-                                <!-- Price -->
-                                <div class="col-md-2 text-center">
-                                    <span class="text-success fw-bold">$@item.Price.ToString("F2")</span>
-                                </div>
-
-                                <!-- Quantity -->
-                                <div class="col-md-1 text-center">
-                                    <span class="badge bg-primary">@item.Quantity</span>
-                                </div>
-
-                                <!-- Total -->
-                                <div class="col-md-1 text-center">
-                                    <span class="fw-bold">$@item.TotalPrice.ToString("F2")</span>
-                                </div>
-                            </div>
+            <div id="checkout-items-list">
+                @foreach (var item in Model.Cart.CartItems)
+                {
+                    <div class="checkout-item-card mb-3" data-item-id="@item.Id">
+                        <div class="checkout-item-image">
+                            <img src="@(string.IsNullOrEmpty(item.MenuItemImagePath) ? "/images/placeholder-food.jpg" : item.MenuItemImagePath)"
+                                 alt="@item.MenuItemName"
+                                 onerror="this.src='/images/placeholder-food.jpg'; this.onerror=null;">
                         </div>
-                    }
-
-                    <div class="row mt-3 pt-3 border-top">
-                        <div class="col-md-8">
-                            <h5>Total Items: @Model.Cart.TotalItems</h5>
+                        <div class="checkout-item-details">
+                            <h5>@item.MenuItemName</h5>
+                            <p class="text-muted small mb-1">
+                                @(item.MenuItemDescription != null && item.MenuItemDescription.Length > 80 ? item.MenuItemDescription.Substring(0, 80) + "..." : item.MenuItemDescription)
+                            </p>
+                            <span class="badge badge-category">@item.MenuItemCategory</span>
                         </div>
-                        <div class="col-md-4 text-end">
-                            <h4 class="text-success">Total: $@Model.Cart.TotalAmount.ToString("F2")</h4>
+                        <div class="text-center px-3" style="min-width: 100px;">
+                            <span class="item-price">@("P" + item.Price.ToString("F2"))</span>
+                        </div>
+                        <div class="text-center px-3" style="min-width: 80px;">
+                            <span class="quantity-badge">x @item.Quantity</span>
+                        </div>
+                        <div class="text-center px-3" style="min-width: 120px;">
+                            <span class="item-total">@("P" + item.TotalPrice.ToString("F2"))</span>
                         </div>
                     </div>
-                </div>
+                }
             </div>
         </div>
 
-        <!-- Payment & Order Details -->
-        <div class="col-lg-4">
+        <!-- Payment & Order Summary -->
+        <div class="col-lg-4" id="checkout-summary-container">
             <form id="checkoutForm" method="post" action="@Url.Action("PlaceOrder", "Checkout")">
                 @Html.AntiForgeryToken()
 
-                <div class="card shadow">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">
-                            <i class="fas fa-credit-card me-2"></i>Payment Details
-                        </h5>
-                    </div>
+                <div class="card shadow-sm checkout-summary-card">
                     <div class="card-body">
+                        <h4 class="card-title text-center mb-4">
+                            <i class="fas fa-credit-card me-2"></i>Payment Details
+                        </h4>
+
                         <div class="mb-3">
                             <label for="PaymentMethod" class="form-label">Payment Method <span class="text-danger">*</span></label>
                             <select asp-for="PaymentMethod" class="form-select" id="PaymentMethod" required>
@@ -132,7 +83,7 @@
                             <span asp-validation-for="PaymentMethod" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label for="Notes" class="form-label">Order Notes (Optional)</label>
                             <textarea asp-for="Notes" class="form-control" id="Notes" rows="3"
                                       placeholder="Special instructions, allergies, etc..."></textarea>
@@ -141,13 +92,31 @@
 
                         <hr>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success btn-lg" id="placeOrderBtn">
-                                <i class="fas fa-shopping-bag me-2"></i>Place Order ($@Model.Cart.TotalAmount.ToString("F2"))
+                        <!-- Order Summary -->
+                        <h5 class="mb-3"><i class="fas fa-receipt me-2"></i>Order Total</h5>
+                        <ul class="list-group list-group-flush mb-3">
+                            @foreach (var item in Model.Cart.CartItems)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        @item.MenuItemName
+                                        <span class="text-muted small"> (x @item.Quantity)</span>
+                                    </div>
+                                    <span class="fw-bold">
+                                        @("P" + item.TotalPrice.ToString("F2"))
+                                    </span>
+                                </li>
+                            }
+                            <li class="list-group-item d-flex justify-content-between align-items-center fw-bold h5">
+                                Total
+                                <span class="text-success" id="checkout-total">@("P" + Model.Cart.TotalAmount.ToString("F2"))</span>
+                            </li>
+                        </ul>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-checkout btn-lg" id="placeOrderBtn">
+                                <i class="fas fa-shopping-bag me-2"></i>Place Order (@("P" + Model.Cart.TotalAmount.ToString("F2")))
                             </button>
-                            <a href="@Url.Action("ViewCart", "Cart")" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>Back to Cart
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -157,102 +126,9 @@
 </div>
 
 @section Scripts {
-    <script>
-        $(document).ready(function() {
-            $('#checkoutForm').on('submit', function(e) {
-                e.preventDefault();
-
-                const form = $(this);
-                const button = $('#placeOrderBtn');
-                const formData = form.serialize();
-
-                // Validate payment method
-                const paymentMethod = $('#PaymentMethod').val();
-                if (!paymentMethod) {
-                    toastr.error('Please select a payment method.');
-                    return;
-                }
-
-                // Disable button and show loading
-                button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Processing Order...');
-
-                // Add AJAX headers
-                $.ajaxSetup({
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                $.ajax({
-                    url: form.attr('action'),
-                    type: 'POST',
-                    data: formData,
-                    dataType: 'json',
-                    success: function(response) {
-                        console.log('Response received:', response);
-                        if (response && response.success) {
-                            toastr.success(response.message);
-                            // Redirect to confirmation page
-                            setTimeout(function() {
-                                window.location.href = response.redirectUrl;
-                            }, 1500);
-                        } else {
-                            toastr.error(response ? response.message : 'Unknown error occurred');
-                            button.prop('disabled', false).html('<i class="fas fa-shopping-bag me-2"></i>Place Order ($@Model.Cart.TotalAmount.ToString("F2"))');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('AJAX Error:', xhr.responseText);
-                        let errorMessage = 'An error occurred while processing your order.';
-
-                        try {
-                            const errorResponse = JSON.parse(xhr.responseText);
-                            if (errorResponse && errorResponse.message) {
-                                errorMessage = errorResponse.message;
-                            }
-                        } catch (e) {
-                            // Use default error message
-                        }
-
-                        toastr.error(errorMessage);
-                        button.prop('disabled', false).html('<i class="fas fa-shopping-bag me-2"></i>Place Order ($@Model.Cart.TotalAmount.ToString("F2"))');
-                    }
-                });
-            });
-
-            // Payment method icon logic
-            $('#PaymentMethod').on('change', function() {
-                const method = $(this).val();
-                const button = $('#placeOrderBtn');
-
-                if (method) {
-                    button.removeClass('btn-secondary').addClass('btn-success');
-                } else {
-                    button.removeClass('btn-success').addClass('btn-secondary');
-                }
-            });
-        });
-    </script>
+    <script src="~/js/checkout.js"></script>
 }
 
 @section Styles {
-    <style>
-        .checkout-item-card {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 15px;
-        }
-
-        .checkout-item-image {
-            position: relative;
-            overflow: hidden;
-            border-radius: 6px;
-        }
-
-        .checkout-item-details h6 {
-            color: #2c3e50;
-            font-weight: 600;
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/checkout.css" />
 }

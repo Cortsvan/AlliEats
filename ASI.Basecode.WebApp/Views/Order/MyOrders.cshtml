@@ -5,22 +5,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 py-4">
     <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="alert alert-primary border-0 shadow-sm">
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <i class="fas fa-history fa-2x text-primary"></i>
-                    </div>
-                    <div>
-                        <h4 class="alert-heading mb-1">My Orders & Tracking</h4>
-                        <p class="mb-0">View all your orders and track their status in real-time</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="orders-header text-center">
+        <h1 class="display-5 fw-bold"><i class="fas fa-history me-3"></i>My Orders & Tracking</h1>
+        <p class="lead">View all your orders and track their status in real-time</p>
     </div>
 
     @if (TempData["SuccessMessage"] != null)
@@ -41,91 +30,104 @@
 
     <div class="row">
         <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header bg-info text-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="fas fa-list me-2"></i>Order History & Status
-                        </h5>
-                        <div>
-                            <a href="@Url.Action("Browse", "Menu")" class="btn btn-light me-2">
-                                <i class="fas fa-utensils me-2"></i>Order More Food
-                            </a>
-                        </div>
-                    </div>
+            @if (Model != null && Model.Any())
+            {
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="mb-0">Order History (@Model.Count() orders)</h4>
+                    <a href="@Url.Action("Browse", "Menu")" class="btn btn-checkout">
+                        <i class="fas fa-utensils me-2"></i>Order More Food
+                    </a>
                 </div>
-                <div class="card-body">
-                    @if (Model != null && Model.Any())
+
+                <div>
+                    @foreach (var order in Model)
                     {
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Order #</th>
-                                        <th>Date</th>
-                                        <th>Items</th>
-                                        <th>Total</th>
-                                        <th>Payment</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var order in Model)
+                        <div class="order-card mb-4">
+                            <div class="order-card-header">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3">
+                                        <div class="order-number">
+                                            <strong>Order #@order.OrderNumber</strong>
+                                        </div>
+                                        <div class="order-date">
+                                            @order.CreatedTime.ToString("MMM dd, yyyy h:mm tt")
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <span class="items-badge">@order.TotalItems items</span>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <span class="total-amount">@("P" + order.TotalAmount.ToString("F2"))</span>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <span class="payment-method">@order.PaymentMethod</span>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <span class="badge @order.StatusBadgeClass status-badge">@order.Status</span>
+                                        @if (order.Status == "Ready")
+                                        {
+                                            <div class="status-note text-warning">
+                                                <small><i class="fas fa-bell"></i> Ready for pickup!</small>
+                                            </div>
+                                        }
+                                        else if (order.Status == "Preparing")
+                                        {
+                                            <div class="status-note text-primary">
+                                                <small><i class="fas fa-utensils"></i> Being prepared...</small>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="col-md-1 text-center">
+                                        <a href="@Url.Action("Details", "Order", new { id = order.Id })"
+                                           class="btn btn-outline-primary btn-sm track-btn">
+                                            <i class="fas fa-eye me-1"></i>Track
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Expandable Order Items (Initially Hidden) -->
+                            <div class="order-items-preview collapse" id="orderItems@order.Id">
+                                <div class="order-items-container">
+                                    <h6 class="mb-3"><i class="fas fa-list me-2"></i>Order Items:</h6>
+                                    @foreach (var item in order.OrderItems.Take(3))
                                     {
-                                        <tr class="@(order.Status == "Delivered" ? "table-success" : "")">
-                                            <td>
-                                                <strong>@order.OrderNumber</strong>
-                                            </td>
-                                            <td>
-                                                <div>@order.CreatedTime.ToString("MMM dd, yyyy")</div>
-                                                <small class="text-muted">@order.CreatedTime.ToString("h:mm tt")</small>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-info">@order.TotalItems items</span>
-                                            </td>
-                                            <td>
-                                                <span class="fw-bold text-success">$@order.TotalAmount.ToString("F2")</span>
-                                            </td>
-                                            <td>
-                                                <small>@order.PaymentMethod</small>
-                                            </td>
-                                            <td>
-                                                <span class="badge @order.StatusBadgeClass">@order.Status</span>
-                                                @if (order.Status == "Ready")
-                                                {
-                                                    <div><small class="text-warning"><i class="fas fa-bell"></i> Ready for pickup!</small></div>
-                                                }
-                                                else if (order.Status == "Preparing")
-                                                {
-                                                    <div><small class="text-primary"><i class="fas fa-utensils"></i> Being prepared...</small></div>
-                                                }
-                                            </td>
-                                            <td>
-                                                <a href="@Url.Action("Details", "Order", new { id = order.Id })"
-                                                   class="btn btn-sm btn-outline-primary">
-                                                    <i class="fas fa-eye me-1"></i>Track & View
-                                                </a>
-                                            </td>
-                                        </tr>
+                                        <div class="preview-item">
+                                            <span class="item-name">@item.MenuItemName</span>
+                                            <span class="item-details">x@item.Quantity - @("P" + item.TotalPrice.ToString("F2"))</span>
+                                        </div>
                                     }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center py-5">
-                            <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No Orders Yet</h5>
-                            <p class="text-muted">You haven't placed any orders yet. Start by browsing our delicious menu!</p>
-                            <a href="@Url.Action("Browse", "Menu")" class="btn btn-primary btn-lg">
-                                <i class="fas fa-utensils me-2"></i>Browse Menu
-                            </a>
+                                    @if (order.OrderItems.Count() > 3)
+                                    {
+                                        <div class="preview-item text-muted">
+                                            <small>and @(order.OrderItems.Count() - 3) more items...</small>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
                         </div>
                     }
                 </div>
-            </div>
+            }
+            else
+            {
+                <div class="empty-orders-container">
+                    <div class="empty-icon"><i class="fas fa-shopping-bag"></i></div>
+                    <h3 class="mt-4">No Orders Yet</h3>
+                    <p class="text-muted">You haven't placed any orders yet. Start by browsing our delicious menu!</p>
+                    <a href="@Url.Action("Browse", "Menu")" class="btn btn-checkout btn-lg mt-3">
+                        <i class="fas fa-utensils me-2"></i>Browse Menu
+                    </a>
+                </div>
+            }
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/my-orders.js"></script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/my-orders.css" />
+}

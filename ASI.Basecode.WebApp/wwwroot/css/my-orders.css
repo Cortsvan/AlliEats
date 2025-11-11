@@ -1,0 +1,201 @@
+﻿/* My Orders Specific Styles */
+.order-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+    .order-card:hover {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
+    }
+
+.order-card-header {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    border-bottom: 1px solid #e9ecef;
+}
+
+.order-number {
+    font-size: 1.1rem;
+    color: var(--dark-text-color);
+    margin-bottom: 0.25rem;
+}
+
+.order-date {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.items-badge {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.payment-method {
+    font-size: 0.875rem;
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
+.status-note {
+    margin-top: 0.25rem;
+}
+
+.track-btn {
+    font-weight: 600;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+
+    .track-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+/* Order Items Preview */
+.order-items-preview {
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.order-items-container {
+    padding: 1.5rem;
+}
+
+.preview-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+    .preview-item:last-child {
+        border-bottom: none;
+    }
+
+.item-name {
+    font-weight: 600;
+    color: var(--dark-text-color);
+    flex: 1;
+}
+
+.item-details {
+    font-weight: 500;
+    color: var(--secondary-color);
+    font-size: 0.875rem;
+}
+
+/* Toggle Button */
+.order-card-footer {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.toggle-items {
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+    .toggle-items:hover {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: white;
+    }
+
+    .toggle-items[aria-expanded="true"] .toggle-text::after {
+        content: " Items";
+    }
+
+    .toggle-items[aria-expanded="false"] .toggle-text::after {
+        content: " Items";
+    }
+
+    .toggle-items[aria-expanded="true"] .toggle-icon {
+        transform: rotate(180deg);
+    }
+
+.toggle-icon {
+    transition: transform 0.3s ease;
+}
+
+/* Order count styling */
+#orders-count {
+    color: var(--dark-text-color);
+    font-weight: 600;
+}
+
+/* Animation for order cards */
+.order-card {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideInUp 0.4s ease forwards;
+}
+
+    .order-card:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .order-card:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .order-card:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    .order-card:nth-child(4) {
+        animation-delay: 0.4s;
+    }
+
+    .order-card:nth-child(5) {
+        animation-delay: 0.5s;
+    }
+
+@keyframes slideInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading state */
+.orders-list.is-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .order-card-header {
+        padding: 1rem;
+    }
+
+        .order-card-header .row {
+            text-align: center;
+        }
+
+        .order-card-header .col-md-3,
+        .order-card-header .col-md-2,
+        .order-card-header .col-md-1 {
+            margin-bottom: 1rem;
+        }
+
+            .order-card-header .col-md-1:last-child {
+                margin-bottom: 0;
+            }
+
+    .track-btn {
+        width: 100%;
+    }
+}

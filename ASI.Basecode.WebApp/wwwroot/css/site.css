@@ -101,3 +101,131 @@ body {
         background-color: #EAE0D5;
         color: #3d2b22;
     }
+
+/* Common AlliEats styles that are shared across multiple pages */
+:root {
+    --primary-color: #8B5E3C;
+    --primary-hover-color: #7a5334;
+    --secondary-color: #5c4033;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --light-background: #f8f5f2;
+    --dark-text-color: #4a3f35;
+    --font-family-sans-serif: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
+
+/* Common header styles for all pages */
+.order-header, .orders-header, .cart-header, .checkout-header, .confirmation-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover-color));
+    color: white;
+    border-radius: .5rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Common card styles */
+.order-info-card, .order-items-card, .order-status-card, .action-buttons-card,
+.checkout-summary-card, .order-details-card {
+    border-radius: 15px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Common grid layout for order information */
+.order-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.order-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+    .order-info-item.full-width {
+        grid-column: 1 / -1;
+    }
+
+.order-info-label {
+    font-weight: 600;
+    color: var(--secondary-color);
+    font-size: 0.875rem;
+}
+
+.order-info-value {
+    font-weight: 500;
+    color: var(--dark-text-color);
+}
+
+/* Common button styles */
+.btn-checkout {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+    .btn-checkout:hover {
+        background-color: var(--primary-hover-color);
+        border-color: var(--primary-hover-color);
+        color: white;
+    }
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+    .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+/* Common badge styles */
+.quantity-badge {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.status-badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+}
+
+/* Common item styles */
+.item-price, .item-total, .total-amount {
+    font-weight: 600;
+    color: var(--dark-text-color);
+    font-size: 1.1rem;
+}
+
+/* Common empty state styles */
+.empty-orders-container, .empty-cart-container {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 12px;
+    border: 2px dashed #e0e0e0;
+}
+
+    .empty-orders-container .empty-icon, .empty-cart-container .icon {
+        font-size: 4rem;
+        color: #ced4da;
+    }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .order-info-grid {
+        grid-template-columns: 1fr;
+    }
+}
