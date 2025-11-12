@@ -16,13 +16,15 @@ namespace ASI.Basecode.Services.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IMenuRepository _menuRepository;
         private readonly ICartService _cartService;
+        private readonly IReviewRepository _reviewRepository;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository orderRepository, IMenuRepository menuRepository, ICartService cartService, IMapper mapper)
+        public OrderService(IOrderRepository orderRepository, IMenuRepository menuRepository, ICartService cartService, IReviewRepository reviewRepository, IMapper mapper)
         {
             _orderRepository = orderRepository;
             _menuRepository = menuRepository;
             _cartService = cartService;
+            _reviewRepository = reviewRepository;
             _mapper = mapper;
         }
 
@@ -37,7 +39,7 @@ namespace ASI.Basecode.Services.Services
                     return new List<OrderViewModel>();
                 }
 
-                // Manual mapping to include menu item image paths
+                // Manual mapping to include menu item image paths and review status
                 var orderViewModels = orders.Select(order => new OrderViewModel
                 {
                     Id = order.Id,
@@ -49,6 +51,7 @@ namespace ASI.Basecode.Services.Services
                     Notes = order.Notes,
                     CreatedTime = order.CreatedTime,
                     UpdatedTime = order.UpdatedTime,
+                    HasReview = _reviewRepository.ReviewExists(order.Id),
                     OrderItems = order.OrderItems?.Select(oi =>
                     {
                         var menuItem = _menuRepository.GetMenuItemById(oi.MenuItemId);
@@ -87,7 +90,7 @@ namespace ASI.Basecode.Services.Services
                     return new List<OrderViewModel>();
                 }
 
-                // Manual mapping to include menu item image paths
+                // Manual mapping to include menu item image paths and review status
                 var orderViewModels = orders.Select(order => new OrderViewModel
                 {
                     Id = order.Id,
@@ -99,6 +102,7 @@ namespace ASI.Basecode.Services.Services
                     Notes = order.Notes,
                     CreatedTime = order.CreatedTime,
                     UpdatedTime = order.UpdatedTime,
+                    HasReview = _reviewRepository.ReviewExists(order.Id),
                     OrderItems = order.OrderItems?.Select(oi =>
                     {
                         var menuItem = _menuRepository.GetMenuItemById(oi.MenuItemId);
@@ -132,7 +136,7 @@ namespace ASI.Basecode.Services.Services
                 var order = _orderRepository.GetOrderById(id);
                 if (order == null) return null;
 
-                // Manual mapping to include menu item image paths
+                // Manual mapping to include menu item image paths and review status
                 return new OrderViewModel
                 {
                     Id = order.Id,
@@ -144,6 +148,7 @@ namespace ASI.Basecode.Services.Services
                     Notes = order.Notes,
                     CreatedTime = order.CreatedTime,
                     UpdatedTime = order.UpdatedTime,
+                    HasReview = _reviewRepository.ReviewExists(order.Id),
                     OrderItems = order.OrderItems?.Select(oi =>
                     {
                         var menuItem = _menuRepository.GetMenuItemById(oi.MenuItemId);
@@ -244,6 +249,7 @@ namespace ASI.Basecode.Services.Services
                 Notes = order.Notes,
                 CreatedTime = order.CreatedTime,
                 UpdatedTime = order.UpdatedTime,
+                HasReview = false, // New orders don't have reviews
                 OrderItems = order.OrderItems.Select(oi => new OrderItemViewModel
                 {
                     Id = oi.Id,

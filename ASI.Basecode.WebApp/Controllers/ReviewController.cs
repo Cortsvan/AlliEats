@@ -1,0 +1,165 @@
+﻿using ASI.Basecode.Services.Interfaces;
+using ASI.Basecode.Services.ServiceModels;
+using ASI.Basecode.WebApp.Mvc;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System;
+
+namespace ASI.Basecode.WebApp.Controllers
+{
+    [Authorize]
+    public class ReviewController : ControllerBase<ReviewController>
+    {
+        private readonly IReviewService _reviewService;
+
+        public ReviewController(
+            IReviewService reviewService,
+            IHttpContextAccessor httpContextAccessor,
+            ILoggerFactory loggerFactory,
+            IConfiguration configuration,
+            IMapper mapper) : base(httpContextAccessor, loggerFactory, configuration, mapper)
+        {
+            _reviewService = reviewService;
+        }
+
+        // GET: Review/Create/5
+        public IActionResult Create(int orderId)
+        {
+            try
+            {
+                // Restrict admin access
+                var userRole = HttpContext.Session.GetString("UserRole");
+                if (userRole == "Admin")
+                {
+                    TempData["ErrorMessage"] = "Admins cannot create reviews.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                // Get userId from session
+                var userId = HttpContext.Session.GetString("UserId")
+                            ?? HttpContext.Session.GetString("UserName")
+                            ?? User.Identity.Name;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    TempData["ErrorMessage"] = "User session expired. Please login again.";
+                    return RedirectToAction("Login", "Account");
+                }
+
+                var reviewModel = _reviewService.GetReviewFormForOrder(orderId, userId);
+
+                if (reviewModel == null)
+                {
+                    TempData["ErrorMessage"] = "Order not found or access denied.";
+                    return RedirectToAction("MyOrders", "Order");
+                }
+
+                if (!reviewModel.CanReview)
+                {
+                    if (reviewModel.HasReview)
+                    {
+                        TempData["InfoMessage"] = "You have already reviewed this order.";
+                        return RedirectToAction("Details", "Order", new { id = orderId });
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "This order is not eligible for review at this time.";
+                        return RedirectToAction("MyOrders", "Order");
+                    }
+                }
+
+                return View(reviewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while loading review form for order {OrderId}", orderId);
+                TempData["ErrorMessage"] = "An error occurred while loading the review form.";
+                return RedirectToAction("MyOrders", "Order");
+            }
+        }
+
+        // POST: Review/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(ReviewViewModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    TempData["ErrorMessage"] = "Please fill in all required fields correctly.";
+                    return View(model);
+                }
+
+                // Get userId from session
+                var userId = HttpContext.Session.GetString("UserId")
+                            ?? HttpContext.Session.GetString("UserName")
+                            ?? User.Identity.Name;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    TempData["ErrorMessage"] = "User session expired. Please login again.";
+                    return RedirectToAction("Login", "Account");
+                }
+
+                var success = _reviewService.SubmitReview(model, userId);
+
+                if (success)
+                {
+                    TempData["SuccessMessage"] = "Thank you for your review! Your feedback helps us improve.";
+                    return RedirectToAction("Details", "Order", new { id = model.OrderId });
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Unable to submit your review. Please try again.";
+                    return View(model);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while submitting review for order {OrderId}", model.OrderId);
+                TempData["ErrorMessage"] = "An error occurred while submitting your review.";
+                return View(model);
+            }
+        }
+
+        // GET: Review/MyReviews
+        public IActionResult MyReviews()
+        {
+            try
+            {
+                // Restrict admin access
+                var userRole = HttpContext.Session.GetString("UserRole");
+                if (userRole == "Admin")
+                {
+                    TempData["ErrorMessage"] = "Admins cannot access reviews.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                // Get userId from session
+                var userId = HttpContext.Session.GetString("UserId")
+                            ?? HttpContext.Session.GetString("UserName")
+                            ?? User.Identity.Name;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    TempData["ErrorMessage"] = "User session expired. Please login again.";
+                    return RedirectToAction("Login", "Account");
+                }
+
+                var reviewsModel = _reviewService.GetUserReviews(userId);
+                return View(reviewsModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while retrieving user reviews");
+                TempData["ErrorMessage"] = "An error occurred while retrieving your reviews.";
+                return RedirectToAction("MyOrders", "Order");
+            }
+        }
+    }
+}

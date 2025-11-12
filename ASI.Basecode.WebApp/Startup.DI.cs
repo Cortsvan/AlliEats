@@ -40,12 +40,14 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<IOrderService, OrderService>();
             this._services.AddScoped<IProfileService, ProfileService>();
             this._services.AddScoped<IOtpService, OtpService>();
+            this._services.AddScoped<IReviewService, ReviewService>();
 
             // Repositories
             this._services.AddScoped<IUserRepository, UserRepository>();
             this._services.AddScoped<IMenuRepository, MenuRepository>();
             this._services.AddScoped<ICartRepository, CartRepository>();
             this._services.AddScoped<IOrderRepository, OrderRepository>();
+            this._services.AddScoped<IReviewRepository, ReviewRepository>();
 
             // Manager Class
             this._services.AddScoped<SignInManager>();

@@ -33,6 +33,7 @@ namespace ASI.Basecode.Services.ServiceModels
 
         public List<OrderItemViewModel> OrderItems { get; set; } = new List<OrderItemViewModel>();
 
+        public bool HasReview { get; set; }
         // Helper properties
         public int TotalItems => OrderItems?.Sum(x => x.Quantity) ?? 0;
         public string StatusBadgeClass => Status?.ToLower() switch

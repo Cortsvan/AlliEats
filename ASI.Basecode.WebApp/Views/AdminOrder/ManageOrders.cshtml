@@ -81,7 +81,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <div class="card border-success">
                                     <div class="card-body text-center">
                                         <h5 class="text-success">@Model.Count(o => o.Status == "Ready")</h5>
@@ -90,14 +90,22 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="card border-success">
+                                <div class="card border-warning">
                                     <div class="card-body text-center">
-                                        <h5 class="text-success">@Model.Count(o => o.Status == "Delivered")</h5>
-                                        <small>Delivered</small>
+                                        <h5 class="text-warning">@Model.Count(o => o.Status == "On the Way")</h5>
+                                        <small>On the Way</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-2">
+                                <div class="card border-success">
+                                    <div class="card-body text-center">
+                                        <h5 class="text-success">@Model.Count(o => o.Status == "Received")</h5>
+                                        <small>Received</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
                                 <div class="card border-danger">
                                     <div class="card-body text-center">
                                         <h5 class="text-danger">@Model.Count(o => o.Status == "Cancelled")</h5>
@@ -124,7 +132,7 @@
                                 <tbody>
                                     @foreach (var order in Model)
                                     {
-                                        <tr class="@(order.Status == "Delivered" ? "table-success" : "")">
+                                        <tr class="@(order.Status == "Received" ? "table-success" : "")">
                                             <td>
                                                 <strong>@order.OrderNumber</strong>
                                             </td>
@@ -153,7 +161,7 @@
                                                        class="btn btn-sm btn-outline-primary" title="View Details">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
-                                                    @if (order.Status != "Delivered" && order.Status != "Cancelled")
+                                                    @if (order.Status != "Received" && order.Status != "Cancelled")
                                                     {
                                                         <button type="button" class="btn btn-sm btn-outline-success"
                                                                 onclick="showUpdateStatusModal(@order.Id, '@order.OrderNumber', '@order.Status')"
@@ -209,7 +217,8 @@
                             <option value="Confirmed">Confirmed</option>
                             <option value="Preparing">Preparing</option>
                             <option value="Ready">Ready</option>
-                            <option value="Delivered">Delivered</option>
+                            <option value="On the Way">On the Way</option>
+                            <option value="Received">Received</option>
                             <option value="Cancelled">Cancelled</option>
                         </select>
                     </div>

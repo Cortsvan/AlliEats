@@ -107,5 +107,53 @@ namespace ASI.Basecode.WebApp.Controllers
                 return RedirectToAction("MyOrders");
             }
         }
+
+        // POST: Order/ConfirmReceipt
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ConfirmReceipt(int orderId)
+        {
+            try
+            {
+                // Get userId from session
+                var userId = HttpContext.Session.GetString("UserId")
+                            ?? HttpContext.Session.GetString("UserName")
+                            ?? User.Identity.Name;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Json(new { success = false, message = "User session expired. Please login again." });
+                }
+
+                var order = _orderService.GetOrderById(orderId);
+
+                if (order == null)
+                {
+                    return Json(new { success = false, message = "Order not found." });
+                }
+
+                // Verify order belongs to current user (security check)
+                if (order.UserId != userId)
+                {
+                    return Json(new { success = false, message = "Access denied." });
+                }
+
+                // Verify order is in "On the Way" status
+                if (order.Status != "On the Way")
+                {
+                    return Json(new { success = false, message = $"Order cannot be confirmed at this time. Current status: {order.Status}" });
+                }
+
+                // Update order status to "Received"
+                _orderService.UpdateOrderStatus(orderId, "Received");
+
+                return Json(new { success = true, message = "Order receipt confirmed successfully! Thank you for your order." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while confirming order receipt");
+                return Json(new { success = false, message = "An error occurred while confirming receipt." });
+            }
+        }
     }
 }

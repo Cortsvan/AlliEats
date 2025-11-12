@@ -1,0 +1,136 @@
+﻿@model ASI.Basecode.Services.ServiceModels.ReviewViewModel
+
+@{
+    ViewData["Title"] = "Leave a Review";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4">
+    <!-- Header -->
+    <div class="review-header text-center">
+        <h1 class="display-5 fw-bold"><i class="fas fa-star me-3"></i>Leave a Review</h1>
+        <p class="lead">Share your experience with this order</p>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Order Summary Card -->
+            <div class="card shadow-sm review-order-card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-receipt me-2"></i>Order Summary
+                    </h5>
+
+                    <div class="order-info-grid">
+                        <div class="order-info-item">
+                            <span class="order-info-label">Order Number:</span>
+                            <span class="order-info-value">@Model.OrderNumber</span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="order-info-label">Order Date:</span>
+                            <span class="order-info-value">@Model.OrderDate.ToString("MMMM dd, yyyy")</span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="order-info-label">Total Amount:</span>
+                            <span class="order-info-value text-success fw-bold">@("P" + Model.OrderTotal.ToString("F2"))</span>
+                        </div>
+                    </div>
+
+                    <!-- Order Items -->
+                    <div class="order-items mt-4">
+                        <h6 class="mb-3">Items Ordered:</h6>
+                        @foreach (var item in Model.OrderItems)
+                        {
+                            <div class="order-item-row">
+                                <div class="order-item-image">
+                                    <img src="@(string.IsNullOrEmpty(item.MenuItemImagePath) ? "/img/placeholder-food.png" : item.MenuItemImagePath)"
+                                         alt="@item.MenuItemName"
+                                         onerror="this.src='/img/placeholder-food.png'; this.onerror=null;">
+                                </div>
+                                <div class="order-item-details">
+                                    <div class="item-name">@item.MenuItemName</div>
+                                    <div class="item-quantity">Qty: @item.Quantity</div>
+                                </div>
+                                <div class="item-price">
+                                    @("P" + item.TotalPrice.ToString("F2"))
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review Form Card -->
+            <div class="card shadow-sm review-form-card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="fas fa-edit me-2"></i>Your Review
+                    </h5>
+
+                    <form asp-action="Create" asp-controller="Review" method="post" id="reviewForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="OrderId" />
+                        <input type="hidden" asp-for="OrderNumber" />
+
+                        <!-- Star Rating -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Rating <span class="text-danger">*</span></label>
+                            <div class="star-rating" id="starRating">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <span class="star" data-rating="@i">
+                                        <i class="far fa-star"></i>
+                                    </span>
+                                }
+                            </div>
+                            <input type="hidden" asp-for="Rating" id="ratingInput" />
+                            <span asp-validation-for="Rating" class="text-danger"></span>
+                            <div class="rating-text mt-2" id="ratingText"></div>
+                        </div>
+
+                        <!-- Comment -->
+                        <div class="mb-4">
+                            <label asp-for="Comment" class="form-label fw-bold">Your Comments (Optional)</label>
+                            <textarea asp-for="Comment" class="form-control" rows="5"
+                                      placeholder="Tell us about your experience with this order..."
+                                      maxlength="1000" id="commentTextarea"></textarea>
+                            <span asp-validation-for="Comment" class="text-danger"></span>
+                            <div class="character-counter text-muted small mt-1">
+                                <span id="charCount">0</span>/1000 characters
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-between">
+                            <a href="@Url.Action("Details", "Order", new { id = Model.OrderId })" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Order
+                            </a>
+                            <button type="submit" class="btn btn-primary" id="submitReviewBtn">
+                                <i class="fas fa-star me-2"></i>Submit Review
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/review.js"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/review.css" />
+}

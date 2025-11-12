@@ -48,5 +48,6 @@ namespace ASI.Basecode.Data.Models
 
         // Navigation properties
         public virtual ICollection<OrderItem> OrderItems { get; set; }
+        public virtual Review Review { get; set; }
     }
 }

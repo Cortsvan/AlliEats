@@ -130,7 +130,7 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    @if (Model.Status != "Delivered" && Model.Status != "Cancelled")
+                    @if (Model.Status != "Received" && Model.Status != "Cancelled")
                     {
                         <div class="d-grid gap-2 mb-3">
                             <button type="button" class="btn btn-primary"
@@ -174,15 +174,31 @@
                     @if (Model.Status == "Ready")
                     {
                         <div class="d-grid gap-1 mb-2">
-                            <button onclick="updateStatus(@Model.Id, 'Delivered')" class="btn btn-sm btn-success">
-                                <i class="fas fa-truck me-1"></i>Mark as Delivered
+                            <button onclick="updateStatus(@Model.Id, 'On the Way')" class="btn btn-sm btn-warning">
+                                <i class="fas fa-shipping-fast me-1"></i>Mark as On the Way
                             </button>
                         </div>
                     }
 
-                    @if (Model.Status != "Delivered" && Model.Status != "Cancelled")
+                    @if (Model.Status == "On the Way")
                     {
-                        <div class="d-grid gap-1">
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Waiting for customer to confirm receipt
+                        </div>
+                    }
+
+                    @if (Model.Status == "Received")
+                    {
+                        <div class="alert alert-success mt-3">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Order completed and received by customer
+                        </div>
+                    }
+
+                    @if (Model.Status != "Received" && Model.Status != "Cancelled")
+                    {
+                        <div class="d-grid gap-1 mt-3">
                             <button onclick="updateStatus(@Model.Id, 'Cancelled')" class="btn btn-sm btn-outline-danger">
                                 <i class="fas fa-times me-1"></i>Cancel Order
                             </button>
@@ -230,7 +246,8 @@
                             <option value="Confirmed">Confirmed</option>
                             <option value="Preparing">Preparing</option>
                             <option value="Ready">Ready</option>
-                            <option value="Delivered">Delivered</option>
+                            <option value="On the Way">On the Way</option>
+                            <option value="Received">Received</option>
                             <option value="Cancelled">Cancelled</option>
                         </select>
                     </div>

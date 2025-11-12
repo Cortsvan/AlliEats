@@ -65,7 +65,7 @@ namespace ASI.Basecode.WebApp.Controllers
 
             try
             {
-                var validStatuses = new[] { "Pending", "Confirmed", "Preparing", "Ready", "Delivered", "Cancelled" };
+                var validStatuses = new[] { "Pending", "Confirmed", "Preparing", "Ready", "On the Way", "Received", "Cancelled" };
                 if (!validStatuses.Contains(status))
                 {
                     TempData["ErrorMessage"] = "Invalid status selected.";

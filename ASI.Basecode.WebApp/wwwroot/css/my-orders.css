@@ -60,6 +60,65 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
 
+/* Review Section Styles */
+.review-section {
+    width: 100%;
+}
+
+.review-prompt-card {
+    background: linear-gradient(135deg, #fff8e1 0%, #fffbf0 100%);
+    border: 1px solid #ffc107;
+    border-radius: 12px;
+    padding: 12px 15px;
+    text-align: center;
+    box-shadow: 0 3px 6px rgba(255, 193, 7, 0.15);
+    transition: all 0.3s ease;
+    margin-top: 8px;
+}
+
+    .review-prompt-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(255, 193, 7, 0.25);
+    }
+
+.review-prompt-content {
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.btn-review {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    border: none;
+    color: #fff;
+    font-size: 0.8rem;
+    padding: 6px 16px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+}
+
+    .btn-review:hover {
+        background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(255, 193, 7, 0.4);
+        text-decoration: none;
+    }
+
+.review-completed {
+    background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+    border: 1px solid #28a745;
+    border-radius: 8px;
+    padding: 6px 12px;
+    text-align: center;
+    margin-top: 4px;
+    font-size: 0.75rem;
+    color: #28a745;
+    font-weight: 600;
+}
+
 /* Order Items Preview */
 .order-items-preview {
     background: #f8f9fa;
@@ -197,5 +256,14 @@
 
     .track-btn {
         width: 100%;
+    }
+
+    .review-prompt-card {
+        padding: 10px 12px;
+    }
+
+    .btn-review {
+        font-size: 0.75rem;
+        padding: 5px 12px;
     }
 }

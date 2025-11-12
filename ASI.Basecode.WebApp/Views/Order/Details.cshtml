@@ -20,6 +20,22 @@
         </div>
     }
 
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["InfoMessage"] != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <i class="fas fa-info-circle me-2"></i>@TempData["InfoMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
     <div class="row">
         <!-- Order Information & Items -->
         <div class="col-lg-8">
@@ -122,7 +138,7 @@
                     </h5>
 
                     <div class="status-icon mb-3">
-                        <i class="fas fa-circle-check fa-3x @(Model.Status == "Delivered" ? "text-success" : "text-muted")"></i>
+                        <i class="fas fa-circle-check fa-3x @(Model.Status == "Received" ? "text-success" : "text-muted")"></i>
                     </div>
 
                     <h4 class="mb-3">
@@ -134,11 +150,12 @@
                         @{
                             var progressWidth = Model.Status switch
                             {
-                                "Pending" => "20%",
-                                "Confirmed" => "40%",
-                                "Preparing" => "60%",
-                                "Ready" => "80%",
-                                "Delivered" => "100%",
+                                "Pending" => "16%",
+                                "Confirmed" => "33%",
+                                "Preparing" => "50%",
+                                "Ready" => "66%",
+                                "On the Way" => "83%",
+                                "Received" => "100%",
                                 "Cancelled" => "100%",
                                 _ => "0%"
                             };
@@ -151,7 +168,7 @@
                         @if (Model.Status == "Ready")
                         {
                             <div class="alert alert-warning">
-                                <i class="fas fa-bell me-2"></i>Your order is ready for pickup!
+                                <i class="fas fa-bell me-2"></i>Your order is ready for courier pickup!
                             </div>
                         }
                         else if (Model.Status == "Preparing")
@@ -160,13 +177,31 @@
                                 <i class="fas fa-clock me-2"></i>Your order is being prepared
                             </div>
                         }
-                        else if (Model.Status == "Delivered")
+                        else if (Model.Status == "On the Way")
+                        {
+                            <div class="alert alert-primary">
+                                <i class="fas fa-shipping-fast me-2"></i>Your order is on the way!
+                            </div>
+                        }
+                        else if (Model.Status == "Received")
                         {
                             <div class="alert alert-success">
-                                <i class="fas fa-check me-2"></i>Order delivered successfully!
+                                <i class="fas fa-check me-2"></i>Order received successfully!
                             </div>
                         }
                     </div>
+
+                    <!-- Confirm Receipt Button for "On the Way" status -->
+                    @if (Model.Status == "On the Way")
+                    {
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-success btn-lg w-100 confirm-receipt-btn"
+                                    data-order-id="@Model.Id"
+                                    data-order-number="@Model.OrderNumber">
+                                <i class="fas fa-check-circle me-2"></i>Confirm Receipt
+                            </button>
+                        </div>
+                    }
                 </div>
             </div>
 
@@ -177,6 +212,15 @@
                         <a href="@Url.Action("MyOrders", "Order")" class="btn btn-outline-primary">
                             <i class="fas fa-history me-2"></i>Back to Order History
                         </a>
+
+                        <!-- Review Button - Only show for delivered orders -->
+                        @if (Model.Status == "Received")
+                        {
+                            <a href="@Url.Action("Create", "Review", new { orderId = Model.Id })" class="btn btn-warning">
+                                <i class="fas fa-star me-2"></i>Leave a Review
+                            </a>
+                        }
+
                         <a href="@Url.Action("Browse", "Menu")" class="btn btn-checkout">
                             <i class="fas fa-utensils me-2"></i>Order More Food
                         </a>
@@ -187,8 +231,39 @@
     </div>
 </div>
 
+<!-- Confirm Receipt Modal -->
+<div class="modal fade" id="confirmReceiptModal" tabindex="-1" aria-labelledby="confirmReceiptModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="confirmReceiptModalLabel">
+                    <i class="fas fa-check-circle me-2"></i>Confirm Order Receipt
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="fas fa-box-open fa-3x text-success mb-3"></i>
+                    <h6>Have you received your order?</h6>
+                    <p class="text-muted">Order Number: <span id="modalOrderNumber"></span></p>
+                    <p class="small text-muted">By confirming receipt, you acknowledge that you have received your order in good condition.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Not Yet
+                </button>
+                <button type="button" class="btn btn-success" id="confirmReceiptSubmit">
+                    <i class="fas fa-check me-2"></i>Yes, I Received It
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script src="~/js/order-details.js"></script>
+    @Html.AntiForgeryToken()
 }
 
 @section Styles {

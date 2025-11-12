@@ -1,4 +1,46 @@
-﻿document.addEventListener('DOMContentLoaded', function () {
+﻿$(document).ready(function () {
+    let currentOrderId = null;
+
+    // Show confirm receipt modal when button is clicked - following menu.js pattern
+    $('.confirm-receipt-btn').on('click', function () {
+        const button = $(this);
+        currentOrderId = button.data('order-id');
+        const orderNumber = button.data('order-number');
+
+        $('#modalOrderNumber').text(orderNumber);
+        $('#confirmReceiptModal').modal('show');
+    });
+
+    // Confirm receipt submission - following menu.js AJAX pattern
+    $('#confirmReceiptSubmit').on('click', function () {
+        const token = $('input[name="__RequestVerificationToken"]').val();
+
+        $.ajax({
+            url: '/Order/ConfirmReceipt',
+            type: 'POST',
+            data: {
+                orderId: currentOrderId,
+                __RequestVerificationToken: token
+            },
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message || 'Order receipt confirmed successfully!');
+                    $('#confirmReceiptModal').modal('hide');
+                    // Reload page to show updated status
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    toastr.error(response.message || 'Failed to confirm receipt.');
+                }
+            },
+            error: function (xhr, status, error) {
+                toastr.error('An error occurred. Please try again.');
+                console.error("Error confirming receipt:", xhr.responseText);
+            }
+        });
+    });
+
     // Add animation to order items
     const orderItems = document.querySelectorAll('.order-item-card');
     orderItems.forEach((item, index) => {

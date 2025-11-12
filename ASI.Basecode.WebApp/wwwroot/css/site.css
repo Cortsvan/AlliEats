@@ -29,7 +29,7 @@ body {
     bottom: 0;
     width: 100%;
     white-space: nowrap;
-    line-height: 60px; 
+    line-height: 60px;
     background-color: #FAF3E8;
     border-top: 1px solid #EAE0D5 !important;
     color: #5C4033;
@@ -91,16 +91,54 @@ body {
 .navbar-new .dropdown-menu {
     background-color: #FAF3E8;
     border-color: #EAE0D5;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 0.75rem 0;
+    min-width: 200px;
 }
 
 .navbar-new .dropdown-item {
     color: #5C4033;
+    padding: 0.75rem 1.25rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
     .navbar-new .dropdown-item:hover {
         background-color: #EAE0D5;
         color: #3d2b22;
+        transform: translateX(5px);
     }
+
+    .navbar-new .dropdown-item i {
+        width: 20px;
+        text-align: center;
+        color: #8B5E3C !important;
+    }
+
+/* Dropdown divider styling */
+.navbar-new .dropdown-divider {
+    border-color: #EAE0D5;
+    margin: 0.5rem 1rem;
+}
+
+/* Special styling for review item */
+.navbar-new .dropdown-item.review-link {
+    color: #ffc107;
+    font-weight: 600;
+}
+
+    .navbar-new .dropdown-item.review-link:hover {
+        background-color: #fff8e1;
+        color: #ff9800;
+    }
+
+        .navbar-new .dropdown-item.review-link:hover i {
+            color: #ff9800 !important;
+        }
 
 /* Common AlliEats styles that are shared across multiple pages */
 :root {

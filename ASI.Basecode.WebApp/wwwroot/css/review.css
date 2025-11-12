@@ -1,0 +1,351 @@
+﻿/* Review Styles */
+.review-header, .reviews-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover-color));
+    color: white;
+    border-radius: .5rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Review Form Styles */
+.review-order-card, .review-form-card {
+    border-radius: 15px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease;
+}
+
+    .review-order-card:hover, .review-form-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    }
+
+/* Order Info Grid */
+.order-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.order-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.order-info-label {
+    font-weight: 600;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.order-info-value {
+    font-weight: 500;
+    color: #212529;
+    font-size: 1rem;
+}
+
+/* Order Items in Review Form */
+.order-item-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.order-item-image img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.order-item-details {
+    flex: 1;
+}
+
+    .order-item-details .item-name {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .order-item-details .item-quantity {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+.item-price {
+    font-weight: 600;
+    color: var(--success-color);
+}
+
+/* Star Rating Styles */
+.star-rating {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.star {
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #ddd;
+}
+
+    .star:hover {
+        transform: scale(1.1);
+    }
+
+    .star.active i {
+        color: #ffc107;
+    }
+
+    .star.hover i {
+        color: #ffc107;
+    }
+
+    .star i {
+        transition: color 0.2s ease;
+    }
+
+.rating-text {
+    font-weight: 600;
+    font-size: 1.1rem;
+    min-height: 1.5rem;
+}
+
+    .rating-text.excellent {
+        color: #28a745;
+    }
+
+    .rating-text.very-good {
+        color: #20c997;
+    }
+
+    .rating-text.good {
+        color: #ffc107;
+    }
+
+    .rating-text.fair {
+        color: #fd7e14;
+    }
+
+    .rating-text.poor {
+        color: #dc3545;
+    }
+
+/* Character Counter */
+.character-counter {
+    text-align: right;
+}
+
+    .character-counter.warning {
+        color: #ffc107 !important;
+    }
+
+    .character-counter.danger {
+        color: #dc3545 !important;
+    }
+
+/* My Reviews Page Styles */
+.review-card {
+    border-radius: 15px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+    .review-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+.review-header-info {
+    border-bottom: 1px solid #f1f3f4;
+    padding-bottom: 0.75rem;
+}
+
+.review-order-number {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.review-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+    .review-rating .fa-star {
+        font-size: 1.1rem;
+    }
+
+.rating-number {
+    font-weight: 600;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.review-comment {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    border-left: 4px solid var(--primary-color);
+}
+
+    .review-comment p {
+        font-style: italic;
+        color: #495057;
+        line-height: 1.5;
+    }
+
+/* Items Summary in Reviews */
+.items-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.item-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.5rem;
+    flex: 1;
+    min-width: 150px;
+}
+
+    .item-summary .item-image {
+        width: 35px;
+        height: 35px;
+        object-fit: cover;
+        border-radius: 6px;
+    }
+
+    .item-summary .item-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+    }
+
+    .item-summary .item-name {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #212529;
+        line-height: 1.2;
+    }
+
+    .item-summary .item-qty {
+        font-size: 0.75rem;
+        color: #6c757d;
+    }
+
+.review-footer {
+    border-top: 1px solid #f1f3f4;
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+/* No Reviews State */
+.no-reviews-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .order-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .order-item-row {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+
+    .star-rating {
+        justify-content: center;
+    }
+
+    .items-list {
+        flex-direction: column;
+    }
+
+    .item-summary {
+        min-width: auto;
+    }
+
+    .review-header-info .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .review-rating {
+        justify-content: center;
+    }
+}
+
+/* Animation for review cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.review-card {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+    .review-card:nth-child(2) {
+        animation-delay: 0.1s;
+    }
+
+    .review-card:nth-child(3) {
+        animation-delay: 0.2s;
+    }
+
+    .review-card:nth-child(4) {
+        animation-delay: 0.3s;
+    }
+
+/* Form validation styles */
+.form-control.is-invalid {
+    border-color: #dc3545;
+}
+
+.form-control.is-valid {
+    border-color: #28a745;
+}
+
+/* Button styles */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover-color));
+    border: none;
+    transition: all 0.3s ease;
+}
+
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(139, 94, 60, 0.25);
+    }
+
+/* Loading state */
+.btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
