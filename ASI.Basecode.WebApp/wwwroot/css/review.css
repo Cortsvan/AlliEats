@@ -152,17 +152,26 @@
         color: #dc3545 !important;
     }
 
-/* My Reviews Page Styles */
+/* My Reviews Page Styles - FIXED */
 .review-card {
     border-radius: 15px;
     border: 1px solid #e0e0e0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
+    height: 100%; /* Ensure consistent height */
+    display: flex;
+    flex-direction: column;
 }
 
     .review-card:hover {
         transform: translateY(-3px);
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .review-card .card-body {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
     }
 
 .review-header-info {
@@ -204,11 +213,17 @@
         line-height: 1.5;
     }
 
-/* Items Summary in Reviews */
+/* Items Summary in Reviews - FIXED */
+.order-items-summary {
+    flex: 1; /* Allow this to grow and push footer down */
+}
+
 .items-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.5rem;
+    max-height: 180px; /* Limit height to prevent card size inconsistency */
+    overflow-y: auto; /* Add scroll if too many items */
 }
 
 .item-summary {
@@ -218,40 +233,52 @@
     background: white;
     border: 1px solid #e9ecef;
     border-radius: 8px;
-    padding: 0.5rem;
-    flex: 1;
-    min-width: 150px;
+    padding: 0.4rem;
+    height: fit-content;
 }
 
     .item-summary .item-image {
-        width: 35px;
-        height: 35px;
+        width: 30px;
+        height: 30px;
         object-fit: cover;
-        border-radius: 6px;
+        border-radius: 4px;
+        flex-shrink: 0;
     }
 
     .item-summary .item-info {
         display: flex;
         flex-direction: column;
         gap: 0.1rem;
+        min-width: 0; /* Allow text to truncate */
     }
 
     .item-summary .item-name {
         font-weight: 600;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         color: #212529;
         line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .item-summary .item-qty {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         color: #6c757d;
     }
 
 .review-footer {
     border-top: 1px solid #f1f3f4;
     padding-top: 0.75rem;
-    margin-top: 0.75rem;
+    margin-top: auto; /* Push to bottom */
+}
+
+/* Show more items indicator when scrolled */
+.items-list::after {
+    content: "";
+    display: block;
+    height: 1px;
+    width: 100%;
 }
 
 /* No Reviews State */
@@ -277,7 +304,8 @@
     }
 
     .items-list {
-        flex-direction: column;
+        grid-template-columns: 1fr;
+        max-height: 120px;
     }
 
     .item-summary {

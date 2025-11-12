@@ -65,12 +65,131 @@
     border-top: 2px solid #e9ecef;
 }
 
-/* Status Card Styling */
-.order-status-card {
-    position: sticky;
-    top: 20px;
+/* Status Timeline Styles */
+.status-timeline {
+    position: relative;
+    padding: 0;
 }
 
+.timeline-step {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding-left: 3rem;
+}
+
+    .timeline-step:last-child {
+        margin-bottom: 0;
+    }
+
+.timeline-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    border: 3px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    color: #6c757d;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.timeline-content {
+    flex: 1;
+}
+
+.timeline-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.25rem;
+}
+
+.timeline-description {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.timeline-line {
+    position: absolute;
+    left: 1.125rem;
+    top: 2.5rem;
+    width: 2px;
+    height: 2rem;
+    background-color: #e9ecef;
+    transition: background-color 0.3s ease;
+}
+
+/* Timeline States */
+.timeline-step.completed .timeline-icon {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+.timeline-step.completed .timeline-title {
+    color: #28a745;
+}
+
+.timeline-step.completed + .timeline-step .timeline-line,
+.timeline-line.completed {
+    background-color: #28a745;
+}
+
+.timeline-step.active .timeline-icon {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+    animation: pulse-timeline 2s infinite;
+}
+
+.timeline-step.active .timeline-title {
+    color: #007bff;
+    font-weight: 700;
+}
+
+.timeline-step.cancelled .timeline-icon {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.timeline-step.cancelled .timeline-title {
+    color: #dc3545;
+}
+
+.timeline-step.cancelled + .timeline-step .timeline-line,
+.timeline-line.cancelled {
+    background-color: #dc3545;
+}
+
+@keyframes pulse-timeline {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+    }
+
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 8px rgba(0, 123, 255, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+    }
+}
+
+/* Legacy status styles (keeping for compatibility) */
 .status-icon {
     animation: pulse 2s infinite;
 }
@@ -132,5 +251,50 @@
 
     .order-item-details {
         margin-bottom: 1rem;
+    }
+
+    /* Timeline mobile adjustments */
+    .timeline-step {
+        padding-left: 2.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .timeline-icon {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.75rem;
+    }
+
+    .timeline-line {
+        left: 0.875rem;
+        top: 2rem;
+        height: 1.5rem;
+    }
+
+    .timeline-title {
+        font-size: 0.9rem;
+    }
+
+    .timeline-description {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .timeline-step {
+        padding-left: 2rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .timeline-icon {
+        width: 1.75rem;
+        height: 1.75rem;
+        font-size: 0.7rem;
+    }
+
+    .timeline-line {
+        left: 0.75rem;
+        top: 1.75rem;
+        height: 1.25rem;
     }
 }
