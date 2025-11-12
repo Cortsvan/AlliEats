@@ -161,5 +161,28 @@ namespace ASI.Basecode.WebApp.Controllers
                 return RedirectToAction("MyOrders", "Order");
             }
         }
+        // GET: Review/AllReviews - Admin only
+        public IActionResult AllReviews()
+        {
+            try
+            {
+                // Restrict access to admin only
+                var userRole = HttpContext.Session.GetString("UserRole");
+                if (userRole != "Admin")
+                {
+                    TempData["ErrorMessage"] = "Access denied. Admin privileges required.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                var reviewsModel = _reviewService.GetAllReviews();
+                return View(reviewsModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while retrieving all reviews for admin");
+                TempData["ErrorMessage"] = "An error occurred while retrieving reviews.";
+                return RedirectToAction("Index", "Home");
+            }
+        }
     }
 }

@@ -105,5 +105,31 @@ namespace ASI.Basecode.Services.Services
                 }).ToList()
             };
         }
+        public MyReviewsViewModel GetAllReviews()
+        {
+            var reviews = _reviewRepository.GetAllReviews();
+
+            return new MyReviewsViewModel
+            {
+                Reviews = reviews.Select(r => new UserReviewViewModel
+                {
+                    OrderId = r.OrderId,
+                    OrderNumber = r.Order.OrderNumber,
+                    Rating = r.Rating,
+                    Comment = r.Comment,
+                    ReviewDate = r.CreatedTime,
+                    OrderDate = r.Order.CreatedTime,
+                    OrderTotal = r.Order.TotalAmount,
+                    OrderItems = r.Order.OrderItems.Select(oi => new OrderItemViewModel
+                    {
+                        MenuItemName = oi.MenuItemName,
+                        Price = oi.Price,
+                        Quantity = oi.Quantity,
+                        TotalPrice = oi.TotalPrice,
+                        MenuItemImagePath = oi.MenuItem?.ImagePath
+                    }).ToList()
+                }).ToList()
+            };
+        }
     }
 }

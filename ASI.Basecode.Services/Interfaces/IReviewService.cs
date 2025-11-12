@@ -7,5 +7,6 @@ namespace ASI.Basecode.Services.Interfaces
         ReviewViewModel GetReviewFormForOrder(int orderId, string userId);
         bool SubmitReview(ReviewViewModel model, string userId);
         MyReviewsViewModel GetUserReviews(string userId);
+        MyReviewsViewModel GetAllReviews();
     }
 }

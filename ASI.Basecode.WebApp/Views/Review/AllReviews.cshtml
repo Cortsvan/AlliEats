@@ -1,0 +1,222 @@
+﻿@model ASI.Basecode.Services.ServiceModels.MyReviewsViewModel
+
+@{
+    ViewData["Title"] = "All Customer Reviews";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4">
+    <!-- Header -->
+    <div class="admin-reviews-header text-center">
+        <h1 class="display-5 fw-bold"><i class="fas fa-star me-3"></i>All Customer Reviews</h1>
+        <p class="lead">Monitor and manage customer feedback and ratings</p>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model.Reviews.Any())
+    {
+        <!-- Reviews Summary Stats -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm admin-stats-card">
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-3 mb-3 mb-md-0">
+                                <div class="stat-item">
+                                    <i class="fas fa-comments stat-icon text-primary"></i>
+                                    <h4 class="stat-number">@Model.Reviews.Count</h4>
+                                    <span class="stat-label">Total Reviews</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3 mb-md-0">
+                                <div class="stat-item">
+                                    <i class="fas fa-star stat-icon text-warning"></i>
+                                    <h4 class="stat-number">@(Model.Reviews.Any() ? Model.Reviews.Average(r => r.Rating).ToString("F1") : "0.0")</h4>
+                                    <span class="stat-label">Average Rating</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3 mb-md-0">
+                                <div class="stat-item">
+                                    <i class="fas fa-thumbs-up stat-icon text-success"></i>
+                                    <h4 class="stat-number">@Model.Reviews.Count(r => r.Rating >= 4)</h4>
+                                    <span class="stat-label">Positive Reviews</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-item">
+                                    <i class="fas fa-calendar stat-icon text-info"></i>
+                                    <h4 class="stat-number">@Model.Reviews.Count(r => r.ReviewDate.Date == DateTime.Today)</h4>
+                                    <span class="stat-label">Today's Reviews</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter and Search -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label for="ratingFilter" class="form-label">Filter by Rating:</label>
+                                <select id="ratingFilter" class="form-select">
+                                    <option value="">All Ratings</option>
+                                    <option value="5">5 Stars</option>
+                                    <option value="4">4 Stars</option>
+                                    <option value="3">3 Stars</option>
+                                    <option value="2">2 Stars</option>
+                                    <option value="1">1 Star</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label for="dateFilter" class="form-label">Filter by Date:</label>
+                                <select id="dateFilter" class="form-select">
+                                    <option value="">All Dates</option>
+                                    <option value="today">Today</option>
+                                    <option value="week">This Week</option>
+                                    <option value="month">This Month</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="searchReviews" class="form-label">Search Reviews:</label>
+                                <input type="text" id="searchReviews" class="form-control" placeholder="Search by order number or comment...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews Grid -->
+        <div class="row" id="reviewsContainer">
+            @foreach (var review in Model.Reviews)
+            {
+                <div class="col-lg-6 mb-4 review-item"
+                     data-rating="@review.Rating"
+                     data-date="@review.ReviewDate.ToString("yyyy-MM-dd")"
+                     data-order="@review.OrderNumber.ToLower()"
+                     data-comment="@(review.Comment?.ToLower())">
+                    <div class="card shadow-sm admin-review-card">
+                        <div class="card-body">
+                            <!-- Review Header -->
+                            <div class="review-header-info mb-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="review-order-number mb-1">
+                                            <i class="fas fa-receipt me-2"></i>@review.OrderNumber
+                                        </h6>
+                                        <small class="text-muted">
+                                            Order Date: @review.OrderDate.ToString("MMM dd, yyyy")
+                                        </small>
+                                    </div>
+                                    <div class="review-rating">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            @if (i <= review.Rating)
+                                            {
+                                                <i class="fas fa-star text-warning"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="far fa-star text-muted"></i>
+                                            }
+                                        }
+                                        <span class="rating-number ms-2">(@review.Rating/5)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Review Comment -->
+                            @if (!string.IsNullOrEmpty(review.Comment))
+                            {
+                                <div class="review-comment mb-3">
+                                    <p class="mb-0">"@review.Comment"</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="review-comment mb-3">
+                                    <p class="mb-0 text-muted fst-italic">No comment provided</p>
+                                </div>
+                            }
+
+                            <!-- Order Items Summary -->
+                            <div class="order-items-summary mb-3">
+                                <h6 class="mb-2">Items Reviewed:</h6>
+                                <div class="items-list">
+                                    @foreach (var item in review.OrderItems)
+                                    {
+                                        <div class="item-summary">
+                                            <img src="@(string.IsNullOrEmpty(item.MenuItemImagePath) ? "/img/placeholder-food.png" : item.MenuItemImagePath)"
+                                                 alt="@item.MenuItemName" class="item-image"
+                                                 onerror="this.src='/img/placeholder-food.png'; this.onerror=null;">
+                                            <div class="item-info">
+                                                <span class="item-name">@item.MenuItemName</span>
+                                                <span class="item-qty">x @item.Quantity</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Review Footer -->
+                            <div class="review-footer">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="review-meta">
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i>
+                                            Reviewed on @review.ReviewDate.ToString("MMM dd, yyyy")
+                                        </small>
+                                    </div>
+                                    <div class="order-total">
+                                        <span class="fw-bold text-success">@("P" + review.OrderTotal.ToString("F2"))</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="no-reviews-container">
+                <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted mb-3">No Reviews Yet</h5>
+                <p class="text-muted mb-4">No customer reviews have been submitted yet. Reviews will appear here once customers start rating their orders.</p>
+                <a href="@Url.Action("ManageOrders", "AdminOrder")" class="btn btn-primary">
+                    <i class="fas fa-clipboard-list me-2"></i>Manage Orders
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-reviews.css" />
+}
+
+@section Scripts {
+    <script src="~/js/admin-reviews.js"></script>
+}
