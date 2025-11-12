@@ -1,0 +1,174 @@
+﻿/* Edit Item Form Styles - Extends add-item styles */
+
+/* Import the base add-item styles */
+@import url('add-item.css');
+
+/* Additional styles specific to edit form */
+
+/* Current Image Display */
+.current-image-container {
+    position: relative;
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.current-image {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+    cursor: pointer;
+}
+
+    .current-image:hover {
+        transform: scale(1.02);
+    }
+
+.image-overlay {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.current-image-container:hover .image-overlay {
+    opacity: 1;
+}
+
+.no-image-placeholder {
+    padding: 2rem;
+    color: var(--secondary-color);
+    background: var(--light-background);
+    border-radius: 6px;
+    border: 2px dashed #e9ecef;
+}
+
+    .no-image-placeholder i {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+/* Enhanced Form Check */
+.form-check-container {
+    background: var(--light-background);
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+    .form-check-container:hover {
+        border-color: var(--primary-color);
+        background-color: white;
+    }
+
+.form-check-enhanced {
+    width: 1.2em;
+    height: 1.2em;
+    margin-right: 0.75rem;
+}
+
+    .form-check-enhanced:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+.form-check-label {
+    color: var(--dark-text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+    .form-check-label i {
+        color: var(--primary-color);
+    }
+
+/* Image Size Toggle */
+.current-image.full-size {
+    max-height: none;
+    max-width: 90vw;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.image-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 9998;
+    display: none;
+}
+
+    .image-backdrop.show {
+        display: block;
+    }
+
+/* New Image Preview for Edit */
+#newImagePreview {
+    border: 2px solid var(--warning-color);
+    background: #fff8e1;
+}
+
+    #newImagePreview .preview-image {
+        border: 2px solid var(--warning-color);
+    }
+
+/* Status indicator */
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+    .status-indicator.active {
+        background: rgba(40, 167, 69, 0.1);
+        color: var(--success-color);
+    }
+
+    .status-indicator.inactive {
+        background: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+    }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .current-image-container {
+        padding: 0.75rem;
+    }
+
+    .current-image {
+        max-height: 150px;
+    }
+
+    .image-overlay {
+        position: static;
+        opacity: 1;
+        margin-top: 1rem;
+    }
+
+    .current-image.full-size {
+        max-width: 95vw;
+        max-height: 80vh;
+    }
+}
