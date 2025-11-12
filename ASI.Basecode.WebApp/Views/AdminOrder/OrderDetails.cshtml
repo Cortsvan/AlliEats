@@ -5,22 +5,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 py-4">
     <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="alert alert-info border-0 shadow-sm">
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <i class="fas fa-receipt fa-2x text-info"></i>
-                    </div>
-                    <div>
-                        <h4 class="alert-heading mb-1">Order Details - Admin View</h4>
-                        <p class="mb-0">Complete information about order @Model.OrderNumber</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="admin-order-header text-center mb-4">
+        <h1 class="display-5 fw-bold"><i class="fas fa-receipt me-3"></i>Order Details</h1>
+        <p class="lead">Complete order information and management tools</p>
     </div>
 
     @if (TempData["ErrorMessage"] != null)
@@ -31,100 +20,131 @@
         </div>
     }
 
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
     <div class="row">
         <!-- Order Information -->
         <div class="col-lg-8">
-            <div class="card shadow mb-4">
-                <div class="card-header bg-primary text-white">
+            <!-- Order Summary Card -->
+            <div class="card order-summary-card mb-4">
+                <div class="card-header order-card-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
-                            <i class="fas fa-info-circle me-2"></i>Order Information
+                            <i class="fas fa-hashtag me-2"></i>Order #@Model.OrderNumber
                         </h5>
-                        <span class="badge @Model.StatusBadgeClass fs-6">@Model.Status</span>
+                        <span class="status-badge-detailed @Model.Status.ToLower().Replace(" ", "-")">
+                            <i class="fas @GetStatusIcon(Model.Status)"></i>
+                            @Model.Status
+                        </span>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Order Number:</strong> @Model.OrderNumber
+                    <div class="order-info-grid">
+                        <div class="order-info-item">
+                            <span class="order-info-label">
+                                <i class="fas fa-user me-1"></i>Customer
+                            </span>
+                            <span class="order-info-value">@Model.UserId</span>
                         </div>
-                        <div class="col-md-6">
-                            <strong>Customer ID:</strong> @Model.UserId
+                        <div class="order-info-item">
+                            <span class="order-info-label">
+                                <i class="fas fa-calendar me-1"></i>Order Date
+                            </span>
+                            <span class="order-info-value">@Model.CreatedTime.ToString("MMM dd, yyyy")</span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="order-info-label">
+                                <i class="fas fa-clock me-1"></i>Order Time
+                            </span>
+                            <span class="order-info-value">@Model.CreatedTime.ToString("h:mm tt")</span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="order-info-label">
+                                <i class="fas fa-sync-alt me-1"></i>Last Updated
+                            </span>
+                            <span class="order-info-value">
+                                @(Model.UpdatedTime?.ToString("MMM dd, yyyy h:mm tt") ?? "Not updated")
+                            </span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="order-info-label">
+                                <i class="fas fa-credit-card me-1"></i>Payment Method
+                            </span>
+                            <span class="order-info-value payment-method-badge">@Model.PaymentMethod</span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="order-info-label">
+                                <i class="fas fa-peso-sign me-1"></i>Total Amount
+                            </span>
+                            <span class="order-info-value order-total-amount">@("P" + Model.TotalAmount.ToString("F2"))</span>
                         </div>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Order Date:</strong> @Model.CreatedTime.ToString("MMMM dd, yyyy h:mm tt")
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Last Updated:</strong>
-                            @(Model.UpdatedTime?.ToString("MMMM dd, yyyy h:mm tt") ?? "Not updated")
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Payment Method:</strong> @Model.PaymentMethod
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Total Amount:</strong> <span class="text-success fw-bold">$@Model.TotalAmount.ToString("F2")</span>
-                        </div>
-                    </div>
+
                     @if (!string.IsNullOrEmpty(Model.Notes))
                     {
-                        <div class="row">
-                            <div class="col-12">
-                                <strong>Customer Notes:</strong>
-                                <div class="mt-2 p-3 bg-light rounded">
-                                    @Model.Notes
-                                </div>
+                        <div class="customer-notes-section">
+                            <div class="notes-header">
+                                <i class="fas fa-sticky-note me-2"></i>Customer Notes
+                            </div>
+                            <div class="notes-content">
+                                @Model.Notes
                             </div>
                         </div>
                     }
                 </div>
             </div>
 
-            <!-- Order Items -->
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
+            <!-- Order Items Card -->
+            <div class="card order-items-card">
+                <div class="card-header order-card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-list me-2"></i>Ordered Items (@Model.TotalItems items)
+                        <i class="fas fa-utensils me-2"></i>Order Items (@Model.TotalItems items)
                     </h5>
                 </div>
-                <div class="card-body">
-                    @foreach (var item in Model.OrderItems)
-                    {
-                        <div class="row align-items-center border-bottom py-3">
-                            <div class="col-md-6">
-                                <h6 class="mb-0">@item.MenuItemName</h6>
+                <div class="card-body p-0">
+                    <div class="order-items-container">
+                        @foreach (var item in Model.OrderItems)
+                        {
+                            <div class="order-item-row">
+                                <div class="item-info">
+                                    <div class="item-name">@item.MenuItemName</div>
+                                    <div class="item-price">@("P" + item.Price.ToString("F2")) each</div>
+                                </div>
+                                <div class="item-quantity">
+                                    <span class="quantity-badge">×@item.Quantity</span>
+                                </div>
+                                <div class="item-total">
+                                    @("P" + item.TotalPrice.ToString("F2"))
+                                </div>
                             </div>
-                            <div class="col-md-2 text-center">
-                                <span class="text-muted">$@item.Price.ToString("F2")</span>
-                            </div>
-                            <div class="col-md-2 text-center">
-                                <span class="badge bg-primary">@item.Quantity</span>
-                            </div>
-                            <div class="col-md-2 text-center">
-                                <span class="fw-bold">$@item.TotalPrice.ToString("F2")</span>
-                            </div>
-                        </div>
-                    }
+                        }
+                    </div>
 
-                    <div class="row mt-3 pt-3 border-top">
-                        <div class="col-md-8">
-                            <h6>Total Items: @Model.TotalItems</h6>
+                    <div class="order-summary-footer">
+                        <div class="summary-row">
+                            <span class="summary-label">Total Items:</span>
+                            <span class="summary-value">@Model.TotalItems</span>
                         </div>
-                        <div class="col-md-4 text-end">
-                            <h5 class="text-success">Total: $@Model.TotalAmount.ToString("F2")</h5>
+                        <div class="summary-row total-row">
+                            <span class="summary-label">Grand Total:</span>
+                            <span class="summary-value total-amount">@("P" + Model.TotalAmount.ToString("F2"))</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Admin Actions -->
+        <!-- Admin Actions Sidebar -->
         <div class="col-lg-4">
-            <div class="card shadow mb-4">
-                <div class="card-header bg-warning text-dark">
+            <!-- Quick Actions Card -->
+            <div class="card admin-actions-card mb-4">
+                <div class="card-header admin-card-header">
                     <h5 class="mb-0">
                         <i class="fas fa-cogs me-2"></i>Admin Actions
                     </h5>
@@ -132,87 +152,136 @@
                 <div class="card-body">
                     @if (Model.Status != "Received" && Model.Status != "Cancelled")
                     {
-                        <div class="d-grid gap-2 mb-3">
-                            <button type="button" class="btn btn-primary"
+                        <div class="action-section">
+                            <h6 class="action-section-title">
+                                <i class="fas fa-edit me-1"></i>Update Status
+                            </h6>
+                            <button type="button" class="btn btn-admin-primary w-100 mb-3"
                                     onclick="showUpdateStatusModal(@Model.Id, '@Model.OrderNumber', '@Model.Status')">
-                                <i class="fas fa-edit me-2"></i>Update Status
+                                <i class="fas fa-edit me-2"></i>Change Status
                             </button>
                         </div>
+
+                        @* Only show Quick Actions if there are actual quick actions available *@
+                        @if (Model.Status == "Pending" || Model.Status == "Confirmed" || Model.Status == "Preparing" || Model.Status == "Ready")
+                        {
+                            <div class="action-section">
+                                <h6 class="action-section-title">
+                                    <i class="fas fa-bolt me-1"></i>Quick Actions
+                                </h6>
+                                <div class="quick-actions">
+                                    @if (Model.Status == "Pending")
+                                    {
+                                        <button onclick="updateStatus(@Model.Id, 'Confirmed')" class="btn btn-quick-action confirmed">
+                                            <i class="fas fa-check"></i>
+                                            <span>Confirm Order</span>
+                                        </button>
+                                    }
+                                    @if (Model.Status == "Confirmed")
+                                    {
+                                        <button onclick="updateStatus(@Model.Id, 'Preparing')" class="btn btn-quick-action preparing">
+                                            <i class="fas fa-utensils"></i>
+                                            <span>Start Preparing</span>
+                                        </button>
+                                    }
+                                    @if (Model.Status == "Preparing")
+                                    {
+                                        <button onclick="updateStatus(@Model.Id, 'Ready')" class="btn btn-quick-action ready">
+                                            <i class="fas fa-bell"></i>
+                                            <span>Mark as Ready</span>
+                                        </button>
+                                    }
+                                    @if (Model.Status == "Ready")
+                                    {
+                                        <button onclick="updateStatus(@Model.Id, 'On the Way')" class="btn btn-quick-action ontheway">
+                                            <i class="fas fa-shipping-fast"></i>
+                                            <span>Out for Delivery</span>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
                     }
 
-                    <div class="mb-3">
-                        <strong>Quick Status Updates:</strong>
+                    <!-- Status Information -->
+                    <div class="action-section">
+                        <h6 class="action-section-title">
+                            <i class="fas fa-info-circle me-1"></i>Status Information
+                        </h6>
+
+                        @if (Model.Status == "On the Way")
+                        {
+                            <div class="status-info pending-customer">
+                                <i class="fas fa-truck"></i>
+                                <div>
+                                    <strong>Waiting for Customer</strong>
+                                    <p>Order is out for delivery. Customer will confirm receipt.</p>
+                                </div>
+                            </div>
+                        }
+                        else if (Model.Status == "Received")
+                        {
+                            <div class="status-info completed">
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <strong>Order Completed</strong>
+                                    <p>Customer has confirmed receipt of the order.</p>
+                                </div>
+                            </div>
+                        }
+                        else if (Model.Status == "Cancelled")
+                        {
+                            <div class="status-info cancelled">
+                                <i class="fas fa-times-circle"></i>
+                                <div>
+                                    <strong>Order Cancelled</strong>
+                                    <p>This order has been cancelled.</p>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="status-flow-info">
+                                <div class="flow-step @(GetStepClass("Pending", Model.Status))">
+                                    <span class="step-number">1</span>
+                                    <span class="step-name">Pending</span>
+                                </div>
+                                <div class="flow-arrow">→</div>
+                                <div class="flow-step @(GetStepClass("Confirmed", Model.Status))">
+                                    <span class="step-number">2</span>
+                                    <span class="step-name">Confirmed</span>
+                                </div>
+                                <div class="flow-arrow">→</div>
+                                <div class="flow-step @(GetStepClass("Preparing", Model.Status))">
+                                    <span class="step-number">3</span>
+                                    <span class="step-name">Preparing</span>
+                                </div>
+                                <div class="flow-arrow">→</div>
+                                <div class="flow-step @(GetStepClass("Ready", Model.Status))">
+                                    <span class="step-number">4</span>
+                                    <span class="step-name">Ready</span>
+                                </div>
+                                <div class="flow-arrow">→</div>
+                                <div class="flow-step @(GetStepClass("On the Way", Model.Status))">
+                                    <span class="step-number">5</span>
+                                    <span class="step-name">On the Way</span>
+                                </div>
+                            </div>
+                        }
                     </div>
-
-                    @if (Model.Status == "Pending")
-                    {
-                        <div class="d-grid gap-1 mb-2">
-                            <button onclick="updateStatus(@Model.Id, 'Confirmed')" class="btn btn-sm btn-info">
-                                <i class="fas fa-check me-1"></i>Confirm Order
-                            </button>
-                        </div>
-                    }
-
-                    @if (Model.Status == "Confirmed")
-                    {
-                        <div class="d-grid gap-1 mb-2">
-                            <button onclick="updateStatus(@Model.Id, 'Preparing')" class="btn btn-sm btn-primary">
-                                <i class="fas fa-utensils me-1"></i>Start Preparing
-                            </button>
-                        </div>
-                    }
-
-                    @if (Model.Status == "Preparing")
-                    {
-                        <div class="d-grid gap-1 mb-2">
-                            <button onclick="updateStatus(@Model.Id, 'Ready')" class="btn btn-sm btn-success">
-                                <i class="fas fa-bell me-1"></i>Mark as Ready
-                            </button>
-                        </div>
-                    }
-
-                    @if (Model.Status == "Ready")
-                    {
-                        <div class="d-grid gap-1 mb-2">
-                            <button onclick="updateStatus(@Model.Id, 'On the Way')" class="btn btn-sm btn-warning">
-                                <i class="fas fa-shipping-fast me-1"></i>Mark as On the Way
-                            </button>
-                        </div>
-                    }
-
-                    @if (Model.Status == "On the Way")
-                    {
-                        <div class="alert alert-info mt-3">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Waiting for customer to confirm receipt
-                        </div>
-                    }
-
-                    @if (Model.Status == "Received")
-                    {
-                        <div class="alert alert-success mt-3">
-                            <i class="fas fa-check-circle me-2"></i>
-                            Order completed and received by customer
-                        </div>
-                    }
-
-                    @if (Model.Status != "Received" && Model.Status != "Cancelled")
-                    {
-                        <div class="d-grid gap-1 mt-3">
-                            <button onclick="updateStatus(@Model.Id, 'Cancelled')" class="btn btn-sm btn-outline-danger">
-                                <i class="fas fa-times me-1"></i>Cancel Order
-                            </button>
-                        </div>
-                    }
                 </div>
             </div>
 
-            <div class="card shadow">
-                <div class="card-body text-center">
+            <!-- Navigation Card -->
+            <div class="card navigation-card">
+                <div class="card-body">
                     <div class="d-grid gap-2">
-                        <a href="@Url.Action("ManageOrders", "AdminOrder")" class="btn btn-outline-info">
-                            <i class="fas fa-arrow-left me-2"></i>Back to Orders
+                        <a href="@Url.Action("ManageOrders", "AdminOrder")" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Order Management
                         </a>
+                        <button type="button" class="btn btn-outline-primary" onclick="refreshPage()">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh Page
+                        </button>
                     </div>
                 </div>
             </div>
@@ -220,11 +289,11 @@
     </div>
 </div>
 
-<!-- Update Status Modal -->
+<!-- Enhanced Update Status Modal -->
 <div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
+            <div class="modal-header update-modal-header">
                 <h5 class="modal-title" id="updateStatusModalLabel">
                     <i class="fas fa-edit me-2"></i>Update Order Status
                 </h5>
@@ -234,27 +303,45 @@
                 @Html.AntiForgeryToken()
                 <div class="modal-body">
                     <input type="hidden" id="orderId" name="orderId" />
+
                     <div class="mb-3">
-                        <label for="orderNumber" class="form-label">Order Number:</label>
-                        <input type="text" id="orderNumber" class="form-control" readonly />
+                        <label for="orderNumber" class="form-label fw-bold">
+                            <i class="fas fa-hashtag me-1"></i>Order Number
+                        </label>
+                        <input type="text" id="orderNumber" class="form-control form-control-enhanced" readonly />
                     </div>
+
                     <div class="mb-3">
-                        <label for="status" class="form-label">New Status:</label>
-                        <select id="status" name="status" class="form-select" required>
-                            <option value="">Select Status</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Confirmed">Confirmed</option>
-                            <option value="Preparing">Preparing</option>
-                            <option value="Ready">Ready</option>
-                            <option value="On the Way">On the Way</option>
-                            <option value="Received">Received</option>
-                            <option value="Cancelled">Cancelled</option>
+                        <label for="currentStatus" class="form-label fw-bold">
+                            <i class="fas fa-info-circle me-1"></i>Current Status
+                        </label>
+                        <input type="text" id="currentStatus" class="form-control form-control-enhanced" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="status" class="form-label fw-bold">
+                            <i class="fas fa-arrow-right me-1"></i>New Status
+                        </label>
+                        <select id="status" name="status" class="form-select form-control-enhanced" required>
+                            <option value="">-- Select New Status --</option>
                         </select>
+                    </div>
+
+                    <div class="status-flow-guide">
+                        <small class="text-muted">
+                            <i class="fas fa-lightbulb me-1"></i>
+                            <strong>Admin Flow:</strong> Pending → Confirmed → Preparing → Ready → On the Way
+                            <br>
+                            <i class="fas fa-info-circle me-1"></i>
+                            <strong>Note:</strong> Only customers can confirm receipt
+                        </small>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="button" class="btn btn-secondary btn-action" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-admin-primary btn-action">
                         <i class="fas fa-save me-2"></i>Update Status
                     </button>
                 </div>
@@ -264,48 +351,37 @@
 </div>
 
 @section Scripts {
-    <script>
-        function showUpdateStatusModal(orderId, orderNumber, currentStatus) {
-            document.getElementById('orderId').value = orderId;
-            document.getElementById('orderNumber').value = orderNumber;
-            document.getElementById('status').value = currentStatus;
+    <script src="~/js/admin-order-details.js"></script>
+}
 
-            var updateModal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
-            updateModal.show();
-        }
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-order-details.css" />
+}
 
-        function updateStatus(orderId, status) {
-            if (confirm(`Are you sure you want to update this order to ${status}?`)) {
-                // Create a form and submit it
-                var form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '@Url.Action("UpdateStatus", "AdminOrder")';
+@functions {
+    string GetStatusIcon(string status)
+    {
+        return status switch
+        {
+            "Pending" => "fa-clock",
+            "Confirmed" => "fa-check",
+            "Preparing" => "fa-utensils",
+            "Ready" => "fa-bell",
+            "On the Way" => "fa-shipping-fast",
+            "Received" => "fa-check-circle",
+            "Cancelled" => "fa-times-circle",
+            _ => "fa-question-circle"
+        };
+    }
 
-                // Add CSRF token
-                var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-                var tokenInput = document.createElement('input');
-                tokenInput.type = 'hidden';
-                tokenInput.name = '__RequestVerificationToken';
-                tokenInput.value = token;
-                form.appendChild(tokenInput);
+    string GetStepClass(string stepStatus, string currentStatus)
+    {
+        var statusOrder = new[] { "Pending", "Confirmed", "Preparing", "Ready", "On the Way", "Received" };
+        var stepIndex = Array.IndexOf(statusOrder, stepStatus);
+        var currentIndex = Array.IndexOf(statusOrder, currentStatus);
 
-                // Add order ID
-                var orderIdInput = document.createElement('input');
-                orderIdInput.type = 'hidden';
-                orderIdInput.name = 'orderId';
-                orderIdInput.value = orderId;
-                form.appendChild(orderIdInput);
-
-                // Add status
-                var statusInput = document.createElement('input');
-                statusInput.type = 'hidden';
-                statusInput.name = 'status';
-                statusInput.value = status;
-                form.appendChild(statusInput);
-
-                document.body.appendChild(form);
-                form.submit();
-            }
-        }
-    </script>
+        if (stepIndex == currentIndex) return "active";
+        if (stepIndex < currentIndex) return "completed";
+        return "";
+    }
 }

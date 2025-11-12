@@ -1,0 +1,428 @@
+﻿/* Manage Orders Styles */
+
+.admin-order-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover-color));
+    color: white;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.admin-order-card, .admin-stats-card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.admin-card-header {
+    background: var(--primary-color);
+    color: white;
+    border-radius: 10px 10px 0 0;
+    padding: 1.25rem;
+    border: none;
+}
+
+/* Order Statistics */
+.stat-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1.25rem;
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: white;
+}
+
+.stat-number {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--secondary-color);
+}
+
+/* Status specific colors */
+.stat-card.pending {
+    border-left-color: #ffc107;
+}
+
+    .stat-card.pending .stat-icon {
+        background: #ffc107;
+    }
+
+    .stat-card.pending .stat-number {
+        color: #ffc107;
+    }
+
+.stat-card.confirmed {
+    border-left-color: #17a2b8;
+}
+
+    .stat-card.confirmed .stat-icon {
+        background: #17a2b8;
+    }
+
+    .stat-card.confirmed .stat-number {
+        color: #17a2b8;
+    }
+
+.stat-card.preparing {
+    border-left-color: var(--primary-color);
+}
+
+    .stat-card.preparing .stat-icon {
+        background: var(--primary-color);
+    }
+
+    .stat-card.preparing .stat-number {
+        color: var(--primary-color);
+    }
+
+.stat-card.ready {
+    border-left-color: #28a745;
+}
+
+    .stat-card.ready .stat-icon {
+        background: #28a745;
+    }
+
+    .stat-card.ready .stat-number {
+        color: #28a745;
+    }
+
+.stat-card.ontheway {
+    border-left-color: #fd7e14;
+}
+
+    .stat-card.ontheway .stat-icon {
+        background: #fd7e14;
+    }
+
+    .stat-card.ontheway .stat-number {
+        color: #fd7e14;
+    }
+
+.stat-card.completed {
+    border-left-color: var(--success-color);
+}
+
+    .stat-card.completed .stat-icon {
+        background: var(--success-color);
+    }
+
+    .stat-card.completed .stat-number {
+        color: var(--success-color);
+    }
+
+.stat-card.cancelled {
+    border-left-color: var(--danger-color);
+}
+
+    .stat-card.cancelled .stat-icon {
+        background: var(--danger-color);
+    }
+
+    .stat-card.cancelled .stat-number {
+        color: var(--danger-color);
+    }
+
+/* Search and Filter */
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--secondary-color);
+    z-index: 5;
+}
+
+.search-input {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    transition: border-color 0.2s ease;
+}
+
+    .search-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(139, 94, 60, 0.15);
+    }
+
+.clear-btn {
+    position: absolute;
+    right: 5px;
+    z-index: 5;
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+}
+
+.filter-info {
+    border-top: 1px solid #e9ecef;
+    padding-top: 0.75rem;
+}
+
+/* Table Styles */
+.admin-table {
+    font-size: 0.95rem;
+}
+
+.admin-table-header {
+    background-color: var(--dark-text-color);
+    color: white;
+}
+
+    .admin-table-header th {
+        border: none;
+        font-weight: 600;
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+    }
+
+.admin-table-row {
+    transition: all 0.2s ease;
+}
+
+    .admin-table-row:hover {
+        background-color: var(--light-background);
+    }
+
+    .admin-table-row td {
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .admin-table-row.hidden {
+        display: none;
+    }
+
+/* Table Content */
+.order-number {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-family: monospace;
+    font-size: 1rem;
+}
+
+.customer-info {
+    font-weight: 500;
+    color: var(--dark-text-color);
+}
+
+.order-date {
+    font-weight: 600;
+    color: var(--dark-text-color);
+    font-size: 0.9rem;
+}
+
+.order-time {
+    color: var(--secondary-color);
+    font-size: 0.8rem;
+}
+
+.items-badge {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 15px;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.order-total {
+    font-weight: 700;
+    color: var(--success-color);
+    font-size: 1.1rem;
+}
+
+.payment-method {
+    color: var(--secondary-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Enhanced Status Badges */
+.status-badge-new {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+    .status-badge-new.pending {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffc107;
+    }
+
+    .status-badge-new.confirmed {
+        background-color: #cff4fc;
+        color: #055160;
+        border: 1px solid #17a2b8;
+    }
+
+    .status-badge-new.preparing {
+        background-color: rgba(139, 94, 60, 0.1);
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+    }
+
+    .status-badge-new.ready {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+
+    .status-badge-new.on-the-way {
+        background-color: #fff0e6;
+        color: #d63384;
+        border: 1px solid #fd7e14;
+    }
+
+    .status-badge-new.received {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #28a745;
+    }
+
+    .status-badge-new.cancelled {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #dc3545;
+    }
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.btn-view {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+    .btn-view:hover {
+        background-color: var(--primary-hover-color);
+        border-color: var(--primary-hover-color);
+        color: white;
+    }
+
+.btn-update {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    color: white;
+}
+
+    .btn-update:hover {
+        background-color: #138496;
+        border-color: #138496;
+        color: white;
+    }
+
+/* Enhanced Modal */
+.update-modal-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover-color));
+    color: white;
+    border-bottom: none;
+}
+
+.form-control-enhanced {
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    transition: border-color 0.2s ease;
+}
+
+    .form-control-enhanced:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(139, 94, 60, 0.15);
+    }
+
+.status-flow-guide {
+    background: var(--light-background);
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-top: 1rem;
+}
+
+.btn-action {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+    .btn-action:hover {
+        transform: translateY(-1px);
+    }
+
+/* Empty and No Results States */
+.empty-state, .no-results {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: white;
+    border-radius: 10px;
+    margin: 2rem 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .admin-order-header {
+        padding: 1.5rem;
+    }
+
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .admin-table-header th,
+    .admin-table-row td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .row.g-3 > div {
+        margin-bottom: 0.75rem;
+    }
+}
