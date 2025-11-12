@@ -197,3 +197,9 @@ $RECYCLE.BIN/
 node_modules
 */src/*/Scripts/**/*.js
 */src/*/Scripts/**/*.js.map
+
+# User uploaded content (admin-added menu photos)
+/ASI.Basecode.WebApp/wwwroot/uploads/
+
+# But keep the uploads folder structure by adding this exception:
+!/ASI.Basecode.WebApp/wwwroot/uploads/.gitkeep
