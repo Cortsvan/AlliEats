@@ -189,6 +189,70 @@
     }
 }
 
+/* Cancel Order Button Styles */
+.cancel-order-btn {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    border-radius: 10px;
+}
+
+    .cancel-order-btn:hover {
+        background: linear-gradient(135deg, #c82333, #bd2130);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(220, 53, 69, 0.3);
+        color: white;
+    }
+
+    .cancel-order-btn:active {
+        transform: translateY(0);
+    }
+
+    .cancel-order-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* Cancel Order Helper Text */
+    .cancel-order-btn + small {
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+    }
+
+/* Modal Enhancements */
+.modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header.bg-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333) !important;
+    border-bottom: none;
+}
+
+.modal-header.bg-success {
+    background: linear-gradient(135deg, #28a745, #1e7e34) !important;
+    border-bottom: none;
+}
+
+.modal-body {
+    padding: 2rem 1.5rem;
+}
+
+    .modal-body .alert-warning {
+        background: linear-gradient(135deg, #fff3cd, #ffeeba);
+        border: none;
+        border-left: 4px solid #ffc107;
+        border-radius: 10px;
+    }
+
 /* Legacy status styles (keeping for compatibility) */
 .status-icon {
     animation: pulse 2s infinite;
@@ -296,5 +360,9 @@
         left: 0.75rem;
         top: 1.75rem;
         height: 1.25rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem 1rem;
     }
 }

@@ -155,5 +155,54 @@ namespace ASI.Basecode.WebApp.Controllers
                 return Json(new { success = false, message = "An error occurred while confirming receipt." });
             }
         }
+
+        // POST: Order/CancelOrder
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CancelOrder(int orderId)
+        {
+            try
+            {
+                // Get userId from session
+                var userId = HttpContext.Session.GetString("UserId")
+                            ?? HttpContext.Session.GetString("UserName")
+                            ?? User.Identity.Name;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Json(new { success = false, message = "User session expired. Please login again." });
+                }
+
+                var order = _orderService.GetOrderById(orderId);
+
+                if (order == null)
+                {
+                    return Json(new { success = false, message = "Order not found." });
+                }
+
+                // Verify order belongs to current user (security check)
+                if (order.UserId != userId)
+                {
+                    return Json(new { success = false, message = "Access denied." });
+                }
+
+                // Verify order is in "Pending" status (only allow cancellation for pending orders)
+                if (order.Status != "Pending")
+                {
+                    return Json(new { success = false, message = $"Order cannot be cancelled at this time. Current status: {order.Status}. Orders can only be cancelled while pending." });
+                }
+
+                // Cancel the order
+                _orderService.CancelOrder(orderId);
+                _logger.LogInformation("Order {OrderId} cancelled by user {UserId}", orderId, userId);
+
+                return Json(new { success = true, message = "Order has been cancelled successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while cancelling order {OrderId}", orderId);
+                return Json(new { success = false, message = "An error occurred while cancelling the order." });
+            }
+        }
     }
 }
