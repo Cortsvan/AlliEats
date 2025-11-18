@@ -15,7 +15,7 @@
 @{
         var controller = ViewContext.RouteData.Values["controller"]?.ToString();
         var action = ViewContext.RouteData.Values["action"]?.ToString();
-        var isAccountPage = controller == "Account" && (action == "Login" || action == "Register" || action == "ForgotPassword");
+        var isAccountPage = controller == "Account" && (action == "Login" || action == "Register" || action == "ForgotPassword" || action == "ResetPassword" || action == "VerifyEmail");
 }
 <body>
     @if (!isAccountPage)

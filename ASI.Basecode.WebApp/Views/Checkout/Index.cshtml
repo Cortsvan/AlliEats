@@ -77,7 +77,14 @@
                                 <option value="">-- Select Payment Method --</option>
                                 @foreach (var method in Model.PaymentMethods)
                                 {
-                                    <option value="@method">@method</option>
+                                    if (method.ToLower() == "credit card" || method.ToLower() == "debit card" || method.ToLower() == "paymaya")
+                                    {
+                                        <option value="@method" disabled>@method</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@method">@method</option>
+                                    }
                                 }
                             </select>
                             <span asp-validation-for="PaymentMethod" class="text-danger"></span>

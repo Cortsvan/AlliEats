@@ -78,10 +78,10 @@ namespace ASI.Basecode.Services.ServiceModels
         public List<string> PaymentMethods { get; set; } = new List<string>
         {
             "Cash on Delivery",
-            "Credit Card",
-            "Debit Card",
             "GCash",
-            "PayMaya"
+            "PayMaya",
+            "Credit Card",
+            "Debit Card"
         };
     }
 }

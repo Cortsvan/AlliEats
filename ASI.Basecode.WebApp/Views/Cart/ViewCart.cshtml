@@ -74,7 +74,7 @@
                         </div>
 
                         <div class="text-center px-3" style="min-width: 120px;">
-                            <span class="item-total">@("P" + item.Price.ToString("F2"))</span>
+                            <span class="item-total">@("P" + (item.Quantity * item.Price).ToString("F2"))</span>
                         </div>
                         <div class="text-center">
                             <button type="button" class="remove-btn" onclick="confirmRemove(@item.Id, '@item.MenuItemName')">
