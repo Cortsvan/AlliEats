@@ -73,6 +73,7 @@ namespace ASI.Basecode.Services.ServiceModels
 
         // Cart summary for display
         public CartViewModel Cart { get; set; }
+        public ProfileViewModel UserProfile { get; set; }
 
         // Available payment methods
         public List<string> PaymentMethods { get; set; } = new List<string>

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ASI.Basecode.WebApp.Controllers
@@ -17,10 +18,12 @@ namespace ASI.Basecode.WebApp.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly ICartService _cartService;
+        private readonly IProfileService _profileService;
 
         public CheckoutController(
             IOrderService orderService,
             ICartService cartService,
+            IProfileService profileService,
             IHttpContextAccessor httpContextAccessor,
             ILoggerFactory loggerFactory,
             IConfiguration configuration,
@@ -28,6 +31,7 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             _orderService = orderService;
             _cartService = cartService;
+            _profileService = profileService;
         }
 
         // GET: Checkout
@@ -54,7 +58,21 @@ namespace ASI.Basecode.WebApp.Controllers
                     return RedirectToAction("Login", "Account");
                 }
 
+                // Check if user has complete delivery information
+                var userProfile = _profileService.GetProfile(userId);
+                if (!HasCompleteDeliveryInformation(userProfile))
+                {
+                    _logger.LogInformation("User {UserId} attempted checkout without complete delivery information", userId);
+                    TempData["ErrorMessage"] = "Please complete your delivery information before checkout.";
+                    TempData["MissingDeliveryInfo"] = GetMissingDeliveryFields(userProfile);
+                    return RedirectToAction("Edit", "Profile");
+                }
+
                 var checkoutModel = _orderService.PrepareCheckout(userId);
+
+                // Add user profile information to checkout model for display
+                checkoutModel.UserProfile = userProfile;
+
                 return View(checkoutModel);
             }
             catch (InvalidOperationException ex)
@@ -82,6 +100,37 @@ namespace ASI.Basecode.WebApp.Controllers
                 return Json(new { success = false, message = "Admins cannot place orders." });
             }
 
+            // Get userId from session
+            var userId = HttpContext.Session.GetString("UserId")
+                        ?? HttpContext.Session.GetString("UserName")
+                        ?? User.Identity.Name;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User session expired. Please login again." });
+            }
+
+            // Double-check delivery information before placing order
+            try
+            {
+                var userProfile = _profileService.GetProfile(userId);
+                if (!HasCompleteDeliveryInformation(userProfile))
+                {
+                    _logger.LogWarning("User {UserId} attempted to place order without complete delivery information", userId);
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Delivery information is incomplete. Please update your profile.",
+                        redirectUrl = Url.Action("Edit", "Profile")
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking delivery information for user {UserId}", userId);
+                return Json(new { success = false, message = "Error validating delivery information." });
+            }
+
             if (!ModelState.IsValid)
             {
                 var errors = string.Join(", ", ModelState.Values
@@ -93,16 +142,6 @@ namespace ASI.Basecode.WebApp.Controllers
 
             try
             {
-                // Get userId from session
-                var userId = HttpContext.Session.GetString("UserId")
-                            ?? HttpContext.Session.GetString("UserName")
-                            ?? User.Identity.Name;
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Json(new { success = false, message = "User session expired. Please login again." });
-                }
-
                 _logger.LogInformation("Creating order for user: {UserId}", userId);
                 var order = _orderService.CreateOrderFromCart(userId, model);
                 _logger.LogInformation("Order created successfully: {OrderNumber}", order.OrderNumber);
@@ -169,6 +208,40 @@ namespace ASI.Basecode.WebApp.Controllers
                 TempData["ErrorMessage"] = "An error occurred while retrieving your order.";
                 return RedirectToAction("Index", "Home");
             }
+        }
+
+        /// <summary>
+        /// Checks if user has complete delivery information required for checkout
+        /// </summary>
+        /// <param name="profile">User profile</param>
+        /// <returns>True if delivery information is complete</returns>
+        private bool HasCompleteDeliveryInformation(ProfileViewModel profile)
+        {
+            // Required fields for delivery
+            return !string.IsNullOrWhiteSpace(profile.Phone) &&
+                   !string.IsNullOrWhiteSpace(profile.Address) &&
+                   !string.IsNullOrWhiteSpace(profile.City);
+        }
+
+        /// <summary>
+        /// Gets a list of missing delivery fields for error messaging
+        /// </summary>
+        /// <param name="profile">User profile</param>
+        /// <returns>Comma-separated string of missing fields</returns>
+        private string GetMissingDeliveryFields(ProfileViewModel profile)
+        {
+            var missingFields = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(profile.Phone))
+                missingFields.Add("Phone Number");
+
+            if (string.IsNullOrWhiteSpace(profile.Address))
+                missingFields.Add("Address");
+
+            if (string.IsNullOrWhiteSpace(profile.City))
+                missingFields.Add("City");
+
+            return string.Join(", ", missingFields);
         }
     }
 }
