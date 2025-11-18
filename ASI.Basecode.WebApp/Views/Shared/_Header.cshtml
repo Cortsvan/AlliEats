@@ -4,16 +4,51 @@
     var user = HttpContextAccessor.HttpContext.User;
     var isAuthenticated = user.Identity.IsAuthenticated;
     var isAdmin = user.IsInRole("Admin");
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var isOnMenuPage = currentController?.Equals("Menu", StringComparison.OrdinalIgnoreCase) == true &&
+                       currentAction?.Equals("Browse", StringComparison.OrdinalIgnoreCase) == true;
 }
 
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-new">
         <div class="container-fluid">
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AlliEats</a>
+
+            <!-- Search Bar (only visible for users on menu page) -->
+            @if (isAuthenticated && !isAdmin && isOnMenuPage)
+            {
+                <div class="navbar-search-container d-none d-md-flex">
+                    <div class="search-wrapper">
+                        <input type="text"
+                               id="headerSearchInput"
+                               class="form-control search-input"
+                               placeholder="Search menu items..."
+                               autocomplete="off">
+                        <button type="button" id="headerSearchBtn" class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <button type="button" id="headerClearSearch" class="clear-search-btn" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <!-- Search Suggestions Dropdown -->
+                    <div id="searchSuggestions" class="search-suggestions" style="display: none;">
+                        <div class="suggestions-header">
+                            <span class="suggestions-title">Search Results</span>
+                        </div>
+                        <div id="suggestionsContent" class="suggestions-content">
+                            <!-- Dynamic suggestions will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            }
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
                 @if (isAuthenticated)
                 {
@@ -44,7 +79,7 @@
                     }
                     else
                     {
-                        // User Navbar
+                        <!-- User Navbar -->
                         <ul class="navbar-nav">
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
@@ -53,7 +88,10 @@
                                 <a class="nav-link" asp-area="" asp-controller="Menu" asp-action="Browse">Menu</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Cart" asp-action="ViewCart">Cart</a>
+                                <a class="nav-link" asp-controller="Cart" asp-action="ViewCart">
+                                    <i class="fas fa-shopping-cart me-1"></i>Cart
+                                    <span id="cartItemCount" class="cart-badge" style="display: none;">0</span>
+                                </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Order" asp-action="MyOrders">Orders</a>
@@ -72,7 +110,35 @@
                         </ul>
                     }
                 }
+
+                <!-- Mobile Search (only on menu page) -->
+                @if (isAuthenticated && !isAdmin && isOnMenuPage)
+                {
+                    <div class="mobile-search d-md-none">
+                        <button type="button" class="mobile-search-toggle" id="mobileSearchToggle">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                }
             </div>
         </div>
+
+        <!-- Mobile Search Dropdown -->
+        @if (isAuthenticated && !isAdmin && isOnMenuPage)
+        {
+            <div id="mobileSearchDropdown" class="mobile-search-dropdown d-md-none" style="display: none;">
+                <div class="container-fluid py-3">
+                    <div class="mobile-search-wrapper">
+                        <input type="text"
+                               id="mobileHeaderSearchInput"
+                               class="form-control mobile-search-input"
+                               placeholder="Search menu items...">
+                        <button type="button" id="mobileHeaderSearchBtn" class="mobile-search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
     </nav>
 </header>
