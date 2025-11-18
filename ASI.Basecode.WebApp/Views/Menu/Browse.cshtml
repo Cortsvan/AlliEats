@@ -26,10 +26,10 @@
     <div id="menu-all">
         @foreach (var category in categories)
         {
-            if (menuItemsByCategory.ContainsKey(category))
-            {
-                <div id="@category.Replace(" ", "-").ToLower()" class="category-section">
-                    <h2 class="category-title">@category</h2>
+            <div id="@category.Replace(" ", "-").ToLower()" class="category-section">
+                <h2 class="category-title">@category</h2>
+                @if (menuItemsByCategory.ContainsKey(category) && menuItemsByCategory[category].Any())
+                {
                     <div class="row g-4">
                         @foreach (var item in menuItemsByCategory[category])
                         {
@@ -65,8 +65,18 @@
                             </div>
                         }
                     </div>
-                </div>
-            }
+                }
+                else
+                {
+                    <div class="no-items-fallback">
+                        <div class="no-items-message">
+                            <i class="fas fa-utensils no-items-icon"></i>
+                            <h4>No items available in this category</h4>
+                            <p>We're working on adding delicious options to this section. Check back soon!</p>
+                        </div>
+                    </div>
+                }
+            </div>
         }
     </div>
 </div>

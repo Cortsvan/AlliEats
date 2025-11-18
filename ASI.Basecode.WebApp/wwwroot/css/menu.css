@@ -298,3 +298,25 @@
         cursor: not-allowed;
         background-color: #8B5E3C;
     }
+
+.no-items-fallback {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.no-items-icon {
+    font-size: 48px;
+    color: #ddd;
+    margin-bottom: 20px;
+}
+
+.no-items-message h4 {
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.no-items-message p {
+    color: #888;
+    font-size: 14px;
+}
