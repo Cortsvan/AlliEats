@@ -8,5 +8,7 @@ namespace ASI.Basecode.Services.Interfaces
         bool SubmitReview(ReviewViewModel model, string userId);
         MyReviewsViewModel GetUserReviews(string userId);
         MyReviewsViewModel GetAllReviews();
+        ReviewViewModel GetReviewForEdit(int orderId, string userId);
+        bool UpdateReview(int orderId, string userId, int rating, string comment);
     }
 }

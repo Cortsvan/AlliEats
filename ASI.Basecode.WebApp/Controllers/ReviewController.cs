@@ -161,6 +161,102 @@ namespace ASI.Basecode.WebApp.Controllers
                 return RedirectToAction("MyOrders", "Order");
             }
         }
+
+        // GET: Review/GetReviewForEdit
+        [HttpGet]
+        public IActionResult GetReviewForEdit(int orderId)
+        {
+            try
+            {
+                // Restrict admin access
+                var userRole = HttpContext.Session.GetString("UserRole");
+                if (userRole == "Admin")
+                {
+                    return Json(new { success = false, message = "Admins cannot edit reviews." });
+                }
+
+                // Get userId from session
+                var userId = HttpContext.Session.GetString("UserId")
+                            ?? HttpContext.Session.GetString("UserName")
+                            ?? User.Identity.Name;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Json(new { success = false, message = "User session expired. Please login again." });
+                }
+
+                var reviewModel = _reviewService.GetReviewForEdit(orderId, userId);
+
+                if (reviewModel == null)
+                {
+                    return Json(new { success = false, message = "Review not found or access denied." });
+                }
+
+                return Json(new
+                {
+                    success = true,
+                    review = new
+                    {
+                        orderId = reviewModel.OrderId,
+                        rating = reviewModel.Rating,
+                        comment = reviewModel.Comment ?? ""
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while loading review for edit. OrderId: {OrderId}", orderId);
+                return Json(new { success = false, message = "An error occurred while loading the review." });
+            }
+        }
+
+        // POST: Review/UpdateReview
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateReview(int orderId, int rating, string comment)
+        {
+            try
+            {
+                // Get userId from session
+                var userId = HttpContext.Session.GetString("UserId")
+                            ?? HttpContext.Session.GetString("UserName")
+                            ?? User.Identity.Name;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Json(new { success = false, message = "User session expired. Please login again." });
+                }
+
+                // Validate rating
+                if (rating < 1 || rating > 5)
+                {
+                    return Json(new { success = false, message = "Rating must be between 1 and 5 stars." });
+                }
+
+                // Validate comment length
+                if (!string.IsNullOrEmpty(comment) && comment.Length > 1000)
+                {
+                    return Json(new { success = false, message = "Comment cannot exceed 1000 characters." });
+                }
+
+                var success = _reviewService.UpdateReview(orderId, userId, rating, comment);
+
+                if (success)
+                {
+                    return Json(new { success = true, message = "Review updated successfully!" });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Unable to update your review. Please try again." });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while updating review for order {OrderId}", orderId);
+                return Json(new { success = false, message = "An error occurred while updating your review." });
+            }
+        }
+
         // GET: Review/AllReviews - Admin only
         public IActionResult AllReviews()
         {

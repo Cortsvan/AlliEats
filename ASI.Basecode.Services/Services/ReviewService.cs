@@ -53,6 +53,21 @@ namespace ASI.Basecode.Services.Services
             };
         }
 
+        public ReviewViewModel GetReviewForEdit(int orderId, string userId)
+        {
+            var review = _reviewRepository.GetReviewByOrderId(orderId);
+
+            if (review == null || review.UserId != userId)
+                return null;
+
+            return new ReviewViewModel
+            {
+                OrderId = orderId,
+                Rating = review.Rating,
+                Comment = review.Comment
+            };
+        }
+
         public bool SubmitReview(ReviewViewModel model, string userId)
         {
             try
@@ -71,6 +86,29 @@ namespace ASI.Basecode.Services.Services
                 };
 
                 _reviewRepository.AddReview(review);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateReview(int orderId, string userId, int rating, string comment)
+        {
+            try
+            {
+                var existingReview = _reviewRepository.GetReviewByOrderId(orderId);
+
+                if (existingReview == null || existingReview.UserId != userId)
+                    return false;
+
+                existingReview.Rating = rating;
+                existingReview.Comment = comment;
+                existingReview.UpdatedTime = DateTime.Now;
+                existingReview.UpdatedBy = userId;
+
+                _reviewRepository.UpdateReview(existingReview);
                 return true;
             }
             catch
@@ -105,6 +143,7 @@ namespace ASI.Basecode.Services.Services
                 }).ToList()
             };
         }
+
         public MyReviewsViewModel GetAllReviews()
         {
             var reviews = _reviewRepository.GetAllReviews();

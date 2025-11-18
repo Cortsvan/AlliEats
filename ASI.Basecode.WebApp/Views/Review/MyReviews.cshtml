@@ -92,8 +92,12 @@
                                             Reviewed on @review.ReviewDate.ToString("MMM dd, yyyy")
                                         </small>
                                     </div>
-                                    <div class="order-total">
+                                    <div class="d-flex align-items-center gap-2">
                                         <span class="fw-bold text-success">@("P" + review.OrderTotal.ToString("F2"))</span>
+                                        <button type="button" class="btn btn-sm btn-outline-primary edit-review-btn"
+                                                data-order-id="@review.OrderId">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -118,6 +122,66 @@
     }
 </div>
 
+<!-- Edit Review Modal -->
+<div class="modal fade" id="editReviewModal" tabindex="-1" aria-labelledby="editReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editReviewModalLabel">
+                    <i class="fas fa-edit me-2"></i>Edit Review
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editReviewForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="editOrderId" />
+
+                    <!-- Star Rating -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Rating <span class="text-danger">*</span></label>
+                        <div class="star-rating" id="editStarRating">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <span class="star" data-rating="@i">
+                                    <i class="far fa-star"></i>
+                                </span>
+                            }
+                        </div>
+                        <input type="hidden" id="editRatingInput" />
+                        <div id="editRatingText" class="rating-text mt-2"></div>
+                        <div id="editRatingError" class="text-danger mt-1" style="display: none;"></div>
+                    </div>
+
+                    <!-- Comment -->
+                    <div class="mb-4">
+                        <label for="editComment" class="form-label fw-bold">Your Comments (Optional)</label>
+                        <textarea id="editComment" class="form-control" rows="5"
+                                  placeholder="Tell us about your experience with this order..."
+                                  maxlength="1000"></textarea>
+                        <div class="text-muted small mt-1">
+                            <span id="editCharCount">0</span>/1000 characters
+                        </div>
+                        <div id="editCommentError" class="text-danger mt-1" style="display: none;"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="saveReviewBtn">
+                    <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Styles {
     <link rel="stylesheet" href="~/css/review.css" />
+}
+
+@section Scripts {
+    <script src="~/js/review.js"></script>
 }
