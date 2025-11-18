@@ -86,6 +86,40 @@
                         </div>
                     </div>
 
+                    @if (Model.Status == "On the Way")
+                    {
+                        var timeSinceUpdate = DateTime.Now - (Model.UpdatedTime ?? Model.CreatedTime);
+                        var remainingTime = TimeSpan.FromHours(2) - timeSinceUpdate;
+                        var isOverdue = remainingTime.TotalMinutes <= 0;
+
+                        <div class="timer-info-section mt-3">
+                            <div class="alert @(isOverdue ? "alert-warning" : "alert-info") timer-alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas @(isOverdue ? "fa-exclamation-triangle" : "fa-hourglass-half") me-2"></i>
+                                    <div class="flex-grow-1">
+                                        <strong>Auto-Receipt Timer</strong>
+                                        <div class="timer-details">
+                                            @if (isOverdue)
+                                            {
+                                                <span class="text-warning">⚠️ This order is overdue and will be automatically marked as "Received" shortly.</span>
+                                            }
+                                            else
+                                            {
+                                                <span>This order will be automatically marked as "Received" in:</span>
+                                                <div class="countdown-display" data-remaining="@remainingTime.TotalSeconds">
+                                                    <span class="countdown-time">@(remainingTime.Hours)h @(remainingTime.Minutes)m</span>
+                                                </div>
+                                            }
+                                        </div>
+                                        <small class="text-muted">
+                                            Started: @((Model.UpdatedTime ?? Model.CreatedTime).ToString("MMM dd, yyyy h:mm tt"))
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
                     @if (!string.IsNullOrEmpty(Model.Notes))
                     {
                         <div class="customer-notes-section">
@@ -215,7 +249,11 @@
                                 <i class="fas fa-truck"></i>
                                 <div>
                                     <strong>Waiting for Customer</strong>
-                                    <p>Order is out for delivery. Customer will confirm receipt.</p>
+                                    <p>Order is out for delivery. Customer will confirm receipt or it will be auto-confirmed after 2 hours.</p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>
+                                        Timer started: @((Model.UpdatedTime ?? Model.CreatedTime).ToString("h:mm tt"))
+                                    </small>
                                 </div>
                             </div>
                         }
@@ -333,7 +371,7 @@
                             <strong>Admin Flow:</strong> Pending → Confirmed → Preparing → Ready → On the Way
                             <br>
                             <i class="fas fa-info-circle me-1"></i>
-                            <strong>Note:</strong> Only customers can confirm receipt
+                            <strong>Note:</strong> Orders marked as "On the Way" will auto-confirm after 2 hours
                         </small>
                     </div>
                 </div>

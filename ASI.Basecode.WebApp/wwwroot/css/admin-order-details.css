@@ -514,3 +514,37 @@
         font-size: 0.7rem;
     }
 }
+.timer-info-section {
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+}
+
+.timer-alert {
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.countdown-display {
+    margin-top: 0.5rem;
+}
+
+.countdown-time {
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #007bff;
+    background: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+.timer-details {
+    margin-top: 0.5rem;
+}
+
+.status-info.pending-customer small {
+    display: block;
+    margin-top: 0.5rem;
+}

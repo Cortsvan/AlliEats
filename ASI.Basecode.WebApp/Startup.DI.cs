@@ -42,6 +42,9 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<IOtpService, OtpService>();
             this._services.AddScoped<IReviewService, ReviewService>();
 
+            // Background Services
+            this._services.AddHostedService<OrderTimerService>();
+
             // Repositories
             this._services.AddScoped<IUserRepository, UserRepository>();
             this._services.AddScoped<IMenuRepository, MenuRepository>();

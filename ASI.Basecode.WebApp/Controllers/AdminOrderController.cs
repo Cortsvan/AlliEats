@@ -73,7 +73,16 @@ namespace ASI.Basecode.WebApp.Controllers
                 }
 
                 _orderService.UpdateOrderStatus(orderId, status);
-                TempData["SuccessMessage"] = $"Order status updated to {status} successfully.";
+
+                // Add special message for "On the Way" status
+                if (status == "On the Way")
+                {
+                    TempData["SuccessMessage"] = $"Order status updated to {status}. The order will be automatically marked as 'Received' after 2 hours if not confirmed by the customer.";
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = $"Order status updated to {status} successfully.";
+                }
             }
             catch (Exception ex)
             {

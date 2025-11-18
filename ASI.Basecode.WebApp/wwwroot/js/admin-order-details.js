@@ -260,3 +260,59 @@ const adminRippleCSS = `
 const style = document.createElement('style');
 style.textContent = adminRippleCSS;
 document.head.appendChild(style);
+
+// Countdown timer for "On the Way" orders
+document.addEventListener('DOMContentLoaded', function () {
+    const countdownDisplay = document.querySelector('.countdown-display');
+    if (countdownDisplay) {
+        const remainingSeconds = parseInt(countdownDisplay.getAttribute('data-remaining'));
+        if (remainingSeconds > 0) {
+            startCountdown(remainingSeconds);
+        }
+    }
+});
+
+function startCountdown(seconds) {
+    const countdownElement = document.querySelector('.countdown-time');
+    if (!countdownElement) return;
+
+    const timer = setInterval(function () {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+
+        if (seconds <= 0) {
+            clearInterval(timer);
+            // Show overdue message and refresh page
+            const alert = document.querySelector('.timer-alert');
+            alert.className = 'alert alert-warning timer-alert';
+            alert.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <div>
+                                <strong>Auto-Receipt Timer</strong>
+                                <div>⚠️ This order is now overdue and will be automatically marked as "Received" shortly.</div>
+                                <button onclick="location.reload()" class="btn btn-sm btn-warning mt-2">
+                                    <i class="fas fa-sync-alt me-1"></i>Refresh Page
+                                </button>
+                            </div>
+                        </div>
+                    `;
+            return;
+        }
+
+        if (hours > 0) {
+            countdownElement.textContent = `${hours}h ${minutes}m`;
+        } else if (minutes > 0) {
+            countdownElement.textContent = `${minutes}m ${secs}s`;
+        } else {
+            countdownElement.textContent = `${secs}s`;
+        }
+
+        seconds--;
+    }, 1000);
+}
+
+function refreshPage() {
+    location.reload();
+}
