@@ -203,3 +203,44 @@ body {
 .hidden {
     display: none !important;
 }
+
+/* Add these styles to your existing cart.css */
+
+.cart-item-card.stock-issue {
+    border-left: 4px solid #ffc107;
+    background-color: #fef9e7;
+}
+
+.stock-indicator {
+    margin-top: 0.5rem;
+}
+
+    .stock-indicator .text-danger {
+        color: #dc3545 !important;
+    }
+
+    .stock-indicator .text-warning {
+        color: #f0ad4e !important;
+    }
+
+.btn-checkout.disabled {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    opacity: 0.65;
+}
+
+#stockIssuesAlert {
+    animation: slideDown 0.3s ease-in-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

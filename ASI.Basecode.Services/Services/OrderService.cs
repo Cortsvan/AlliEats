@@ -203,6 +203,15 @@ namespace ASI.Basecode.Services.Services
                 throw new InvalidOperationException("Cart is empty. Cannot create order.");
             }
 
+            foreach (var cartItem in cart.CartItems)
+            {
+                if (!_menuRepository.HasSufficientStock(cartItem.MenuItemId, cartItem.Quantity))
+                {
+                    var menuItem = _menuRepository.GetMenuItemById(cartItem.MenuItemId);
+                    throw new InvalidOperationException($"Insufficient stock for {cartItem.MenuItemName}. Only {menuItem?.Stock ?? 0} items available.");
+                }
+            }
+
             var order = new Order
             {
                 UserId = userId,
@@ -229,6 +238,7 @@ namespace ASI.Basecode.Services.Services
                 };
 
                 order.OrderItems.Add(orderItem);
+                _menuRepository.DecrementStock(cartItem.MenuItemId, cartItem.Quantity);
             }
 
             // Save the order
@@ -249,7 +259,7 @@ namespace ASI.Basecode.Services.Services
                 Notes = order.Notes,
                 CreatedTime = order.CreatedTime,
                 UpdatedTime = order.UpdatedTime,
-                HasReview = false, // New orders don't have reviews
+                HasReview = false,
                 OrderItems = order.OrderItems.Select(oi => new OrderItemViewModel
                 {
                     Id = oi.Id,

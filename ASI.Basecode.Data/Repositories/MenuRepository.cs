@@ -58,5 +58,35 @@ namespace ASI.Basecode.Data.Repositories
             }
             return query.Any();
         }
+
+        public bool HasSufficientStock(int menuItemId, int requestedQuantity)
+        {
+            var menuItem = GetMenuItemById(menuItemId);
+            return menuItem != null && menuItem.IsActive && menuItem.Stock >= requestedQuantity;
+        }
+
+        public void DecrementStock(int menuItemId, int quantity)
+        {
+            var menuItem = GetMenuItemById(menuItemId);
+            if (menuItem != null && menuItem.Stock >= quantity)
+            {
+                menuItem.Stock -= quantity;
+                menuItem.UpdatedTime = System.DateTime.Now;
+                menuItem.UpdatedBy = System.Environment.UserName;
+                UpdateMenuItem(menuItem);
+            }
+        }
+
+        public void IncrementStock(int menuItemId, int quantity)
+        {
+            var menuItem = GetMenuItemById(menuItemId);
+            if (menuItem != null)
+            {
+                menuItem.Stock += quantity;
+                menuItem.UpdatedTime = System.DateTime.Now;
+                menuItem.UpdatedBy = System.Environment.UserName;
+                UpdateMenuItem(menuItem);
+            }
+        }
     }
 }

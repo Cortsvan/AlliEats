@@ -16,6 +16,11 @@ namespace ASI.Basecode.Services.ServiceModels
         [Display(Name = "Price ($)")]
         public decimal Price { get; set; }
 
+        [Required(ErrorMessage = "Stock quantity is required")]
+        [Range(0, int.MaxValue, ErrorMessage = "Stock must be 0 or greater")]
+        [Display(Name = "Stock Quantity")]
+        public int Stock { get; set; }
+
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
         public string Description { get; set; }
 

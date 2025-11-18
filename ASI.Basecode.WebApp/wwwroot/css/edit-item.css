@@ -151,6 +151,143 @@
         color: #6c757d;
     }
 
+/* NEW: Stock Management Styles */
+
+/* Stock Status Badge in Header */
+.stock-status-badge .badge {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    font-weight: 600;
+}
+
+/* Stock Input Group */
+.stock-input-group {
+    position: relative;
+}
+
+.stock-input {
+    border-radius: 6px 6px 0 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.stock-quick-actions {
+    display: flex;
+    gap: 2px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    padding: 4px;
+    justify-content: center;
+}
+
+    .stock-quick-actions .btn {
+        padding: 3px 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border-radius: 4px;
+        transition: all 0.15s ease;
+        min-width: 35px;
+    }
+
+        .stock-quick-actions .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .stock-quick-actions .btn.btn-feedback {
+            transform: scale(0.95);
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+/* Stock Summary Card */
+.stock-summary-card {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.stock-summary-title {
+    margin: 0 0 12px 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 8px;
+}
+
+.stock-summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.stock-summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    padding: 4px 0;
+}
+
+.summary-label {
+    font-weight: 500;
+    color: #6c757d;
+    flex: 1;
+}
+
+.summary-value {
+    font-weight: 600;
+    color: var(--dark-text-color);
+    text-align: right;
+    flex: 0 0 auto;
+}
+
+/* Stock Warnings */
+.stock-warnings {
+    margin-top: 1rem;
+}
+
+.alert-sm {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+}
+
+    .alert-sm i {
+        margin-right: 6px;
+    }
+
+/* Stock Preview Text */
+#stock-preview-text {
+    color: #6c757d;
+    font-style: italic;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+}
+
+/* Enhanced transitions for stock changes */
+.stock-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(139, 94, 60, 0.25);
+}
+
+.stock-summary-item .summary-value {
+    transition: all 0.3s ease;
+}
+
+    .stock-summary-item .summary-value.updated {
+        color: var(--primary-color);
+        font-weight: 700;
+    }
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .current-image-container {
@@ -170,5 +307,48 @@
     .current-image.full-size {
         max-width: 95vw;
         max-height: 80vh;
+    }
+
+    /* Stock management mobile adjustments */
+    .stock-quick-actions {
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 6px;
+    }
+
+        .stock-quick-actions .btn {
+            flex: 1;
+            min-width: auto;
+        }
+
+    .stock-summary-card {
+        padding: 12px;
+        margin-top: 10px;
+    }
+
+    .stock-summary-item {
+        font-size: 0.8rem;
+    }
+
+    .stock-status-badge .badge {
+        font-size: 0.7rem;
+        padding: 4px 6px;
+    }
+}
+
+/* Dark mode considerations (if you implement it later) */
+@media (prefers-color-scheme: dark) {
+    .stock-summary-card {
+        background: linear-gradient(135deg, #2d3748, #4a5568);
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+
+    .summary-label {
+        color: #a0aec0;
+    }
+
+    .summary-value {
+        color: #e2e8f0;
     }
 }

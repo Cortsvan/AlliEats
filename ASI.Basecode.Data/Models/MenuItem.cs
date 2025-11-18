@@ -14,7 +14,10 @@ namespace ASI.Basecode.Data.Models
         [Required]
         [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
         public decimal Price { get; set; }
-        
+        [Required]
+        [Range(0, int.MaxValue, ErrorMessage = "Stock must be 0 or greater")]
+        public int Stock { get; set; }
+
         [StringLength(500)]
         public string Description { get; set; }
 

@@ -88,5 +88,19 @@ namespace ASI.Basecode.Services.Services
         {
             return _repository.MenuItemExists(name, excludeId);
         }
+        public bool HasSufficientStock(int menuItemId, int requestedQuantity)
+        {
+            return _repository.HasSufficientStock(menuItemId, requestedQuantity);
+        }
+
+        public void DecrementStock(int menuItemId, int quantity)
+        {
+            _repository.DecrementStock(menuItemId, quantity);
+        }
+
+        public void IncrementStock(int menuItemId, int quantity)
+        {
+            _repository.IncrementStock(menuItemId, quantity);
+        }
     }
 }

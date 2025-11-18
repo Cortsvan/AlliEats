@@ -40,6 +40,11 @@ namespace ASI.Basecode.Services.Services
                 throw new InvalidOperationException("Menu item not found or not available.");
             }
 
+            if (!_menuRepository.HasSufficientStock(menuItemId, quantity))
+            {
+                throw new InvalidOperationException("Insufficient stock. Only " + menuItem.Stock + " items available.");
+            }
+
             var cart = _cartRepository.GetCartByUserId(userId);
             if (cart == null)
             {
@@ -56,6 +61,13 @@ namespace ASI.Basecode.Services.Services
             var existingCartItem = cart.CartItems.FirstOrDefault(x => x.MenuItemId == menuItemId);
             if (existingCartItem != null)
             {
+                var totalQuantity = existingCartItem.Quantity + quantity;
+
+                if (!_menuRepository.HasSufficientStock(menuItemId, totalQuantity))
+                {
+                    throw new InvalidOperationException("Cannot add " + quantity + " more items. Only " + (menuItem.Stock  - existingCartItem.Quantity) + " more items available.");
+                }
+
                 existingCartItem.Quantity += quantity;
                 existingCartItem.UpdatedTime = DateTime.Now;
                 _cartRepository.UpdateCartItem(existingCartItem);
@@ -92,6 +104,11 @@ namespace ASI.Basecode.Services.Services
             }
             else
             {
+                if (!_menuRepository.HasSufficientStock(cartItem.MenuItemId, quantity))
+                {
+                    var menuItem = _menuRepository.GetMenuItemById(cartItem.MenuItemId);
+                    throw new InvalidOperationException("Insufficient stock. Only " + menuItem?.Stock + " items available.");
+                }
                 cartItem.Quantity = quantity;
                 cartItem.UpdatedTime = DateTime.Now;
                 _cartRepository.UpdateCartItem(cartItem);

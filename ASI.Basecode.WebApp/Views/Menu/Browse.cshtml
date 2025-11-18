@@ -34,14 +34,27 @@
                         @foreach (var item in menuItemsByCategory[category])
                         {
                             <div class="col-lg-4 col-md-6">
-                                <div class="menu-item-card"
+                                <div class="menu-item-card @(item.Stock == 0 ? "out-of-stock" : "")"
                                      data-id="@item.Id"
                                      data-name="@item.Name"
                                      data-description="@item.Description"
                                      data-price="@item.Price"
+                                     data-stock="@item.Stock"
                                      data-image="@item.ImagePath">
                                     <div class="menu-item-image-container">
                                         <img src="@(string.IsNullOrEmpty(item.ImagePath) ? "/img/placeholder-food.png" : item.ImagePath)" alt="@item.Name" class="menu-item-preview-img" />
+                                        @if (item.Stock == 0)
+                                        {
+                                            <div class="stock-overlay">
+                                                <span class="out-of-stock-label">Out of Stock</span>
+                                            </div>
+                                        }
+                                        else if (item.Stock <= 5)
+                                        {
+                                            <div class="stock-badge low-stock">
+                                                Only @item.Stock left!
+                                            </div>
+                                        }
                                     </div>
                                     <div class="menu-item-content">
                                         <h5 class="menu-item-name">@item.Name</h5>

@@ -14,7 +14,7 @@
 
     @if (TempData["SuccessMessage"] != null)
     {
-        
+
     }
 
     @if (TempData["ErrorMessage"] != null)
@@ -25,20 +25,41 @@
         </div>
     }
 
+    <!-- Stock Issues Alert (Hidden by default) -->
+    <div class="alert alert-warning alert-dismissible fade show d-none" id="stockIssuesAlert" role="alert">
+        <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+                <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Stock Issues Detected</h6>
+                <div id="stockIssuesContent"></div>
+            </div>
+            <div class="ms-3">
+                <button type="button" class="btn btn-warning btn-sm" id="autoFixStockBtn">
+                    <i class="fas fa-magic me-2"></i>Auto-fix Issues
+                </button>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
     <div class="row @(Model.CartItems.Any() ? "" : "hidden")" id="cart-content-wrapper">
 
         <div class="col-lg-8" id="cart-items-container">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4 class="mb-0" id="cart-item-count">Cart Items (@Model.TotalItems)</h4>
-                <a href="@Url.Action("Browse", "Menu")" class="btn btn-outline-primary">
-                    <i class="fas fa-arrow-left me-2"></i>Continue Shopping
-                </a>
+                <div>
+                    <button type="button" class="btn btn-outline-info me-2" id="checkStockBtn">
+                        <i class="fas fa-sync me-2"></i>Check Stock
+                    </button>
+                    <a href="@Url.Action("Browse", "Menu")" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                    </a>
+                </div>
             </div>
 
             <div id="cart-items-list">
                 @foreach (var item in Model.CartItems)
                 {
-                    <div class="cart-item-card mb-3" data-item-id="@item.Id">
+                    <div class="cart-item-card mb-3" data-item-id="@item.Id" data-menu-item-id="@item.MenuItemId">
                         <div class="cart-item-image">
                             <img src="@(string.IsNullOrEmpty(item.MenuItemImagePath) ? "/images/placeholder-food.jpg" : item.MenuItemImagePath)"
                                  alt="@item.MenuItemName"
@@ -50,8 +71,15 @@
                                 @(item.MenuItemDescription != null && item.MenuItemDescription.Length > 80 ? item.MenuItemDescription.Substring(0, 80) + "..." : item.MenuItemDescription)
                             </p>
                             <span class="badge badge-category">@item.MenuItemCategory</span>
+                            <!-- Stock indicator (will be populated via JavaScript) -->
+                            <div class="stock-indicator mt-1 d-none">
+                                <small class="text-muted">
+                                    <i class="fas fa-box me-1"></i>
+                                    <span class="stock-text"></span>
+                                </small>
+                            </div>
                         </div>
-                        <div classtext-center px-3" style="min-width: 100px;">
+                        <div class="text-center px-3" style="min-width: 100px;">
                             <span class="item-price" data-unit-price="@item.Price.ToString("F2")">@("P" + item.Price.ToString("F2"))</span>
                         </div>
 
@@ -117,7 +145,7 @@
                         </li>
                     </ul>
                     <div class="d-grid mt-4">
-                        <a href="@Url.Action("Index", "Checkout")" class="btn btn-checkout btn-lg">
+                        <a href="@Url.Action("Index", "Checkout")" class="btn btn-checkout btn-lg" id="checkoutBtn">
                             <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
                         </a>
                     </div>
@@ -125,7 +153,8 @@
             </div>
         </div>
 
-    </div> <div class="col-12 @(Model.CartItems.Any() ? "hidden" : "")" id="empty-cart-container">
+    </div>
+    <div class="col-12 @(Model.CartItems.Any() ? "hidden" : "")" id="empty-cart-container">
         <div class="empty-cart-container">
             <div class="icon"><i class="fas fa-shopping-bag"></i></div>
             <h3 class="mt-4">Your cart is empty</h3>
@@ -184,7 +213,6 @@
         </div>
     </div>
 }
-
 
 @section Scripts {
     <script src="~/js/cart.js"></script>

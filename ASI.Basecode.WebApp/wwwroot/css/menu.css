@@ -79,6 +79,17 @@
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
 
+    /* --- NEW: Stock-related styles for menu cards --- */
+    .menu-item-card.out-of-stock {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+        .menu-item-card.out-of-stock:hover {
+            transform: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
 /* Image Container for Aspect Ratio */
 .menu-item-image-container {
     width: 100%;
@@ -95,6 +106,46 @@
     height: 100%;
     object-fit: cover; /* This makes the image cover the container without distortion */
 }
+
+/* --- NEW: Stock overlay and badges --- */
+.stock-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px 10px 0 0;
+}
+
+.out-of-stock-label {
+    background: #dc3545;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.stock-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    z-index: 10;
+}
+
+    .stock-badge.low-stock {
+        background: #ffc107;
+        color: #000;
+    }
 
 /* Card Content */
 .menu-item-content {
@@ -146,6 +197,32 @@
     color: #28a745;
 }
 
+/* --- NEW: Stock display in modal --- */
+.stock-display {
+    text-align: left;
+}
+
+.stock-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+    .stock-indicator.in-stock {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .stock-indicator.low-stock {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+
 /* Quantity Selector */
 .quantity-selector {
     margin-bottom: 1.5rem;
@@ -162,7 +239,18 @@
     border: 1px solid #ccc;
     background-color: #f8f9fa;
     font-size: 1.2rem;
+    transition: all 0.2s ease;
 }
+
+    .quantity-btn:hover:not(:disabled) {
+        background-color: #e9ecef;
+    }
+
+    .quantity-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #f8f9fa;
+    }
 
 #quantity-input {
     width: 50px;
@@ -171,6 +259,24 @@
     border-left: none;
     border-right: none;
     height: 35px;
+    background-color: #f8f9fa;
+}
+
+/* --- NEW: Stock warning styles --- */
+.stock-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* --- NEW: Stock alert styles --- */
+.stock-alert {
+    margin-bottom: 1rem;
+    border-radius: 8px;
 }
 
 #confirmAddToCart {
@@ -180,8 +286,15 @@
     background-color: #8B5E3C; /* Matching brown for the add to cart button */
     color: white;
     border: none;
+    transition: all 0.2s ease;
 }
 
-    #confirmAddToCart:hover {
+    #confirmAddToCart:hover:not(:disabled) {
         background-color: #7a5334;
+    }
+
+    #confirmAddToCart:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        background-color: #8B5E3C;
     }

@@ -104,6 +104,7 @@
                                         <th>Description</th>
                                         <th width="100" class="text-center">Status</th>
                                         <th width="120" class="text-center">Actions</th>
+                                        <th width="100" class="text-center">Stock</th>
                                     </tr>
                                 </thead>
                                 <tbody id="menuItemsTable">
@@ -157,6 +158,27 @@
                                                 }
                                             </td>
                                             <td class="text-center">
+                                                <div class="stock-info">
+                                                    <span class="stock-number @(item.Stock == 0 ? "text-danger" : item.Stock <= 5 ? "text-warning" : "text-success")">
+                                                        @item.Stock
+                                                    </span>
+                                                    <div class="stock-status">
+                                                        @if (item.Stock == 0)
+                                                        {
+                                                            <span class="badge bg-danger">Out of Stock</span>
+                                                        }
+                                                        else if (item.Stock <= 5)
+                                                        {
+                                                            <span class="badge bg-warning">Low Stock</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-success">In Stock</span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
                                                 <div class="action-buttons">
                                                     <a href="@Url.Action("EditItem", "AdminMenu", new { id = item.Id })"
                                                        class="btn btn-sm btn-edit" title="Edit">
@@ -172,6 +194,7 @@
                                                 </div>
                                             </td>
                                         </tr>
+
                                     }
                                 </tbody>
                             </table>

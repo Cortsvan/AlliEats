@@ -14,5 +14,8 @@ namespace ASI.Basecode.Services.Interfaces
         void DeleteMenuItem(int id);
         bool MenuItemExists(int id);
         bool MenuItemNameExists(string name, int? excludeId = null);
+        bool HasSufficientStock(int menuItemId, int requestedQuantity);
+        void DecrementStock(int menuItemId, int quantity);
+        void IncrementStock(int menuItemId, int quantity);
     }
 }
