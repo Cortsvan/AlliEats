@@ -1,229 +1,344 @@
-﻿/* General Menu Container */
-.menu-container {
-    padding: 2rem 1rem;
-    max-width: 1200px;
-    margin: auto;
+﻿/* --- 1. Hero Section --- */
+.menu-hero-section {
+    padding: 3rem 1rem 1.5rem;
+    background-color: transparent;
+    margin-bottom: 1rem;
 }
 
-/* Menu Header */
-.menu-header {
-    text-align: center;
-    margin-bottom: 2.5rem;
+.menu-title {
+    font-family: var(--font-family-sans-serif);
+    color: #5C4033;
+    font-weight: 800;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
 }
 
-    .menu-header h1 {
-        font-weight: 700;
-        color: #333;
-    }
-
-    .menu-header p {
-        font-size: 1.1rem;
-        color: #666;
-    }
-
-/* --- UPDATED: Category Filters with Brown Theme --- */
-.category-filters {
-    text-align: center;
-    margin-bottom: 2.5rem;
+.menu-subtitle {
+    color: #998A7E;
+    font-size: 1rem;
+    font-weight: 400;
 }
 
-.category-btn {
-    background-color: #f8f5f2; /* Light beige background */
-    border: 1px solid #dcdcdc;
-    color: #5c4033; /* Dark brown text */
-    border-radius: 20px;
-    padding: 8px 20px;
-    margin: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 500;
-}
-
-    .category-btn.active,
-    .category-btn:hover {
-        background-color: #8B5E3C; /* Rich, woody brown */
-        color: #fff; /* White text */
-        border-color: #7a5334;
-    }
-
-/* Category Section */
-.category-section {
+/* --- 2. Category Navigation --- */
+.category-nav-container {
     margin-bottom: 3rem;
+    text-align: center;
 }
 
-.category-title {
-    font-size: 1.8rem;
+.category-filters {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+/* Styling the original class name: .category-btn */
+.category-btn {
+    background: transparent;
+    border: none;
+    color: #998A7E;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
     font-weight: 600;
-    margin-bottom: 1.5rem;
-    border-bottom: 2px solid #8B5E3C; /* Matching brown underline */
-    padding-bottom: 0.5rem;
-    display: inline-block;
-    color: #4a3f35;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
-/* New Menu Item Card Design */
+    .category-btn:hover {
+        color: #5C4033;
+        background-color: rgba(139, 94, 60, 0.05);
+    }
+
+    .category-btn.active {
+        background-color: #8B5E3C;
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(139, 94, 60, 0.2);
+    }
+
+/* --- 3. Section Headers --- */
+.category-section {
+    margin-bottom: 4rem;
+}
+
+.section-label {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #5C4033;
+    margin-bottom: 1.5rem;
+}
+
+/* --- 4. Carousel Navigation Styles --- */
+.category-carousel-wrapper {
+    position: relative;
+    padding: 0 50px;
+}
+
+.category-carousel-container {
+    overflow: hidden;
+    width: 100%;
+}
+
+.category-carousel-track {
+    display: flex;
+    gap: 1.5rem;
+    transition: transform 0.5s ease;
+    padding: 1rem 0;
+}
+
+.carousel-item-wrapper {
+    flex: 0 0 calc(33.333% - 1rem);
+    min-width: calc(33.333% - 1rem);
+}
+
+.carousel-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid #8B5E3C;
+    color: #8B5E3C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-nav-btn:hover {
+    background: #8B5E3C;
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.carousel-prev {
+    left: 0;
+}
+
+.carousel-next {
+    right: 0;
+}
+
+/* --- 5. Menu Card Design --- */
+/* Styling the original class name: .menu-item-card */
 .menu-item-card {
-    background-color: #fff;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    background: #FFFFFF;
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    height: 100%; /* Ensures cards in a row are the same height */
+    cursor: pointer;
+    position: relative;
 }
 
     .menu-item-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
     }
 
-    /* --- NEW: Stock-related styles for menu cards --- */
-    .menu-item-card.out-of-stock {
-        opacity: 0.7;
-        cursor: not-allowed;
-    }
-
-        .menu-item-card.out-of-stock:hover {
-            transform: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-
-/* Image Container for Aspect Ratio */
-.menu-item-image-container {
-    width: 100%;
-    padding-top: 75%; /* 4:3 Aspect Ratio */
+/* Image Area */
+.card-img-wrapper {
     position: relative;
+    width: 100%;
+    padding-top: 65%;
     overflow: hidden;
+    border-radius: 20px 20px 0 0;
 }
 
-.menu-item-preview-img {
+.card-img-top {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* This makes the image cover the container without distortion */
+    object-fit: cover;
 }
 
-/* --- NEW: Stock overlay and badges --- */
-.stock-overlay {
+/* Sold Out Badge */
+.badge-sold-out {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px 10px 0 0;
-}
-
-.out-of-stock-label {
-    background: #dc3545;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #dc3545;
     color: white;
-    padding: 8px 16px;
+    padding: 6px 16px;
     border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 2;
 }
 
-.stock-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: white;
-    z-index: 10;
+.out-of-stock .card-img-top {
+    opacity: 0.6;
 }
 
-    .stock-badge.low-stock {
-        background: #ffc107;
-        color: #000;
-    }
+.menu-item-card.out-of-stock {
+    cursor: default;
+}
 
 /* Card Content */
-.menu-item-content {
+.card-body-custom {
     padding: 1.25rem;
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* Allows content to fill remaining space */
+    flex-grow: 1;
+}
+
+.card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
 }
 
 .menu-item-name {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #333;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #4a3f35;
+    margin: 0;
+    line-height: 1.3;
+    padding-right: 10px;
+}
+
+.card-price {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #8B5E3C;
+    white-space: nowrap;
 }
 
 .menu-item-description {
-    font-size: 0.9rem;
-    color: #777;
-    flex-grow: 1; /* Pushes the price to the bottom */
+    font-size: 0.8rem;
+    color: #998A7E;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Rating Styles */
+.menu-item-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin-bottom: 1rem;
 }
 
-.price {
-    font-size: 1.3rem;
-    font-weight: 700;
-    text-align: right;
+.rating-stars {
+    color: #ffc107;
+    font-size: 0.85rem;
+    display: flex;
+    gap: 2px;
 }
 
-/* Modal Styles */
-.modal-content {
-    border-radius: 15px;
+.rating-stars .text-muted {
+    color: #ddd !important;
+}
+
+.rating-count {
+    color: #636e72;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.card-action {
+    margin-top: auto;
+    text-align: center;
+    padding-top: 0.5rem;
+}
+
+.add-btn-text {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #998A7E;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: color 0.2s;
+}
+
+.menu-item-card:not(.out-of-stock):hover .add-btn-text {
+    color: #8B5E3C;
+}
+
+/* --- 6. Item Details Modal Styles (Same as Index.cshtml) --- */
+.modal-item-image-wrapper {
+    background: linear-gradient(135deg, #fff5eb 0%, #ffe8d4 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.modal-item-image-wrapper::before {
+    content: '';
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: rgba(253, 126, 20, 0.1);
+    border-radius: 50%;
 }
 
 .modal-item-img {
     width: 100%;
-    height: auto;
-    max-height: 400px;
+    height: 100%;
     object-fit: cover;
-    border-radius: 10px;
+    z-index: 1;
 }
 
 .modal-item-name {
+    font-size: 1.75rem;
     font-weight: 700;
+    color: #2d3436;
+    margin-bottom: 0.75rem;
+}
+
+.modal-item-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+}
+
+.modal-item-category {
+    color: #6c757d;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.modal-item-description {
+    color: #636e72;
+    line-height: 1.6;
+    margin-bottom: 1rem;
 }
 
 .modal-item-price {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #28a745;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #8B5E3C;
 }
 
-/* --- NEW: Stock display in modal --- */
-.stock-display {
-    text-align: left;
-}
-
-.stock-indicator {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-    .stock-indicator.in-stock {
-        background-color: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-    }
-
-    .stock-indicator.low-stock {
-        background-color: #fff3cd;
-        color: #856404;
-        border: 1px solid #ffeaa7;
-    }
-
-/* Quantity Selector */
 .quantity-selector {
     margin-bottom: 1.5rem;
 }
@@ -231,92 +346,94 @@
 .quantity-controls {
     display: flex;
     align-items: center;
+    gap: 1rem;
 }
 
 .quantity-btn {
-    width: 35px;
-    height: 35px;
-    border: 1px solid #ccc;
-    background-color: #f8f9fa;
-    font-size: 1.2rem;
-    transition: all 0.2s ease;
+    width: 40px;
+    height: 40px;
+    border: 2px solid #8B5E3C;
+    background: white;
+    color: #8B5E3C;
+    border-radius: 50%;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-    .quantity-btn:hover:not(:disabled) {
-        background-color: #e9ecef;
-    }
-
-    .quantity-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        background-color: #f8f9fa;
-    }
-
-#quantity-input {
-    width: 50px;
-    text-align: center;
-    border: 1px solid #ccc;
-    border-left: none;
-    border-right: none;
-    height: 35px;
-    background-color: #f8f9fa;
-}
-
-/* --- NEW: Stock warning styles --- */
-.stock-warning {
-    color: #856404;
-    background-color: #fff3cd;
-    border: 1px solid #ffeaa7;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    text-align: center;
-}
-
-/* --- NEW: Stock alert styles --- */
-.stock-alert {
-    margin-bottom: 1rem;
-    border-radius: 8px;
-}
-
-#confirmAddToCart {
-    width: 100%;
-    padding: 12px;
-    font-size: 1.1rem;
-    background-color: #8B5E3C; /* Matching brown for the add to cart button */
+.quantity-btn:hover {
+    background: #8B5E3C;
     color: white;
-    border: none;
-    transition: all 0.2s ease;
 }
 
-    #confirmAddToCart:hover:not(:disabled) {
-        background-color: #7a5334;
-    }
+.quantity-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 
-    #confirmAddToCart:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-        background-color: #8B5E3C;
-    }
-
-.no-items-fallback {
+.quantity-input {
+    width: 80px;
     text-align: center;
-    padding: 60px 20px;
-    color: #666;
+    font-size: 1.25rem;
+    font-weight: 600;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.5rem;
 }
 
-.no-items-icon {
-    font-size: 48px;
-    color: #ddd;
-    margin-bottom: 20px;
+/* Add to Cart button in modal */
+#confirmAddToCart {
+    background: #8b5e3c !important;
+    border: none !important;
+    color: white !important;
+    transition: all 0.3s ease;
 }
 
-.no-items-message h4 {
-    color: #555;
-    margin-bottom: 10px;
+#confirmAddToCart:hover {
+    background: #744a33 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
 }
 
-.no-items-message p {
-    color: #888;
-    font-size: 14px;
+#confirmAddToCart:disabled {
+    background: #6c757d !important;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Empty State */
+.empty-category-state {
+    text-align: center;
+    color: #998A7E;
+    padding: 2rem;
+    background: rgba(255,255,255,0.5);
+    border-radius: 12px;
+}
+
+/* --- 7. Responsive Design for Carousel --- */
+@media (max-width: 992px) {
+    .carousel-item-wrapper {
+        flex: 0 0 calc(50% - 0.75rem);
+        min-width: calc(50% - 0.75rem);
+    }
+}
+
+@media (max-width: 768px) {
+    .carousel-item-wrapper {
+        flex: 0 0 100%;
+        min-width: 100%;
+    }
+    
+    .category-carousel-wrapper {
+        padding: 0 40px;
+    }
+    
+    .carousel-nav-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 0.8rem;
+    }
 }

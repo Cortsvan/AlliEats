@@ -1,6 +1,6 @@
 ﻿$(document).ready(function () {
-    let currentItemId = null;
-    let currentStock = 0;
+    let currentItemData = null;
+    let carouselPositions = {}; // Track position of each category carousel
 
     // Handle anchor links from external pages (like home page)
     if (window.location.hash) {
@@ -24,157 +24,261 @@
                     scrollTop: targetPosition
                 }, 800, 'swing');
             }
-        }, 300); // Small delay to ensure page is fully loaded
+        }, 300);
     }
 
-    // Show modal when a menu item card is clicked
-    $('.menu-item-card').on('click', function () {
-        const card = $(this);
+    // Initialize carousels
+    initializeCarousels();
 
-        // Check if item is out of stock before opening modal
-        const stock = parseInt(card.data('stock')) || 0;
-        if (stock === 0) {
-            showStockAlert('This item is currently out of stock and cannot be ordered.', 'warning');
-            return;
-        }
+    // Initialize Item Details Modal (Same as home.js)
+    initializeItemDetailsModal();
 
-        currentItemId = card.data('id');
-        currentStock = stock;
-        const name = card.data('name');
-        const description = card.data('description');
-        const price = parseFloat(card.data('price')).toFixed(2);
-        let image = card.data('image');
+    function initializeCarousels() {
+        // Initialize position tracking for each category
+        $('.category-carousel-container').each(function() {
+            const category = $(this).data('category');
+            carouselPositions[category] = 0;
+            updateCarouselButtons(category);
+        });
 
-        if (!image) {
-            image = '/images/placeholder-food.jpg';
-        }
+        // Previous button click handler
+        $('.carousel-prev').on('click', function() {
+            const category = $(this).data('category');
+            scrollCarousel(category, 'prev');
+        });
 
-        $('#modalItemName').text(name);
-        $('#modalItemDescription').text(description);
-        $('#modalItemPrice').text('P' + price);
-        $('#modalItemImage').attr('src', image);
-
-        // Reset quantity and update controls based on stock
-        $('#quantity-input').val(1).attr('max', currentStock);
-        updateQuantityControls();
-
-        // Add stock indicator to modal
-        updateStockDisplay();
-
-        $('#addToCartModal').modal('show');
-    });
-
-    // Quantity controls - Updated with stock validation
-    $('#quantity-plus').on('click', function () {
-        let quantityInput = $('#quantity-input');
-        let currentValue = parseInt(quantityInput.val());
-        let maxQuantity = Math.min(currentStock, 10);
-
-        if (currentValue < maxQuantity) {
-            quantityInput.val(currentValue + 1);
-            updateQuantityControls();
-        }
-    });
-
-    $('#quantity-minus').on('click', function () {
-        let quantityInput = $('#quantity-input');
-        let currentValue = parseInt(quantityInput.val());
-        if (currentValue > 1) {
-            quantityInput.val(currentValue - 1);
-            updateQuantityControls();
-        }
-    });
-
-    // Update quantity controls based on stock
-    function updateQuantityControls() {
-        const quantityInput = $('#quantity-input');
-        const currentQuantity = parseInt(quantityInput.val());
-        const maxQuantity = Math.min(currentStock, 10);
-
-        $('#quantity-plus').prop('disabled', currentQuantity >= maxQuantity);
-        $('#quantity-minus').prop('disabled', currentQuantity <= 1);
-
-        updateStockWarning(currentQuantity, maxQuantity);
+        // Next button click handler
+        $('.carousel-next').on('click', function() {
+            const category = $(this).data('category');
+            scrollCarousel(category, 'next');
+        });
     }
 
-    // Update stock warning display
-    function updateStockWarning(currentQuantity, maxQuantity) {
-        const warningContainer = $('#stock-warning');
+    function scrollCarousel(category, direction) {
+        const container = $(`.category-carousel-container[data-category="${category}"]`);
+        const track = container.find('.category-carousel-track');
+        const items = track.find('.carousel-item-wrapper');
+        
+        if (items.length === 0) return;
 
-        if (currentQuantity >= maxQuantity && maxQuantity < 10) {
-            if (warningContainer.length === 0) {
-                const warningHtml = `
-                    <div id="stock-warning" class="stock-warning mt-2">
-                        <i class="fas fa-exclamation-triangle me-1"></i>
-                        Maximum available quantity reached (${maxQuantity} in stock)
-                    </div>`;
-                $('.quantity-controls').after(warningHtml);
+        const itemWidth = items.first().outerWidth(true); // includes margin
+        const containerWidth = container.width();
+        const visibleItems = Math.floor(containerWidth / itemWidth);
+        const maxScroll = Math.max(0, items.length - visibleItems);
+
+        if (direction === 'next' && carouselPositions[category] < maxScroll) {
+            carouselPositions[category]++;
+        } else if (direction === 'prev' && carouselPositions[category] > 0) {
+            carouselPositions[category]--;
+        }
+
+        const translateX = -(carouselPositions[category] * itemWidth);
+        track.css('transform', `translateX(${translateX}px)`);
+        
+        updateCarouselButtons(category);
+    }
+
+    function updateCarouselButtons(category) {
+        const container = $(`.category-carousel-container[data-category="${category}"]`);
+        const track = container.find('.category-carousel-track');
+        const items = track.find('.carousel-item-wrapper');
+        
+        if (items.length === 0) return;
+
+        const itemWidth = items.first().outerWidth(true);
+        const containerWidth = container.width();
+        const visibleItems = Math.floor(containerWidth / itemWidth);
+        const maxScroll = Math.max(0, items.length - visibleItems);
+
+        const prevBtn = $(`.carousel-prev[data-category="${category}"]`);
+        const nextBtn = $(`.carousel-next[data-category="${category}"]`);
+
+        // Disable/enable buttons based on position
+        prevBtn.prop('disabled', carouselPositions[category] <= 0);
+        nextBtn.prop('disabled', carouselPositions[category] >= maxScroll);
+    }
+
+    // Recalculate carousel positions on window resize
+    $(window).on('resize', function() {
+        Object.keys(carouselPositions).forEach(category => {
+            carouselPositions[category] = 0;
+            const track = $(`.category-carousel-container[data-category="${category}"] .category-carousel-track`);
+            track.css('transform', 'translateX(0)');
+            updateCarouselButtons(category);
+        });
+    });
+
+    function initializeItemDetailsModal() {
+        // Show modal when a menu item card is clicked
+        $('.menu-item-card').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const card = $(this);
+            const stock = parseInt(card.data('stock')) || 0;
+
+            // Check if item is out of stock
+            if (stock === 0) {
+                toastr.warning('This item is currently out of stock and cannot be ordered.');
+                return;
             }
+
+            // Gather item data
+            currentItemData = {
+                id: card.data('id'),
+                name: card.data('name'),
+                price: parseFloat(card.data('price')),
+                stock: stock,
+                description: card.data('description') || 'No description available.',
+                image: card.data('image'),
+                category: card.data('category'),
+                rating: parseFloat(card.data('rating')) || 0,
+                reviewCount: parseInt(card.data('review-count')) || 0
+            };
+
+            // Populate modal
+            $('#modalItemName').text(currentItemData.name);
+            $('#modalItemDescription').text(currentItemData.description);
+            $('#modalItemPrice').text('P' + currentItemData.price.toFixed(2));
+            $('#modalItemCategory').html(`<i class="fas fa-tag me-2"></i>${currentItemData.category}`);
+
+            // Set image or show placeholder
+            if (currentItemData.image) {
+                $('#modalItemImage').attr('src', currentItemData.image).show();
+            } else {
+                $('#modalItemImage').attr('src', '/img/placeholder-food.png').show();
+            }
+
+            // Display rating
+            displayModalRating(currentItemData.rating, currentItemData.reviewCount);
+
+            // Reset quantity
+            $('#quantity-input').val(1).attr('max', currentItemData.stock);
+            updateQuantityButtons();
+
+            // Show modal
+            var modal = new bootstrap.Modal(document.getElementById('itemDetailsModal'));
+            modal.show();
+        });
+
+        // Quantity control handlers
+        $('#quantity-plus').on('click', function() {
+            let input = $('#quantity-input');
+            let currentValue = parseInt(input.val());
+            let maxValue = parseInt(input.attr('max'));
+
+            if (currentValue < maxValue && currentValue < 10) {
+                input.val(currentValue + 1);
+                updateQuantityButtons();
+            }
+        });
+
+        $('#quantity-minus').on('click', function() {
+            let input = $('#quantity-input');
+            let currentValue = parseInt(input.val());
+
+            if (currentValue > 1) {
+                input.val(currentValue - 1);
+                updateQuantityButtons();
+            }
+        });
+
+        // Confirm Add to Cart button
+        $('#confirmAddToCart').on('click', function() {
+            if (!currentItemData) return;
+
+            const quantity = parseInt($('#quantity-input').val());
+            addToCart(currentItemData.id, currentItemData.name, quantity);
+        });
+    }
+
+    function displayModalRating(rating, reviewCount) {
+        const ratingContainer = $('#modalItemRating');
+        ratingContainer.empty();
+
+        if (reviewCount > 0) {
+            let starsHtml = '<div class="rating-stars">';
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = (rating - fullStars) >= 0.5;
+            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+            // Full stars
+            for (let i = 0; i < fullStars; i++) {
+                starsHtml += '<i class="fas fa-star"></i>';
+            }
+
+            // Half star
+            if (hasHalfStar) {
+                starsHtml += '<i class="fas fa-star-half-alt"></i>';
+            }
+
+            // Empty stars
+            for (let i = 0; i < emptyStars; i++) {
+                starsHtml += '<i class="far fa-star"></i>';
+            }
+
+            starsHtml += '</div>';
+            starsHtml += `<span class="rating-count">${rating.toFixed(1)} (${reviewCount} review${reviewCount !== 1 ? 's' : ''})</span>`;
+            ratingContainer.html(starsHtml);
         } else {
-            warningContainer.remove();
+            ratingContainer.html('<div class="rating-stars">' +
+                '<i class="far fa-star text-muted"></i>'.repeat(5) +
+                '</div><span class="rating-count text-muted">(No reviews yet)</span>');
         }
     }
 
-    // Add stock display to modal
-    function updateStockDisplay() {
-        $('#stock-display').remove();
+    function updateQuantityButtons() {
+        const input = $('#quantity-input');
+        const currentValue = parseInt(input.val());
+        const maxValue = parseInt(input.attr('max'));
 
-        let stockHtml = '';
-        if (currentStock <= 5) {
-            stockHtml = `
-                <div id="stock-display" class="stock-display mb-3">
-                    <span class="stock-indicator low-stock">
-                        <i class="fas fa-box me-1"></i>
-                        Only ${currentStock} left in stock!
-                    </span>
-                </div>`;
-        } else {
-            stockHtml = `
-                <div id="stock-display" class="stock-display mb-3">
-                    <span class="stock-indicator in-stock">
-                        <i class="fas fa-check-circle me-1"></i>
-                        ${currentStock} available
-                    </span>
-                </div>`;
-        }
-
-        $('#modalItemPrice').after(stockHtml);
+        $('#quantity-minus').prop('disabled', currentValue <= 1);
+        $('#quantity-plus').prop('disabled', currentValue >= maxValue || currentValue >= 10);
     }
 
-    // Add to cart confirmation - FIXED: No more visual stock updates
-    $('#confirmAddToCart').on('click', function () {
-        const quantity = parseInt($('#quantity-input').val());
+    function addToCart(itemId, itemName, quantity) {
         const token = $('input[name="__RequestVerificationToken"]').val();
+        const button = $('#confirmAddToCart');
 
-        if (quantity > currentStock) {
-            showStockAlert(`Cannot add ${quantity} items. Only ${currentStock} available.`, 'error');
-            return;
-        }
+        // Disable button and show loading
+        const originalText = button.html();
+        button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Adding...');
 
-        const $button = $(this);
-        const originalText = $button.text();
-        $button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Adding...');
-
+        // Add to cart via AJAX
         $.ajax({
             url: '/Cart/AddItem',
             type: 'POST',
             data: {
-                menuItemId: currentItemId,
+                menuItemId: itemId,
                 quantity: quantity,
                 __RequestVerificationToken: token
             },
-            success: function (response) {
+            success: function(response) {
                 if (response.success) {
-                    toastr.success(response.message || 'Item added to cart!');
-                    $('#addToCartModal').modal('hide');
+                    toastr.success(`${itemName} added to cart!`);
+                    
+                    // Update cart count if cart badge exists
+                    if (response.itemCount !== undefined) {
+                        const cartBadge = $('#cartItemCount');
+                        if (cartBadge.length) {
+                            cartBadge.text(response.itemCount).show();
+                        }
+                    }
 
-                    // REMOVED: updateCardStockDisplay(currentItemId, quantity);
-                    // Stock should only visually update when page refreshes or orders are placed
+                    // Close modal
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('itemDetailsModal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+
+                    // Reset button
+                    button.prop('disabled', false).html(originalText);
                 } else {
-                    toastr.error(response.message || 'Failed to add item to cart.');
+                    toastr.error(response.message || 'Failed to add item to cart');
+                    button.prop('disabled', false).html(originalText);
                 }
             },
-            error: function (xhr, status, error) {
+            error: function(xhr, status, error) {
                 let errorMessage = 'An error occurred. Please try again.';
                 try {
                     const errorResponse = JSON.parse(xhr.responseText);
@@ -186,39 +290,10 @@
                 }
 
                 toastr.error(errorMessage);
-                console.error("Error adding to cart:", xhr.responseText);
-            },
-            complete: function () {
-                $button.prop('disabled', false).text(originalText);
+                button.prop('disabled', false).html(originalText);
+                console.error('Error adding to cart:', xhr.responseText);
             }
         });
-    });
-
-    // REMOVED: updateCardStockDisplay function entirely
-    // Stock visual updates should only happen when:
-    // 1. Page is refreshed/reloaded
-    // 2. Orders are actually placed (not just added to cart)
-
-    // Show stock alert function
-    function showStockAlert(message, type = 'warning') {
-        const alertClass = type === 'error' ? 'alert-danger' : 'alert-warning';
-        const icon = type === 'error' ? 'fas fa-times-circle' : 'fas fa-exclamation-triangle';
-
-        const alertDiv = $(`
-            <div class="alert ${alertClass} alert-dismissible fade show stock-alert" role="alert">
-                <i class="${icon} me-2"></i>${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        `);
-
-        $('.stock-alert').remove();
-        $('.menu-container').prepend(alertDiv);
-
-        setTimeout(() => {
-            alertDiv.fadeOut('slow', function () {
-                $(this).remove();
-            });
-        }, 5000);
     }
 
     // Category smooth scrolling logic

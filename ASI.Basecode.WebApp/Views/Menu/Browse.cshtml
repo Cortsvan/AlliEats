@@ -6,74 +6,147 @@
     var menuItemsByCategory = Model.GroupBy(item => item.Category).ToDictionary(g => g.Key, g => g.ToList());
 }
 
-<div class="menu-container">
-    <!-- Menu Header -->
-    <div class="menu-header">
-        <h1>Explore Our Menu</h1>
-        <p>Deliciously crafted meals, just a few clicks away.</p>
+<div class="menu-hero-section">
+    <div class="container text-center">
+        <h1 class="menu-title">Explore Our Menu</h1>
+        <p class="menu-subtitle">Deliciously crafted meals, just a few clicks away.</p>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <div class="category-nav-container">
+        <div class="category-filters">
+            <button class="category-btn active" data-target="#menu-all">All</button>
+            @foreach (var category in categories)
+            {
+                <button class="category-btn" data-target="#@category.Replace(" ", "-").ToLower()">@category</button>
+            }
+        </div>
     </div>
 
-    <!-- Category Filters -->
-    <div class="category-filters">
-        <button class="category-btn active" data-target="#menu-all">All</button>
-        @foreach (var category in categories)
-        {
-            <button class="category-btn" data-target="#@category.Replace(" ", "-").ToLower()">@category</button>
-        }
-    </div>
-
-    <!-- Menu Items Sections -->
     <div id="menu-all">
         @foreach (var category in categories)
         {
-            <div id="@category.Replace(" ", "-").ToLower()" class="category-section">
-                <h2 class="category-title">@category</h2>
+            var categoryId = category.Replace(" ", "-").ToLower();
+            <div id="@categoryId" class="category-section">
+                <h3 class="section-label">@category</h3>
+
                 @if (menuItemsByCategory.ContainsKey(category) && menuItemsByCategory[category].Any())
                 {
-                    <div class="row g-4">
-                        @foreach (var item in menuItemsByCategory[category])
+                    var itemCount = menuItemsByCategory[category].Count;
+                    var showCarousel = itemCount > 3; // Show carousel controls if more than 3 items
+                    
+                    <div class="category-carousel-wrapper">
+                        @if (showCarousel)
                         {
-                            <div class="col-lg-4 col-md-6">
-                                <div class="menu-item-card @(item.Stock == 0 ? "out-of-stock" : "")"
-                                     data-id="@item.Id"
-                                     data-name="@item.Name"
-                                     data-description="@item.Description"
-                                     data-price="@item.Price"
-                                     data-stock="@item.Stock"
-                                     data-image="@item.ImagePath">
-                                    <div class="menu-item-image-container">
-                                        <img src="@(string.IsNullOrEmpty(item.ImagePath) ? "/img/placeholder-food.png" : item.ImagePath)" alt="@item.Name" class="menu-item-preview-img" />
-                                        @if (item.Stock == 0)
-                                        {
-                                            <div class="stock-overlay">
-                                                <span class="out-of-stock-label">Out of Stock</span>
+                            <button class="carousel-nav-btn carousel-prev" data-category="@categoryId">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                        }
+                        
+                        <div class="category-carousel-container" data-category="@categoryId">
+                            <div class="category-carousel-track">
+                                @foreach (var item in menuItemsByCategory[category])
+                                {
+                                    var isOutOfStock = item.Stock == 0;
+                                    <div class="carousel-item-wrapper">
+                                        <div class="menu-item-card @(isOutOfStock ? "out-of-stock" : "")"
+                                             data-id="@item.Id"
+                                             data-name="@item.Name"
+                                             data-description="@item.Description"
+                                             data-price="@item.Price"
+                                             data-stock="@item.Stock"
+                                             data-image="@item.ImagePath"
+                                             data-category="@item.Category"
+                                             data-rating="@item.AverageRating.ToString("F1")"
+                                             data-review-count="@item.ReviewCount">
+
+                                            <div class="card-img-wrapper">
+                                                <img src="@(string.IsNullOrEmpty(item.ImagePath) ? "/img/placeholder-food.png" : item.ImagePath)" alt="@item.Name" class="card-img-top" />
+
+                                                @if (isOutOfStock)
+                                                {
+                                                    <span class="badge-sold-out">Sold Out</span>
+                                                }
                                             </div>
-                                        }
-                                        else if (item.Stock <= 5)
-                                        {
-                                            <div class="stock-badge low-stock">
-                                                Only @item.Stock left!
+
+                                            <div class="card-body-custom">
+                                                <div class="card-header-row">
+                                                    <h5 class="menu-item-name">@item.Name</h5>
+                                                    <span class="card-price">P@(item.Price.ToString("F2"))</span>
+                                                </div>
+
+                                                <p class="menu-item-description">@item.Description</p>
+
+                                                <!-- Rating Display -->
+                                                <div class="menu-item-rating mb-2">
+                                                    @if (item.ReviewCount > 0)
+                                                    {
+                                                        <div class="rating-stars">
+                                                            @{
+                                                                var fullStars = (int)Math.Floor(item.AverageRating);
+                                                                var hasHalfStar = (item.AverageRating - fullStars) >= 0.5;
+                                                                var emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+                                                            }
+                                                            @for (int i = 0; i < fullStars; i++)
+                                                            {
+                                                                <i class="fas fa-star"></i>
+                                                            }
+                                                            @if (hasHalfStar)
+                                                            {
+                                                                <i class="fas fa-star-half-alt"></i>
+                                                            }
+                                                            @for (int i = 0; i < emptyStars; i++)
+                                                            {
+                                                                <i class="far fa-star"></i>
+                                                            }
+                                                        </div>
+                                                        <span class="rating-count">(@item.ReviewCount)</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="rating-stars">
+                                                            @for (int i = 0; i < 5; i++)
+                                                            {
+                                                                <i class="far fa-star text-muted"></i>
+                                                            }
+                                                        </div>
+                                                        <span class="rating-count text-muted">(No reviews)</span>
+                                                    }
+                                                </div>
+
+                                                <div class="card-action">
+                                                    <span class="add-btn-text">
+                                                        @if (isOutOfStock)
+                                                        {
+                                                            <text>OUT OF STOCK</text>
+                                                        }
+                                                        else
+                                                        {
+                                                            <text>Add to Cart <i class="fas fa-shopping-cart"></i></text>
+                                                        }
+                                                    </span>
+                                                </div>
                                             </div>
-                                        }
+                                        </div>
                                     </div>
-                                    <div class="menu-item-content">
-                                        <h5 class="menu-item-name">@item.Name</h5>
-                                        <p class="menu-item-description">@item.Description</p>
-                                        <div class="price mt-auto">P@(item.Price.ToString("F2"))</div>
-                                    </div>
-                                </div>
+                                }
                             </div>
+                        </div>
+                        
+                        @if (showCarousel)
+                        {
+                            <button class="carousel-nav-btn carousel-next" data-category="@categoryId">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
                         }
                     </div>
                 }
                 else
                 {
-                    <div class="no-items-fallback">
-                        <div class="no-items-message">
-                            <i class="fas fa-utensils no-items-icon"></i>
-                            <h4>No items available in this category</h4>
-                            <p>We're working on adding delicious options to this section. Check back soon!</p>
-                        </div>
+                    <div class="empty-category-state">
+                        <i class="fas fa-utensils mb-3"></i>
+                        <p>No items available right now.</p>
                     </div>
                 }
             </div>
@@ -81,34 +154,44 @@
     </div>
 </div>
 
-<!-- New Add to Cart Modal -->
-<div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true">
+<!-- Item Details Modal - Same as Index.cshtml -->
+<div class="modal fade" id="itemDetailsModal" tabindex="-1" aria-labelledby="itemDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
+                <h5 class="modal-title" id="itemDetailsModalLabel">Item Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-6">
-                        <img id="modalItemImage" src="" alt="Menu Item" class="modal-item-img">
-                    </div>
-                    <div class="col-md-6 d-flex flex-column">
-                        <h3 id="modalItemName" class="modal-item-name"></h3>
-                        <p id="modalItemDescription" class="modal-item-description"></p>
-                        <p id="modalItemPrice" class="modal-item-price"></p>
-
-                        <div class="mt-auto">
-                            <div class="quantity-selector">
-                                <label for="quantity-input">Quantity</label>
-                                <div class="quantity-controls">
-                                    <button id="quantity-minus" class="quantity-btn">-</button>
-                                    <input type="number" id="quantity-input" value="1" min="1" max="10" readonly>
-                                    <button id="quantity-plus" class="quantity-btn">+</button>
-                                </div>
-                            </div>
-                            <button type="button" class="btn" id="confirmAddToCart">Add to Cart</button>
+                    <div class="col-md-5">
+                        <div class="modal-item-image-wrapper">
+                            <img id="modalItemImage" src="" alt="Item" class="modal-item-img" />
                         </div>
+                    </div>
+                    <div class="col-md-7">
+                        <h3 id="modalItemName" class="modal-item-name"></h3>
+                        <div id="modalItemRating" class="modal-item-rating mb-3"></div>
+                        <p id="modalItemCategory" class="modal-item-category mb-2"></p>
+                        <p id="modalItemDescription" class="modal-item-description"></p>
+                        <p id="modalItemPrice" class="modal-item-price mb-3"></p>
+                        
+                        <div class="quantity-selector mb-4">
+                            <label for="quantity-input" class="form-label fw-bold">Quantity</label>
+                            <div class="quantity-controls">
+                                <button id="quantity-minus" class="quantity-btn">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <input type="number" id="quantity-input" value="1" min="1" max="10" readonly class="quantity-input">
+                                <button id="quantity-plus" class="quantity-btn">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn btn-primary btn-lg w-100" id="confirmAddToCart">
+                            <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                        </button>
                     </div>
                 </div>
             </div>
@@ -118,6 +201,7 @@
 
 @section Scripts {
     <script src="~/js/menu.js" asp-append-version="true"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     @Html.AntiForgeryToken()
 }
 
