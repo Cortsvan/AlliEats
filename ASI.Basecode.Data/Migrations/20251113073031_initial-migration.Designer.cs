@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASI.Basecode.Data.Migrations
 {
     [DbContext(typeof(AsiBasecodeDBContext))]
-    [Migration("20251111044203_addimagepathtomenuitem")]
-    partial class addimagepathtomenuitem
+    [Migration("20251113073031_initial-migration")]
+    partial class initialmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -236,6 +236,51 @@ namespace ASI.Basecode.Data.Migrations
                     b.ToTable("OrderItems");
                 });
 
+            modelBuilder.Entity("ASI.Basecode.Data.Models.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("UpdatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.ToTable("Review");
+                });
+
             modelBuilder.Entity("ASI.Basecode.Data.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -366,6 +411,17 @@ namespace ASI.Basecode.Data.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("ASI.Basecode.Data.Models.Review", b =>
+                {
+                    b.HasOne("ASI.Basecode.Data.Models.Order", "Order")
+                        .WithOne("Review")
+                        .HasForeignKey("ASI.Basecode.Data.Models.Review", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("ASI.Basecode.Data.Models.Cart", b =>
                 {
                     b.Navigation("CartItems");
@@ -374,6 +430,8 @@ namespace ASI.Basecode.Data.Migrations
             modelBuilder.Entity("ASI.Basecode.Data.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
+
+                    b.Navigation("Review");
                 });
 #pragma warning restore 612, 618
         }

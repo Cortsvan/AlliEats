@@ -13,29 +13,78 @@ namespace ASI.Basecode.Services.Services
     {
         private readonly IMenuRepository _repository;
         private readonly IMapper _mapper;
+        private readonly IReviewRepository _reviewRepository;
 
-        public MenuService(IMenuRepository repository, IMapper mapper)
+        public MenuService(IMenuRepository repository, IMapper mapper, IReviewRepository reviewRepository)
         {
             _repository = repository;
             _mapper = mapper;
+            _reviewRepository = reviewRepository;
         }
 
         public IEnumerable<MenuItemViewModel> GetAllMenuItems()
         {
             var menuItems = _repository.GetMenuItems().OrderBy(x => x.Name);
-            return _mapper.Map<IEnumerable<MenuItemViewModel>>(menuItems);
+            var menuItemViewModels = _mapper.Map<IEnumerable<MenuItemViewModel>>(menuItems).ToList();
+            
+            // Calculate ratings for each menu item
+            foreach (var item in menuItemViewModels)
+            {
+                CalculateMenuItemRating(item);
+            }
+            
+            return menuItemViewModels;
         }
 
         public IEnumerable<MenuItemViewModel> GetActiveMenuItems()
         {
             var menuItems = _repository.GetMenuItems().Where(x => x.IsActive).OrderBy(x => x.Name);
-            return _mapper.Map<IEnumerable<MenuItemViewModel>>(menuItems);
+            var menuItemViewModels = _mapper.Map<IEnumerable<MenuItemViewModel>>(menuItems).ToList();
+            
+            // Calculate ratings for each menu item
+            foreach (var item in menuItemViewModels)
+            {
+                CalculateMenuItemRating(item);
+            }
+            
+            return menuItemViewModels;
         }
 
         public MenuItemViewModel GetMenuItemById(int id)
         {
             var menuItem = _repository.GetMenuItemById(id);
-            return _mapper.Map<MenuItemViewModel>(menuItem);
+            var menuItemViewModel = _mapper.Map<MenuItemViewModel>(menuItem);
+            
+            // Calculate rating for the menu item
+            if (menuItemViewModel != null)
+            {
+                CalculateMenuItemRating(menuItemViewModel);
+            }
+            
+            return menuItemViewModel;
+        }
+
+        private void CalculateMenuItemRating(MenuItemViewModel menuItem)
+        {
+            // Get all reviews
+            var allReviews = _reviewRepository.GetAllReviews();
+            
+            // Filter reviews that contain this menu item
+            var relevantReviews = allReviews
+                .Where(r => r.Order != null && r.Order.OrderItems != null && 
+                            r.Order.OrderItems.Any(oi => oi.MenuItemId == menuItem.Id))
+                .ToList();
+            
+            if (relevantReviews.Any())
+            {
+                menuItem.AverageRating = relevantReviews.Average(r => r.Rating);
+                menuItem.ReviewCount = relevantReviews.Count();
+            }
+            else
+            {
+                menuItem.AverageRating = 0;
+                menuItem.ReviewCount = 0;
+            }
         }
 
         public void AddMenuItem(MenuItemViewModel model)
@@ -88,6 +137,7 @@ namespace ASI.Basecode.Services.Services
         {
             return _repository.MenuItemExists(name, excludeId);
         }
+        
         public bool HasSufficientStock(int menuItemId, int requestedQuantity)
         {
             return _repository.HasSufficientStock(menuItemId, requestedQuantity);

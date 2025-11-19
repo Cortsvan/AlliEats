@@ -2,6 +2,31 @@
     let currentItemId = null;
     let currentStock = 0;
 
+    // Handle anchor links from external pages (like home page)
+    if (window.location.hash) {
+        setTimeout(function() {
+            const targetId = window.location.hash;
+            const targetElement = $(targetId);
+            
+            if (targetElement.length) {
+                // Activate the corresponding category button
+                const categoryBtn = $(`.category-btn[data-target="${targetId}"]`);
+                if (categoryBtn.length) {
+                    $('.category-btn').removeClass('active');
+                    categoryBtn.addClass('active');
+                }
+                
+                // Scroll to the category section
+                const headerOffset = 100;
+                const targetPosition = targetElement.offset().top - headerOffset;
+                
+                $('html, body').animate({
+                    scrollTop: targetPosition
+                }, 800, 'swing');
+            }
+        }, 300); // Small delay to ensure page is fully loaded
+    }
+
     // Show modal when a menu item card is clicked
     $('.menu-item-card').on('click', function () {
         const card = $(this);
@@ -196,7 +221,7 @@
         }, 5000);
     }
 
-    // Category smooth scrolling logic (unchanged)
+    // Category smooth scrolling logic
     $('.category-btn').on('click', function (e) {
         e.preventDefault();
 

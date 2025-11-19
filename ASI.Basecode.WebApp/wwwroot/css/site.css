@@ -1,5 +1,7 @@
 ﻿html {
     font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -8,13 +10,19 @@
     }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-    position: relative;
-    min-height: 100%;
+/* =========================================
+   CORE VARIABLES & DEFAULTS
+   ========================================= */
+:root {
+    --primary-color: #8B5E3C;
+    --primary-hover-color: #7a5334;
+    --secondary-color: #5c4033;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --light-background: #f8f5f2;
+    --dark-text-color: #4a3f35;
+    --font-family-sans-serif: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 
 body {
@@ -24,6 +32,13 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Focus states */
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 3px rgba(92, 64, 51, 0.15);
+    border-color: #5C4033;
+}
+
+/* Footer */
 .footer {
     position: absolute;
     bottom: 0;
@@ -44,7 +59,7 @@ body {
 .wrapper {
     min-height: 100vh;
     position: relative;
-    height: auto
+    height: auto;
 }
 
 .hide-navbar {
@@ -58,102 +73,261 @@ body {
 .w-1000px {
     width: 1000px;
 }
-/* New Navbar styling - Made selector more specific */
+
+/* =========================================
+   NAVBAR - Earthy Tan Theme
+   ========================================= */
 .navbar.navbar-new {
-    background-color: #FAF3E8 !important; /* Use !important to ensure override */
-    border-bottom: 1px solid #EAE0D5;
-    padding: 1rem 2rem;
+    background-color: #DCC8B3 !important;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 0.85rem 2rem;
+    box-shadow: 0 2px 10px rgba(92, 64, 51, 0.08);
 }
 
+/* Brand Styling */
 .navbar-new .navbar-brand {
-    color: #5C4033;
-    font-weight: bold;
+    color: #4E3629;
+    font-weight: 800;
     font-size: 1.75rem;
+    letter-spacing: -0.5px;
+    padding: 5px 0;
+}
+
+    .navbar-new .navbar-brand:hover {
+        color: #2b1e17;
+    }
+
+/* Navigation Links */
+.navbar-new .navbar-nav {
+    gap: 10px;
+    align-items: center;
 }
 
 .navbar-new .nav-link {
-    color: #5C4033;
+    color: #4E3629 !important;
     font-size: 1rem;
-    margin-left: 15px;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem !important;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    margin-left: 0;
 }
 
     .navbar-new .nav-link:hover {
-        color: #3d2b22;
+        background-color: rgba(255, 255, 255, 0.25);
+        color: #2b1e17 !important;
     }
 
-/* Ensure icons are visible and have the correct color */
-.navbar-new .navbar-nav .nav-item i {
-    color: #5C4033 !important;
-    font-size: 1.2rem;
+    .navbar-new .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.3);
+        color: #2b1e17 !important;
+        font-weight: 700;
+    }
+
+    /* Icons */
+    .navbar-new .nav-link i {
+        margin-right: 8px;
+        font-size: 1.1rem;
+        color: #4E3629;
+        vertical-align: text-bottom;
+    }
+
+.navbar-new .navbar-toggler {
+    border: 1px solid rgba(78, 54, 41, 0.2);
+    color: #4E3629;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
 }
 
-/* Align dropdown menu to the right */
+/* Dropdown Menu */
 .navbar-new .dropdown-menu {
-    background-color: #FAF3E8;
-    border-color: #EAE0D5;
+    background-color: #FDFBF7;
+    border: 1px solid #DCC8B3;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    padding: 0.75rem 0;
-    min-width: 200px;
+    box-shadow: 0 8px 20px rgba(92, 64, 51, 0.12);
+    padding: 0.5rem 0;
+    margin-top: 12px;
+    min-width: 220px;
+}
+
+.navbar-new .dropdown-header {
+    color: #8B5E3C;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.75rem 1.25rem 0.25rem;
 }
 
 .navbar-new .dropdown-item {
-    color: #5C4033;
-    padding: 0.75rem 1.25rem;
+    color: #4E3629;
+    padding: 0.65rem 1.25rem;
     font-weight: 500;
-    transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
 }
 
     .navbar-new .dropdown-item:hover {
         background-color: #EAE0D5;
-        color: #3d2b22;
-        transform: translateX(5px);
+        color: #2b1e17;
+        padding-left: 1.4rem;
     }
 
     .navbar-new .dropdown-item i {
         width: 20px;
         text-align: center;
         color: #8B5E3C !important;
+        margin-right: 8px;
     }
 
-/* Dropdown divider styling */
 .navbar-new .dropdown-divider {
-    border-color: #EAE0D5;
-    margin: 0.5rem 1rem;
+    border-top: 1px solid #EAE0D5;
+    margin: 0.5rem 0;
 }
 
-/* Special styling for review item */
-.navbar-new .dropdown-item.review-link {
-    color: #ffc107;
-    font-weight: 600;
+/* Search Bar */
+.navbar-search-container {
+    position: relative;
+    flex: 1;
+    max-width: 400px;
+    margin: 0 20px;
 }
 
-    .navbar-new .dropdown-item.review-link:hover {
-        background-color: #fff8e1;
-        color: #ff9800;
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    background: #FDFBF7;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    height: 42px;
+}
+
+    .search-wrapper:focus-within {
+        background: #FFFFFF;
+        box-shadow: 0 0 0 2px rgba(92, 64, 51, 0.1);
+        border-color: #8B5E3C;
     }
 
-        .navbar-new .dropdown-item.review-link:hover i {
-            color: #ff9800 !important;
-        }
-
-/* Common AlliEats styles that are shared across multiple pages */
-:root {
-    --primary-color: #8B5E3C;
-    --primary-hover-color: #7a5334;
-    --secondary-color: #5c4033;
-    --success-color: #28a745;
-    --danger-color: #dc3545;
-    --warning-color: #ffc107;
-    --light-background: #f8f5f2;
-    --dark-text-color: #4a3f35;
-    --font-family-sans-serif: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+.search-input {
+    border: none;
+    background: transparent;
+    padding: 0 1rem;
+    font-size: 0.95rem;
+    color: #4E3629;
+    flex: 1;
+    height: 100%;
 }
 
-/* Common header styles for all pages */
+    .search-input::placeholder {
+        color: #998A7E;
+    }
+
+.search-btn {
+    background: transparent;
+    border: none;
+    color: #8B5E3C;
+    padding: 0 1rem;
+    cursor: pointer;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.mobile-search-toggle {
+    background: transparent;
+    border: 1px solid rgba(78, 54, 41, 0.2);
+    color: #4E3629;
+    border-radius: 8px;
+    padding: 6px 10px;
+    margin-left: 10px;
+}
+
+/* =========================================
+   SEARCH SUGGESTIONS (RESTORED)
+   ========================================= */
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    z-index: 1000;
+    margin-top: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.suggestions-header {
+    background: #FDFBF7;
+    padding: 8px 15px;
+    border-bottom: 1px solid #EAE0D5;
+}
+
+.suggestions-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #8B5E3C;
+    text-transform: uppercase;
+}
+
+/* Styles missing that caused the "Zoom" effect */
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid #f1f3f4;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+}
+
+    .suggestion-item:hover {
+        background-color: #EAE0D5;
+        text-decoration: none;
+        color: #2b1e17;
+    }
+
+/* CRITICAL FIX: Restrict image size */
+.suggestion-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover; /* Ensures image doesn't stretch */
+    margin-right: 12px;
+    background: #e9ecef;
+    flex-shrink: 0;
+}
+
+.suggestion-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.suggestion-name {
+    font-weight: 600;
+    color: #4E3629;
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.suggestion-price {
+    color: #28a745;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+/* =========================================
+   COMMON ALLIEATS STYLES
+   ========================================= */
+
 .order-header, .orders-header, .cart-header, .checkout-header, .confirmation-header {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-hover-color));
     color: white;
@@ -162,15 +336,22 @@ body {
     margin-bottom: 2rem;
 }
 
-/* Common card styles */
-.order-info-card, .order-items-card, .order-status-card, .action-buttons-card,
+.card, .order-info-card, .order-items-card, .order-status-card, .action-buttons-card,
 .checkout-summary-card, .order-details-card {
     border-radius: 15px;
     border: 1px solid #e0e0e0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    background: white;
 }
 
-/* Common grid layout for order information */
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid #EAE0D5;
+    padding: 1.25rem 1.5rem;
+    font-weight: 600;
+    color: #4E3629;
+}
+
 .order-info-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -199,7 +380,6 @@ body {
     color: var(--dark-text-color);
 }
 
-/* Common button styles */
 .btn-checkout {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
@@ -214,7 +394,6 @@ body {
         color: white;
     }
 
-/* Admin Primary Button - Added missing style */
 .btn-admin-primary {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
@@ -240,7 +419,6 @@ body {
         border-color: var(--primary-color);
     }
 
-/* Common badge styles */
 .quantity-badge {
     background-color: var(--primary-color);
     color: white;
@@ -255,14 +433,12 @@ body {
     padding: 0.5rem 0.75rem;
 }
 
-/* Common item styles */
 .item-price, .item-total, .total-amount {
     font-weight: 600;
     color: var(--dark-text-color);
     font-size: 1.1rem;
 }
 
-/* Common empty state styles */
 .empty-orders-container, .empty-cart-container {
     text-align: center;
     padding: 4rem 2rem;
@@ -276,376 +452,27 @@ body {
         color: #ced4da;
     }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .order-info-grid {
-        grid-template-columns: 1fr;
-    }
-}
-/* Header Search Functionality Styles */
-
-.navbar-search-container {
-    position: relative;
-    flex: 1;
-    max-width: 400px;
-    margin: 0 20px;
-}
-
-.search-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-    background: #f8f9fa;
-    border-radius: 25px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: box-shadow 0.3s ease;
-}
-
-    .search-wrapper:focus-within {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-.search-input {
-    border: none;
-    background: transparent;
-    padding: 10px 20px;
-    font-size: 14px;
-    flex: 1;
-    outline: none;
-    border-radius: 0;
-}
-
-    .search-input::placeholder {
-        color: #6c757d;
-        font-style: italic;
-    }
-
-.search-btn {
-    background: #28a745;
-    border: none;
-    color: white;
-    padding: 10px 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-    .search-btn:hover {
-        background: #218838;
-    }
-
-.clear-search-btn {
-    background: #6c757d;
-    border: none;
-    color: white;
-    margin-right: 2px;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    position: absolute;
-    right: 45px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-}
-
-    .clear-search-btn:hover {
-        background: #5a6268;
-    }
-
-/* Search Suggestions Dropdown */
-.search-suggestions {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
+.form-control:not(.search-input), .form-select {
     border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    z-index: 1000;
-    margin-top: 8px;
-    max-height: 400px;
-    overflow: hidden;
-    border: 1px solid #e9ecef;
-    animation: slideDown 0.2s ease-out;
+    border: 1px solid #ced4da;
+    padding: 0.6rem 1rem;
 }
 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.suggestions-header {
-    padding: 12px 20px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.suggestions-title {
-    font-weight: 600;
-    color: #495057;
-    font-size: 14px;
-}
-
-.suggestions-content {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.suggestion-item {
-    display: flex;
-    align-items: center;
-    padding: 12px 20px;
-    border-bottom: 1px solid #f1f3f4;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    text-decoration: none;
-    color: inherit;
-}
-
-    .suggestion-item:hover {
-        background-color: #f8f9fa;
-        text-decoration: none;
-        color: inherit;
-    }
-
-    .suggestion-item:last-child {
-        border-bottom: none;
-    }
-
-.suggestion-image {
-    width: 40px;
-    height: 40px;
-    border-radius: 6px;
-    object-fit: cover;
-    margin-right: 12px;
-    background: #e9ecef;
-}
-
-.suggestion-image-placeholder {
-    width: 40px;
-    height: 40px;
-    border-radius: 6px;
-    background: #e9ecef;
-    margin-right: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6c757d;
-    font-size: 14px;
-}
-
-.suggestion-content {
-    flex: 1;
-}
-
-.suggestion-name {
-    font-weight: 500;
-    color: #212529;
-    margin-bottom: 4px;
-    font-size: 14px;
-}
-
-.suggestion-details {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.suggestion-category {
-    color: #6c757d;
-    font-size: 12px;
-    background: #e9ecef;
-    padding: 2px 8px;
-    border-radius: 12px;
-}
-
-.suggestion-price {
-    color: #28a745;
-    font-weight: 600;
-    font-size: 14px;
-}
-
-.no-results {
-    padding: 20px;
-    text-align: center;
-    color: #6c757d;
-}
-
-    .no-results i {
-        font-size: 24px;
-        margin-bottom: 8px;
-        display: block;
-    }
-
-.out-of-stock {
-    opacity: 0.6;
-}
-
-    .out-of-stock .suggestion-price {
-        color: #dc3545;
-        text-decoration: line-through;
-    }
-
-/* Cart Badge Styles */
 .cart-badge {
     background: #dc3545;
     color: white;
     border-radius: 50%;
     padding: 2px 6px;
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 10px;
+    font-weight: 700;
     position: relative;
-    top: -2px;
+    top: -8px;
+    left: -4px;
     min-width: 18px;
     text-align: center;
-    line-height: 1.2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* Mobile Search Styles */
-.mobile-search-toggle {
-    background: none;
-    border: none;
-    color: #495057;
-    font-size: 18px;
-    padding: 8px;
-    margin-left: 10px;
-}
-
-.mobile-search-dropdown {
-    background: white;
-    border-top: 1px solid #e9ecef;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.mobile-search-wrapper {
-    display: flex;
-    align-items: center;
-    background: #f8f9fa;
-    border-radius: 25px;
-    overflow: hidden;
-}
-
-.mobile-search-input {
-    border: none;
-    background: transparent;
-    padding: 10px 20px;
-    flex: 1;
-    outline: none;
-}
-
-.mobile-search-btn {
-    background: #28a745;
-    border: none;
-    color: white;
-    padding: 10px 16px;
-    cursor: pointer;
-}
-
-/* Search Highlighting */
-.search-highlight {
-    background-color: #fff3cd;
-    padding: 1px 2px;
-    border-radius: 2px;
-    font-weight: 500;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .navbar-search-container {
-        display: none !important;
-    }
-}
-
-/* Loading animation */
-.search-loading {
-    padding: 20px;
-    text-align: center;
-    color: #6c757d;
-}
-
-    .search-loading i {
-        animation: spin 1s linear infinite;
-    }
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-/* Add to your site.css */
-.cart-badge {
-    background: #dc3545;
-    color: white;
-    border-radius: 50%;
-    padding: 2px 6px;
-    font-size: 11px;
-    font-weight: 600;
-    position: relative;
-    top: -2px;
-    min-width: 18px;
-    text-align: center;
-    line-height: 1.2;
-    transition: all 0.3s ease; /* Add smooth transition */
-}
-
-    /* Pulse animation when cart updates */
-    .cart-badge.updated {
-        animation: cartPulse 0.6s ease-in-out;
-    }
-
-@keyframes cartPulse {
-    0% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.3);
-        background: #e74c3c;
-    }
-
-    100% {
-        transform: scale(1);
-    }
-}
-
-/* Different colors for different states */
-.cart-badge.empty {
-    display: none;
-}
-
-.cart-badge.low {
-    background: #ffc107; /* Yellow for 1-2 items */
-}
-
-.cart-badge.medium {
-    background: #fd7e14; /* Orange for 3-5 items */
-}
-
-.cart-badge.high {
-    background: #dc3545; /* Red for 6+ items */
-}
-/* Add to site.css */
 .cart-toast {
     position: fixed;
     top: 80px;
@@ -657,16 +484,6 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     z-index: 1050;
     animation: toastSlideIn 0.3s ease;
-    max-width: 300px;
-}
-
-.cart-toast.error {
-    background: #dc3545;
-}
-
-.cart-toast.warning {
-    background: #ffc107;
-    color: #212529;
 }
 
 @keyframes toastSlideIn {
@@ -674,12 +491,19 @@ body {
         opacity: 0;
         transform: translateX(100%);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
     }
 }
 
-.cart-toast-icon {
-    margin-right: 8px;
+@media (max-width: 768px) {
+    .order-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .navbar-search-container {
+        display: none !important;
+    }
 }

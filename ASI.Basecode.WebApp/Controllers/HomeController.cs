@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using ASI.Basecode.Services.Interfaces;
+using System.Linq;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -12,6 +14,8 @@ namespace ASI.Basecode.WebApp.Controllers
     /// </summary>
     public class HomeController : ControllerBase<HomeController>
     {
+        private readonly IMenuService _menuService;
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -20,12 +24,14 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <param name="configuration"></param>
         /// <param name="localizer"></param>
         /// <param name="mapper"></param>
+        /// <param name="menuService"></param>
         public HomeController(IHttpContextAccessor httpContextAccessor,
                               ILoggerFactory loggerFactory,
                               IConfiguration configuration,
+                              IMenuService menuService,
                               IMapper mapper = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
-
+            _menuService = menuService;
         }
 
         /// <summary>
@@ -34,8 +40,30 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <returns> Home View </returns>
         public IActionResult Index()
         {
+            var user = _httpContextAccessor.HttpContext.User;
+            var isAuthenticated = user.Identity.IsAuthenticated;
+            var isAdmin = user.IsInRole("Admin");
+
+            // Only fetch menu items for authenticated non-admin users
+            if (isAuthenticated && !isAdmin)
+            {
+                var activeMenuItems = _menuService.GetActiveMenuItems();
+                // Take top 6 items for preview
+                var featuredItems = activeMenuItems.Take(6).ToList();
+                ViewBag.FeaturedMenuItems = featuredItems;
+
+                // Get distinct categories for the category section
+                var categories = activeMenuItems
+                    .Select(m => m.Category)
+                    .Distinct()
+                    .Take(3)
+                    .ToList();
+                ViewBag.Categories = categories;
+            }
+
             return View();
         }
+        
         public IActionResult Privacy()
         {
             return View();

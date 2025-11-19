@@ -34,5 +34,9 @@ namespace ASI.Basecode.Services.ServiceModels
 
         [Display(Name = "Food Image")]
         public IFormFile ImageFile { get; set; }
+
+        // Rating properties
+        public double AverageRating { get; set; }
+        public int ReviewCount { get; set; }
     }
 }

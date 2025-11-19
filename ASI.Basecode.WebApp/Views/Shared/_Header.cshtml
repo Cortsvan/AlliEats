@@ -11,34 +11,38 @@
 }
 
 <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-new">
-        <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AlliEats</a>
+    <nav class="navbar navbar-expand-md navbar-toggleable-sm navbar-new">
+        <div class="container-fluid px-lg-4">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                <!-- You could add a logo image here -->
+                AlliEats
+            </a>
 
-            <!-- Search Bar (only visible for users on menu page) -->
+            <!-- Search Bar (Centered) -->
             @if (isAuthenticated && !isAdmin && isOnMenuPage)
             {
                 <div class="navbar-search-container d-none d-md-flex">
                     <div class="search-wrapper">
+                        <button type="button" class="search-btn" disabled>
+                            <i class="fas fa-search"></i>
+                        </button>
                         <input type="text"
                                id="headerSearchInput"
                                class="form-control search-input"
-                               placeholder="Search menu items..."
+                               placeholder="Search menu..."
                                autocomplete="off">
-                        <button type="button" id="headerSearchBtn" class="search-btn">
-                            <i class="fas fa-search"></i>
-                        </button>
+
                         <button type="button" id="headerClearSearch" class="clear-search-btn" style="display: none;">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    <!-- Search Suggestions Dropdown -->
+
                     <div id="searchSuggestions" class="search-suggestions" style="display: none;">
                         <div class="suggestions-header">
-                            <span class="suggestions-title">Search Results</span>
+                            <span class="suggestions-title">Suggestions</span>
                         </div>
                         <div id="suggestionsContent" class="suggestions-content">
-                            <!-- Dynamic suggestions will be populated here -->
+                            <!-- Dynamic content -->
                         </div>
                     </div>
                 </div>
@@ -46,7 +50,7 @@
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+                <span class="fas fa-bars"></span>
             </button>
 
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
@@ -54,25 +58,27 @@
                 {
                     @if (isAdmin)
                     {
+                        <!-- Admin Navbar -->
                         <ul class="navbar-nav">
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                <a class="nav-link @(currentController == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">Overview</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="AdminMenu" asp-action="ViewItems">Manage Menu</a>
+                                <a class="nav-link @(currentController == "AdminMenu" ? "active" : "")" asp-controller="AdminMenu" asp-action="ViewItems">Menu</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="AdminOrder" asp-action="ManageOrders">Manage Orders</a>
+                                <a class="nav-link @(currentController == "AdminOrder" ? "active" : "")" asp-controller="AdminOrder" asp-action="ManageOrders">Orders</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Review" asp-action="AllReviews">User Reviews</a>
-                            </li>
-                            <li class="nav-item dropdown">
+                            <li class="nav-item dropdown ms-2">
                                 <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fa-solid fa-user"></i>
+                                    <i class="fa-solid fa-user-shield"></i> Admin
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
-                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="SignOutUser">Logout</a></li>
+                                    <li><h6 class="dropdown-header">Management</h6></li>
+                                    <li><a class="dropdown-item" asp-controller="Review" asp-action="AllReviews"><i class="fas fa-star"></i> Reviews</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h6 class="dropdown-header">Account</h6></li>
+                                    <li><a class="dropdown-item text-danger" asp-controller="Account" asp-action="SignOutUser"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -82,39 +88,49 @@
                         <!-- User Navbar -->
                         <ul class="navbar-nav">
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                <a class="nav-link @(currentController == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Menu" asp-action="Browse">Menu</a>
+                                <a class="nav-link @(currentController == "Menu" ? "active" : "")" asp-controller="Menu" asp-action="Browse">Menu</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Cart" asp-action="ViewCart">
-                                    <i class="fas fa-shopping-cart me-1"></i>Cart
+                                <a class="nav-link @(currentController == "Order" ? "active" : "")" asp-controller="Order" asp-action="MyOrders">Orders</a>
+                            </li>
+                            <li class="nav-item position-relative mx-2">
+                                <a class="nav-link @(currentController == "Cart" ? "active" : "")" asp-controller="Cart" asp-action="ViewCart">
+                                    <i class="fas fa-shopping-cart"></i>
                                     <span id="cartItemCount" class="cart-badge" style="display: none;">0</span>
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Order" asp-action="MyOrders">Orders</a>
-                            </li>
-                            <li class="nav-item dropdown">
+
+                            <!-- User Dropdown with Sections -->
+                            <li class="nav-item dropdown ms-1">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fa-solid fa-user"></i>
+                                    <i class="fa-solid fa-user-circle"></i>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item" asp-controller="Review" asp-action="MyReviews">My Reviews</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index">Profile</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Settings" asp-action="Index">Settings</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="SignOutUser">Logout</a></li>
+                                    <li><h6 class="dropdown-header">Activity</h6></li>
+                                    <li><a class="dropdown-item" asp-controller="Review" asp-action="MyReviews"><i class="fas fa-star"></i> My Reviews</a></li>
+
+                                    <li><hr class="dropdown-divider"></li>
+
+                                    <li><h6 class="dropdown-header">Account</h6></li>
+                                    <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index"><i class="fas fa-id-card"></i> Profile</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Settings" asp-action="Index"><i class="fas fa-cog"></i> Settings</a></li>
+
+                                    <li><hr class="dropdown-divider"></li>
+
+                                    <li><a class="dropdown-item text-danger" asp-controller="Account" asp-action="SignOutUser"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                                 </ul>
                             </li>
                         </ul>
                     }
                 }
 
-                <!-- Mobile Search (only on menu page) -->
+                <!-- Mobile Search Trigger -->
                 @if (isAuthenticated && !isAdmin && isOnMenuPage)
                 {
-                    <div class="mobile-search d-md-none">
+                    <div class="mobile-search d-md-none ms-3">
                         <button type="button" class="mobile-search-toggle" id="mobileSearchToggle">
                             <i class="fas fa-search"></i>
                         </button>
@@ -123,19 +139,16 @@
             </div>
         </div>
 
-        <!-- Mobile Search Dropdown -->
+        <!-- Mobile Search Bar -->
         @if (isAuthenticated && !isAdmin && isOnMenuPage)
         {
             <div id="mobileSearchDropdown" class="mobile-search-dropdown d-md-none" style="display: none;">
                 <div class="container-fluid py-3">
-                    <div class="mobile-search-wrapper">
+                    <div class="search-wrapper p-1">
                         <input type="text"
                                id="mobileHeaderSearchInput"
-                               class="form-control mobile-search-input"
+                               class="form-control search-input"
                                placeholder="Search menu items...">
-                        <button type="button" id="mobileHeaderSearchBtn" class="mobile-search-btn">
-                            <i class="fas fa-search"></i>
-                        </button>
                     </div>
                 </div>
             </div>
