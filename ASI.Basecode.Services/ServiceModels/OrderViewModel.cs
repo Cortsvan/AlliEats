@@ -71,18 +71,21 @@ namespace ASI.Basecode.Services.ServiceModels
         [StringLength(500, ErrorMessage = "Notes cannot exceed 500 characters")]
         public string Notes { get; set; }
 
+        // Selected saved card ID (if using saved card)
+        public int? SelectedCardId { get; set; }
+
         // Cart summary for display
         public CartViewModel Cart { get; set; }
         public ProfileViewModel UserProfile { get; set; }
+
+        // Saved payment cards
+        public List<PaymentCardViewModel> SavedCards { get; set; } = new List<PaymentCardViewModel>();
 
         // Available payment methods
         public List<string> PaymentMethods { get; set; } = new List<string>
         {
             "Cash on Delivery",
-            "GCash",
-            "PayMaya",
-            "Credit Card",
-            "Debit Card"
+            "Credit or Debit Card"
         };
     }
 }

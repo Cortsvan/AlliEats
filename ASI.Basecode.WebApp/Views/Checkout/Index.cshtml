@@ -5,191 +5,247 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid px-4 py-4">
-    <!-- Header -->
-    <div class="checkout-header text-center">
-        <h1 class="display-5 fw-bold"><i class="fas fa-credit-card me-3"></i>Checkout</h1>
-        <p class="lead">Review your order and complete your purchase.</p>
+<div class="container py-5">
+    <div class="checkout-header">
+        <div class="row align-items-end">
+            <div class="col-lg-7">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("ViewCart", "Cart")">Cart</a></li>
+                        <li class="breadcrumb-item active">Checkout</li>
+                    </ol>
+                </nav>
+                <h1 class="display-5 fw-bold text-dark mt-2 mb-1">Checkout</h1>
+                <p class="text-muted mb-0">Review your details and complete payment.</p>
+            </div>
+            <div class="col-lg-5 text-lg-end mt-3 mt-lg-0">
+                <div class="step-indicator">
+                    <div class="step completed"><i class="fas fa-check-circle me-2"></i>Cart</div>
+                    <div class="step-divider">›</div>
+                    <div class="step active"><i class="fas fa-credit-card me-2"></i>Checkout</div>
+                    <div class="step-divider">›</div>
+                    <div class="step"><i class="fas fa-box me-2"></i>Done</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     @if (TempData["ErrorMessage"] != null)
     {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="alert alert-danger border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center">
+            <i class="fas fa-exclamation-circle fs-4 me-3"></i>
+            <div>@TempData["ErrorMessage"]</div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
         </div>
     }
 
-    <div class="row">
-        <!-- Order Items and Delivery Info -->
-        <div class="col-lg-8" id="checkout-items-container">
-            <!-- Delivery Information Card -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="card-title mb-0">
-                            <i class="fas fa-truck me-2"></i>Delivery Information
-                        </h4>
-                        <a href="@Url.Action("Edit", "Profile")" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-edit me-2"></i>Edit
-                        </a>
-                    </div>
+    <div class="row g-4">
+        <div class="col-lg-8">
 
+            <div class="modern-card">
+                <div class="card-header-clean d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-map-marker-alt me-2 text-primary-color"></i>Delivery Information</h5>
+                    <a href="@Url.Action("Edit", "Profile")" class="btn btn-sm btn-light text-primary-color fw-bold rounded-pill px-3">Edit</a>
+                </div>
+                <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="delivery-info-item mb-2">
-                                <i class="fas fa-user me-2 text-muted"></i>
-                                <strong>Name:</strong> @Model.UserProfile.Name
-                            </div>
-                            <div class="delivery-info-item mb-2">
-                                <i class="fas fa-phone me-2 text-muted"></i>
-                                <strong>Phone:</strong> @Model.UserProfile.Phone
+                            <div class="info-group">
+                                <div class="info-icon-box"><i class="fas fa-user"></i></div>
+                                <div>
+                                    <span class="info-label">Contact Person</span>
+                                    <p class="info-value">@Model.UserProfile.Name</p>
+                                    <small class="text-muted">@Model.UserProfile.Phone</small>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="delivery-info-item mb-2">
-                                <i class="fas fa-map-marker-alt me-2 text-muted"></i>
-                                <strong>Address:</strong> @Model.UserProfile.Address
-                            </div>
-                            <div class="delivery-info-item mb-2">
-                                <i class="fas fa-city me-2 text-muted"></i>
-                                <strong>City:</strong> @Model.UserProfile.City
-                                @if (!string.IsNullOrEmpty(Model.UserProfile.PostalCode))
-                                {
-                                    <span>, @Model.UserProfile.PostalCode</span>
-                                }
+                            <div class="info-group">
+                                <div class="info-icon-box"><i class="fas fa-truck"></i></div>
+                                <div>
+                                    <span class="info-label">Shipping Address</span>
+                                    <p class="info-value">
+                                        @Model.UserProfile.Address, @Model.UserProfile.City
+                                        @if (!string.IsNullOrEmpty(Model.UserProfile.PostalCode))
+                                        {
+                                            <span>, @Model.UserProfile.PostalCode</span>
+                                        }
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    @if (!string.IsNullOrEmpty(Model.UserProfile.PreferredDeliveryAddress))
-                    {
-                        <div class="mt-3 pt-3 border-top">
-                            <div class="delivery-info-item">
-                                <i class="fas fa-home me-2 text-muted"></i>
-                                <strong>Preferred Delivery Address:</strong> @Model.UserProfile.PreferredDeliveryAddress
-                            </div>
-                        </div>
-                    }
 
                     @if (!string.IsNullOrEmpty(Model.UserProfile.DeliveryInstructions))
                     {
-                        <div class="mt-2">
-                            <div class="delivery-info-item">
-                                <i class="fas fa-sticky-note me-2 text-muted"></i>
-                                <strong>Delivery Instructions:</strong> @Model.UserProfile.DeliveryInstructions
-                            </div>
+                        <div class="mt-3 p-3 bg-light rounded-3 border-start border-4 border-warning">
+                            <small class="fw-bold text-uppercase text-warning mb-1 d-block">Note</small>
+                            <p class="mb-0 small text-muted">@Model.UserProfile.DeliveryInstructions</p>
                         </div>
                     }
                 </div>
             </div>
 
-            <!-- Order Items -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="mb-0" id="checkout-item-count">Order Summary (@Model.Cart.TotalItems items)</h4>
-                <a href="@Url.Action("ViewCart", "Cart")" class="btn btn-outline-primary">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Cart
-                </a>
-            </div>
-
-            <div id="checkout-items-list">
-                @foreach (var item in Model.Cart.CartItems)
-                {
-                    <div class="checkout-item-card mb-3" data-item-id="@item.Id">
-                        <div class="checkout-item-image">
+            <div class="modern-card">
+                <div class="card-header-clean d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-shopping-bag me-2 text-primary-color"></i>Order Items <span class="badge bg-light text-dark border ms-2">@Model.Cart.TotalItems</span></h5>
+                </div>
+                <div class="px-0 pb-2">
+                    @foreach (var item in Model.Cart.CartItems)
+                    {
+                        <div class="checkout-item-row">
                             <img src="@(string.IsNullOrEmpty(item.MenuItemImagePath) ? "/images/placeholder-food.jpg" : item.MenuItemImagePath)"
-                                 alt="@item.MenuItemName"
-                                 onerror="this.src='/images/placeholder-food.jpg'; this.onerror=null;">
+                                 class="item-thumb" alt="Food">
+                            <div class="ms-3 flex-grow-1">
+                                <h6 class="fw-bold mb-1">@item.MenuItemName</h6>
+                                <p class="small text-muted mb-0 text-truncate" style="max-width: 250px;">@item.MenuItemDescription</p>
+                            </div>
+                            <div class="text-end ms-3">
+                                <div class="fw-bold text-dark">₱@item.TotalPrice.ToString("N2")</div>
+                                <small class="text-muted">@item.Quantity x ₱@item.Price.ToString("N0")</small>
+                            </div>
                         </div>
-                        <div class="checkout-item-details">
-                            <h5>@item.MenuItemName</h5>
-                            <p class="text-muted small mb-1">
-                                @(item.MenuItemDescription != null && item.MenuItemDescription.Length > 80 ? item.MenuItemDescription.Substring(0, 80) + "..." : item.MenuItemDescription)
-                            </p>
-                            <span class="badge badge-category">@item.MenuItemCategory</span>
-                        </div>
-                        <div class="text-center px-3" style="min-width: 100px;">
-                            <span class="item-price">@("P" + item.Price.ToString("F2"))</span>
-                        </div>
-                        <div class="text-center px-3" style="min-width: 80px;">
-                            <span class="quantity-badge">x @item.Quantity</span>
-                        </div>
-                        <div class="text-center px-3" style="min-width: 120px;">
-                            <span class="item-total">@("P" + item.TotalPrice.ToString("F2"))</span>
-                        </div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
         </div>
 
-        <!-- Payment & Order Summary -->
-        <div class="col-lg-4" id="checkout-summary-container">
-            <form id="checkoutForm" method="post" action="@Url.Action("PlaceOrder", "Checkout")">
-                @Html.AntiForgeryToken()
+        <div class="col-lg-4">
+            <div class="sticky-summary">
+                <form id="checkoutForm" method="post" action="@Url.Action("PlaceOrder", "Checkout")">
+                    @Html.AntiForgeryToken()
 
-                <div class="card shadow-sm checkout-summary-card">
-                    <div class="card-body">
-                        <h4 class="card-title text-center mb-4">
-                            <i class="fas fa-credit-card me-2"></i>Payment Details
-                        </h4>
+                    <div class="modern-card border-top border-3 border-primary">
+                        <div class="card-body">
+                            <h5 class="fw-bold mb-4">Payment Details</h5>
 
-                        <div class="mb-3">
-                            <label for="PaymentMethod" class="form-label">Payment Method <span class="text-danger">*</span></label>
-                            <select asp-for="PaymentMethod" class="form-select" id="PaymentMethod" required>
-                                <option value="">-- Select Payment Method --</option>
-                                @foreach (var method in Model.PaymentMethods)
-                                {
-                                    if (method.ToLower() == "credit card" || method.ToLower() == "debit card" || method.ToLower() == "paymaya")
-                                    {
-                                        <option value="@method" disabled>@method</option>
-                                    }
-                                    else
+                            <div class="mb-4">
+                                <label for="PaymentMethod" class="form-label">Payment Method <span class="text-danger">*</span></label>
+                                <select asp-for="PaymentMethod" class="form-select" id="PaymentMethod" required>
+                                    <option value="">-- Select Method --</option>
+                                    @foreach (var method in Model.PaymentMethods)
                                     {
                                         <option value="@method">@method</option>
                                     }
-                                }
-                            </select>
-                            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
-                        </div>
+                                </select>
+                                <span asp-validation-for="PaymentMethod" class="text-danger small"></span>
+                            </div>
 
-                        <div class="mb-4">
-                            <label for="Notes" class="form-label">Order Notes (Optional)</label>
-                            <textarea asp-for="Notes" class="form-control" id="Notes" rows="3"
-                                      placeholder="Special instructions, allergies, etc..."></textarea>
-                            <span asp-validation-for="Notes" class="text-danger"></span>
-                        </div>
-
-                        <hr>
-
-                        <!-- Order Summary -->
-                        <h5 class="mb-3"><i class="fas fa-receipt me-2"></i>Order Total</h5>
-                        <ul class="list-group list-group-flush mb-3">
-                            @foreach (var item in Model.Cart.CartItems)
-                            {
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        @item.MenuItemName
-                                        <span class="text-muted small"> (x @item.Quantity)</span>
+                            <!-- Saved Cards Section - Shows when Credit or Debit Card is selected -->
+                            <div id="savedCardsSection" class="mb-4" style="display: none;">
+                                <label class="form-label fw-bold">Select Saved Card</label>
+                                @if (Model.SavedCards != null && Model.SavedCards.Any())
+                                {
+                                    <div class="saved-cards-list">
+                                        @foreach (var card in Model.SavedCards)
+                                        {
+                                            <div class="form-check saved-card-option @(card.IsExpired ? "expired-card-option" : "")">
+                                                <input class="form-check-input" type="radio" 
+                                                       name="SelectedCardId" 
+                                                       id="card_@card.Id" 
+                                                       value="@card.Id"
+                                                       @(card.IsDefault && !card.IsExpired ? "checked" : "")
+                                                       @(card.IsExpired ? "disabled" : "") />
+                                                <label class="form-check-label w-100" for="card_@card.Id">
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <div class="d-flex align-items-center">
+                                                            @if (card.CardBrand == "Visa")
+                                                            {
+                                                                <i class="fab fa-cc-visa fa-2x text-primary me-3"></i>
+                                                            }
+                                                            else if (card.CardBrand == "Mastercard")
+                                                            {
+                                                                <i class="fab fa-cc-mastercard fa-2x text-danger me-3"></i>
+                                                            }
+                                                            else if (card.CardBrand == "American Express")
+                                                            {
+                                                                <i class="fab fa-cc-amex fa-2x text-info me-3"></i>
+                                                            }
+                                                            else
+                                                            {
+                                                                <i class="fas fa-credit-card fa-2x text-secondary me-3"></i>
+                                                            }
+                                                            <div>
+                                                                <div class="fw-bold">@card.MaskedCardNumber</div>
+                                                                <small class="text-muted">Expires: @card.ExpiryDate</small>
+                                                                @if (card.IsExpired)
+                                                                {
+                                                                    <span class="badge bg-danger ms-2">Expired</span>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        @if (card.IsDefault)
+                                                        {
+                                                            <span class="badge bg-primary">Default</span>
+                                                        }
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        }
                                     </div>
-                                    <span class="fw-bold">
-                                        @("P" + item.TotalPrice.ToString("F2"))
-                                    </span>
-                                </li>
-                            }
-                            <li class="list-group-item d-flex justify-content-between align-items-center fw-bold h5">
-                                Total
-                                <span class="text-success" id="checkout-total">@("P" + Model.Cart.TotalAmount.ToString("F2"))</span>
-                            </li>
-                        </ul>
+                                    <input type="hidden" asp-for="SelectedCardId" id="SelectedCardId" />
+                                    <div class="mt-3">
+                                        <a href="@Url.Action("AddPaymentCard", "Settings")" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-plus me-1"></i>Add New Card
+                                        </a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-warning border-0 shadow-sm">
+                                        <div class="d-flex align-items-start">
+                                            <i class="fas fa-exclamation-triangle fs-4 me-3 mt-1"></i>
+                                            <div class="flex-grow-1">
+                                                <h6 class="alert-heading mb-2">No Payment Cards Available</h6>
+                                                <p class="mb-2">You don't have any saved payment cards yet. Please add a card to continue with this payment method.</p>
+                                                <a href="@Url.Action("AddPaymentCard", "Settings")" class="btn btn-warning btn-sm">
+                                                    <i class="fas fa-plus me-1"></i>Add Payment Card Now
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" asp-for="SelectedCardId" id="SelectedCardId" />
+                                }
+                            </div>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-checkout btn-lg" id="placeOrderBtn">
-                                <i class="fas fa-shopping-bag me-2"></i>Place Order (@("P" + Model.Cart.TotalAmount.ToString("F2")))
+                            <div class="mb-4">
+                                <label for="Notes" class="form-label">Order Notes (Optional)</label>
+                                <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Special requests, allergies..."></textarea>
+                            </div>
+
+                            <div class="bg-light p-3 rounded-3 mb-4">
+                                <div class="summary-row">
+                                    <span>Subtotal</span>
+                                    <span class="fw-bold text-dark">₱@Model.Cart.TotalAmount.ToString("N2")</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Delivery Fee</span>
+                                    <span class="text-success fw-bold">FREE</span>
+                                </div>
+                                <div class="summary-total-row">
+                                    <span class="total-label">Total</span>
+                                    <span class="total-amount" id="checkout-total">₱@Model.Cart.TotalAmount.ToString("N2")</span>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary-custom" id="placeOrderBtn">
+                                <i class="fas fa-lock me-2"></i>Place Order
                             </button>
+
+                            <div class="text-center mt-3">
+                                <small class="text-muted"><i class="fas fa-shield-alt me-1"></i> Secure Checkout </small>
+                            </div>
                         </div>
                     </div>
+                </form>
+
+                <div class="text-center opacity-50 grayscale">
+                    <i class="fab fa-cc-visa fa-2x mx-1"></i>
+                    <i class="fab fa-cc-mastercard fa-2x mx-1"></i>
+                    <i class="fas fa-money-bill-wave fa-2x mx-1"></i>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
@@ -197,7 +253,6 @@
 @section Scripts {
     <script src="~/js/checkout.js"></script>
 }
-
 @section Styles {
     <link rel="stylesheet" href="~/css/checkout.css" />
 }

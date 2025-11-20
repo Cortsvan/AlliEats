@@ -1,136 +1,463 @@
 ﻿:root {
+    /* Preserved Palette */
     --primary-color: #8B5E3C;
     --primary-hover-color: #7a5334;
     --secondary-color: #5c4033;
     --success-color: #28a745;
     --danger-color: #dc3545;
     --warning-color: #ffc107;
+    --bg-body: #FAF3E8; /* Same as cart page */
     --light-background: #f8f5f2;
     --dark-text-color: #4a3f35;
-    --font-family-sans-serif: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-family-sans-serif: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 body {
     font-family: var(--font-family-sans-serif);
+    color: var(--dark-text-color);
+    /* Explicit background color as requested */
+    background-color: #FAF3E8;
+    -webkit-font-smoothing: antialiased;
 }
 
-.checkout-header {
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover-color));
-    color: white;
-    border-radius: .5rem;
-    padding: 2rem;
-    margin-bottom: 2rem;
+/* ===== BREADCRUMB ===== */
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin-bottom: 0;
+    font-size: 0.9rem;
 }
 
-.checkout-item-card {
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 15px;
-    padding: 1.25rem;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-    .checkout-item-card:hover {
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        transform: translateY(-2px);
-    }
-
-.checkout-item-image img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-.checkout-item-details {
-    flex-grow: 1;
-    margin-left: 1.5rem;
-}
-
-    .checkout-item-details h5 {
-        font-weight: 600;
-        color: var(--dark-text-color);
-        margin-bottom: 0.5rem;
-    }
-
-.badge-category {
-    background-color: var(--light-background);
-    color: var(--secondary-color);
-    border: 1px solid #dcdcdc;
+.breadcrumb-item a {
+    color: var(--primary-color);
+    text-decoration: none;
     font-weight: 500;
 }
 
-.quantity-badge {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 0.25rem 0.5rem;
-    border-radius: 20px;
+.breadcrumb-item.active {
+    color: #999;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+    color: #ccc;
+}
+
+/* ===== HEADER & STEPS ===== */
+.checkout-header {
+    margin-bottom: 2.5rem;
+    color: var(--light-background);
+}
+
+.checkout-header h1 {
+    color: var(--light-background) !important;
+}
+
+.checkout-header p {
+    color: rgba(248, 245, 242, 0.9) !important; /* soft off-white */
+}
+
+.step-indicator {
+    display: inline-flex;
+    align-items: center;
+    background: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 50px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    border: 1px solid #eee;
+}
+
+.step {
+    font-size: 0.85rem;
     font-weight: 600;
-    font-size: 0.875rem;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    padding: 0 0.75rem;
 }
 
-.item-price, .item-total {
-    font-weight: 600;
-    color: var(--dark-text-color);
-    font-size: 1.1rem;
-}
-
-.checkout-summary-card {
-    position: sticky;
-    top: 20px;
-    border-radius: 15px;
-}
-
-.btn-checkout {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: white;
-    font-weight: 600;
-    padding: 0.75rem;
-    transition: background-color 0.2s;
-}
-
-    .btn-checkout:hover {
-        background-color: var(--primary-hover-color);
-        border-color: var(--primary-hover-color);
-        color: white;
+    .step.active {
+        color: var(--primary-color);
     }
+
+    .step.completed {
+        color: var(--success-color);
+    }
+
+.step-divider {
+    color: #eee;
+    font-size: 0.8rem;
+}
+
+/* ===== CARDS ===== */
+.modern-card {
+    border: none;
+    border-radius: 20px; /* Softer corners */
+    background: #fff;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    transition: transform 0.2s ease;
+    margin-bottom: 1.5rem;
+}
+
+.card-header-clean {
+    background: #fff;
+    padding: 1.5rem 1.75rem 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.card-body {
+    padding: 1.75rem;
+}
+
+/* ===== INFO ICONS (Delivery) ===== */
+.info-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.info-icon-box {
+    width: 42px;
+    height: 42px;
+    background-color: var(--light-background);
+    color: var(--primary-color);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.info-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #aaa;
+    font-weight: 700;
+    margin-bottom: 2px;
+    display: block;
+}
+
+.info-value {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--dark-text-color);
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* ===== LIST ITEMS ===== */
+.checkout-item-row {
+    padding: 1.25rem 1.75rem;
+    border-bottom: 1px solid #f7f7f7;
+    display: flex;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+    .checkout-item-row:last-child {
+        border-bottom: none;
+    }
+
+    .checkout-item-row:hover {
+        background-color: #fafafa;
+    }
+
+.item-thumb {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* ===== FORMS & INPUTS ===== */
+.form-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--dark-text-color);
+    margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+    border: 2px solid #eee;
+    border-radius: 12px;
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    background-color: #fcfcfc;
+}
+
+    .form-control:focus, .form-select:focus {
+        background-color: #fff;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(139, 94, 60, 0.1);
+        outline: none;
+    }
+
+/* ===== SUMMARY & TOTALS ===== */
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    color: #666;
+}
+
+.summary-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px dashed #eee;
+}
+
+.total-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--dark-text-color);
+}
+
+.total-amount {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+/* ===== BUTTONS ===== */
+.btn-primary-custom {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    width: 100%;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(139, 94, 60, 0.25);
+}
+
+    .btn-primary-custom:hover {
+        background: var(--primary-hover-color);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(139, 94, 60, 0.35);
+    }
+
+/* ===== STICKY SIDEBAR ===== */
+.sticky-summary {
+    position: sticky;
+    top: 2rem;
+    z-index: 99;
+}
+
+/* ===== REMOVE DEFAULT BLUE ACCENTS - OVERRIDES ===== */
+/* Ensure links and bootstrap primary utilities use the site's brown primary color */
+a, a:link, a:visited {
+    color: var(--primary-color) !important;
+    text-decoration: none;
+}
+
+a:hover, a:focus {
+    color: var(--primary-hover-color) !important;
+    text-decoration: underline;
+}
+
+/* Override common Bootstrap utility classes that use blue */
+.text-primary,
+.text-primary * {
+    color: var(--primary-color) !important;
+}
+
+.bg-primary {
+    background-color: var(--primary-color) !important;
+    color: #fff !important;
+}
+
+.border-primary {
+    border-color: var(--primary-color) !important;
+}
+
+.btn-primary,
+.btn-primary:focus,
+.btn-primary:hover {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: none !important;
+    color: white !important;
+}
 
 .btn-outline-primary {
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color) !important;
+    color: #fff !important;
+}
+
+/* Replace default link/focus outline blue ring with warm primary color */
+a:focus, .btn:focus, .form-control:focus, .form-select:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 4px rgba(139, 94, 60, 0.12) !important;
+}
+
+/* Neutralize any remaining standard bootstrap blue utility */
+.text-info, .bg-info, .border-info {
+    color: inherit !important;
+    background: transparent !important;
+    border-color: transparent !important;
+}
+
+/* End overrides for removing blue accents */
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .checkout-header {
+        text-align: center;
+    }
+
+    .step-indicator {
+        margin-top: 1rem;
+    }
+
+    .checkout-item-row {
+        padding: 1rem;
+    }
+
+    .item-thumb {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+/* small adjustments for icon color within header */
+.checkout-header .fa, .checkout-header i {
+    color: rgba(248, 245, 242, 0.9) !important;
+}
+
+/* Keep step indicator pill legible: ensure its text contrasts with its background */
+.step-indicator {
+    /* if displayed on dark background, keep it white */
+    background: rgba(255,255,255,0.95);
+}
+
+.step-indicator .step {
+    color: var(--dark-text-color) !important;
+}
+
+/* Header text visibility on dark/brown background */
+.checkout-header .breadcrumb,
+.checkout-header .breadcrumb-item,
+.checkout-header .breadcrumb-item a {
+    color: rgba(248, 245, 242, 0.85) !important;
+}
+
+.checkout-header .breadcrumb-item.active {
+    color: rgba(248, 245, 242, 0.7) !important;
+}
+
+/* Ensure small meta / helper text in header is readable */
+.checkout-header small,
+.checkout-header .text-muted {
+    color: rgba(248, 245, 242, 0.75) !important;
+}
+
+/* If links within header were globally forced to brown, override that here */
+.checkout-header a {
+    color: rgba(248, 245, 242, 0.9) !important;
+}
+
+/* ===== SAVED CARDS SECTION ===== */
+.saved-cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.saved-card-option {
+    padding: 1rem;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    background-color: #fff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.saved-card-option:hover {
+    border-color: var(--primary-color);
+    background-color: #fafafa;
+}
+
+.saved-card-option .form-check-input:checked ~ .form-check-label {
     color: var(--primary-color);
+}
+
+.saved-card-option .form-check-input:checked {
+    background-color: var(--primary-color);
     border-color: var(--primary-color);
 }
 
-    .btn-outline-primary:hover {
-        background-color: var(--primary-color);
-        color: white;
-        border-color: var(--primary-color);
-    }
-
-.form-select:focus, .form-control:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(139, 94, 60, 0.25);
+.saved-card-option .form-check-input {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0;
+    cursor: pointer;
 }
 
-/* Loading state for checkout form */
-.checkout-summary-card.is-loading {
-    opacity: 0.5;
-    pointer-events: none;
+.saved-card-option .form-check-label {
+    cursor: pointer;
+    margin-left: 0.5rem;
 }
 
-    .checkout-summary-card.is-loading::after {
-        content: "\f110";
-        font-family: "Font Awesome 5 Free";
-        font-weight: 900;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 2rem;
-        color: var(--primary-color);
-        animation: fa-spin 1s infinite linear;
-        z-index: 10;
+.saved-card-option.expired-card-option {
+    opacity: 0.6;
+    background-color: #f8f8f8;
+    cursor: not-allowed;
+}
+
+.saved-card-option.expired-card-option:hover {
+    border-color: #eee;
+}
+
+.saved-card-option.expired-card-option .form-check-label {
+    cursor: not-allowed;
+}
+
+#savedCardsSection .alert-info {
+    background-color: #e7f3ff;
+    border: 1px solid #b3d9ff;
+    color: #004085;
+    border-radius: 12px;
+}
+
+#savedCardsSection .alert-link {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* Error highlight animation */
+#savedCardsSection.highlight-error {
+    animation: shakeAndHighlight 0.5s ease-in-out;
+    border: 2px solid #dc3545;
+    border-radius: 12px;
+    padding: 1rem;
+    background-color: #fff5f5;
+}
+
+@keyframes shakeAndHighlight {
+    0%, 100% {
+        transform: translateX(0);
     }
+    25% {
+        transform: translateX(-10px);
+    }
+    75% {
+        transform: translateX(10px);
+    }
+}

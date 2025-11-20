@@ -1,0 +1,170 @@
+@model ASI.Basecode.Services.ServiceModels.PaymentCardViewModel
+
+@{
+    ViewData["Title"] = "Add Payment Card";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var returnUrl = Context.Request.Query["returnUrl"].ToString();
+    var isFromCheckout = !string.IsNullOrEmpty(returnUrl);
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            @if (isFromCheckout)
+            {
+                <div class="alert alert-info border-0 shadow-sm mb-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Complete your checkout:</strong> Add a payment card to continue with your order.
+                </div>
+            }
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-brown text-white">
+                    <h4 class="mb-0"><i class="fas fa-credit-card me-2"></i>Add New Payment Card</h4>
+                </div>
+                <div class="card-body p-4">
+                    <p class="text-muted mb-4">
+                        <i class="fas fa-shield-alt me-2"></i>Your card information is securely stored
+                    </p>
+
+                    <form asp-action="AddPaymentCard" method="post">
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.UserId)
+                        @if (!string.IsNullOrEmpty(returnUrl))
+                        {
+                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                        }
+
+                        <div class="mb-3">
+                            <label asp-for="CardholderName" class="form-label fw-bold"></label>
+                            <input asp-for="CardholderName" class="form-control" placeholder="John Doe" />
+                            <span asp-validation-for="CardholderName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CardNumber" class="form-label fw-bold"></label>
+                            <input asp-for="CardNumber" class="form-control" 
+                                   placeholder="1234 5678 9012 3456" 
+                                   maxlength="19"
+                                   id="cardNumber" />
+                            <span asp-validation-for="CardNumber" class="text-danger"></span>
+                            <small class="text-muted">Enter 16-digit card number</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ExpiryDate" class="form-label fw-bold"></label>
+                                <input asp-for="ExpiryDate" class="form-control" 
+                                       placeholder="MM/YY" 
+                                       maxlength="5"
+                                       id="expiryDate" />
+                                <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CVV" class="form-label fw-bold"></label>
+                                <input asp-for="CVV" type="password" class="form-control" 
+                                       placeholder="123" 
+                                       maxlength="4"
+                                       id="cvv" />
+                                <span asp-validation-for="CVV" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input asp-for="IsDefault" class="form-check-input" type="checkbox" />
+                                <label asp-for="IsDefault" class="form-check-label">
+                                    Set as default payment method
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-brown btn-lg">
+                                <i class="fas fa-save me-2"></i>Save Card @(isFromCheckout ? "& Continue to Checkout" : "")
+                            </button>
+                            @if (isFromCheckout)
+                            {
+                                <a href="@Url.Action("Index", "Checkout")" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Checkout
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("PaymentMethods", "Settings")" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="alert alert-info mt-4">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Note:</strong> This is for demo only.
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Auto-format card number with spaces
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+
+        // Auto-format expiry date with /
+        document.getElementById('expiryDate').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // CVV numbers only
+        document.getElementById('cvv').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        .bg-brown {
+            background: linear-gradient(135deg, #8B5E3C, #7a5334) !important;
+        }
+
+        .btn-brown {
+            background-color: #8B5E3C;
+            border-color: #8B5E3C;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-brown:hover {
+            background-color: #7a5334;
+            border-color: #7a5334;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 94, 60, 0.3);
+        }
+
+        .form-control:focus, .form-check-input:focus {
+            border-color: #8B5E3C;
+            box-shadow: 0 0 0 0.25rem rgba(139, 94, 60, 0.25);
+        }
+
+        .form-check-input:checked {
+            background-color: #8B5E3C;
+            border-color: #8B5E3C;
+        }
+    </style>
+}

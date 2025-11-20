@@ -25,6 +25,7 @@ namespace ASI.Basecode.Data
         public virtual DbSet<CartItem> CartItems { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }
+        public virtual DbSet<PaymentCard> PaymentCards { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -213,6 +214,52 @@ namespace ASI.Basecode.Data
                     .WithMany()
                     .HasForeignKey(e => e.MenuItemId)
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Add PaymentCard entity configuration
+            modelBuilder.Entity<PaymentCard>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.CardholderName)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.CardNumber)
+                    .IsRequired()
+                    .HasMaxLength(19);
+
+                entity.Property(e => e.ExpiryDate)
+                    .IsRequired()
+                    .HasMaxLength(5);
+
+                entity.Property(e => e.CVV)
+                    .IsRequired()
+                    .HasMaxLength(4);
+
+                entity.Property(e => e.CardType)
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.IsDefault)
+                    .IsRequired()
+                    .HasDefaultValue(false);
+
+                entity.Property(e => e.CreatedTime)
+                    .IsRequired()
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedTime)
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedBy)
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedBy)
+                    .HasMaxLength(50);
             });
 
             OnModelCreatingPartial(modelBuilder);

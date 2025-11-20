@@ -41,6 +41,7 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<IProfileService, ProfileService>();
             this._services.AddScoped<IOtpService, OtpService>();
             this._services.AddScoped<IReviewService, ReviewService>();
+            this._services.AddScoped<IPaymentCardService, PaymentCardService>();
 
             // Background Services
             this._services.AddHostedService<OrderTimerService>();
@@ -51,6 +52,7 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<ICartRepository, CartRepository>();
             this._services.AddScoped<IOrderRepository, OrderRepository>();
             this._services.AddScoped<IReviewRepository, ReviewRepository>();
+            this._services.AddScoped<IPaymentCardRepository, PaymentCardRepository>();
 
             // Manager Class
             this._services.AddScoped<SignInManager>();

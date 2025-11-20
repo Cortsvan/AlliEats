@@ -48,6 +48,9 @@ namespace ASI.Basecode.WebApp
                     .ForMember(dest => dest.OrderItems, opt => opt.MapFrom(src => src.OrderItems))
                     .ReverseMap();
                 CreateMap<OrderItem, OrderItemViewModel>().ReverseMap();
+
+                // PaymentCard mappings
+                CreateMap<PaymentCard, PaymentCardViewModel>().ReverseMap();
             }
         }
     }

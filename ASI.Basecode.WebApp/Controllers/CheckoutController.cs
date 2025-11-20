@@ -19,11 +19,13 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly IOrderService _orderService;
         private readonly ICartService _cartService;
         private readonly IProfileService _profileService;
+        private readonly IPaymentCardService _paymentCardService;
 
         public CheckoutController(
             IOrderService orderService,
             ICartService cartService,
             IProfileService profileService,
+            IPaymentCardService paymentCardService,
             IHttpContextAccessor httpContextAccessor,
             ILoggerFactory loggerFactory,
             IConfiguration configuration,
@@ -32,6 +34,7 @@ namespace ASI.Basecode.WebApp.Controllers
             _orderService = orderService;
             _cartService = cartService;
             _profileService = profileService;
+            _paymentCardService = paymentCardService;
         }
 
         // GET: Checkout
@@ -73,6 +76,9 @@ namespace ASI.Basecode.WebApp.Controllers
                 // Add user profile information to checkout model for display
                 checkoutModel.UserProfile = userProfile;
 
+                // Load saved payment cards
+                checkoutModel.SavedCards = _paymentCardService.GetCardsByUserId(userId).ToList();
+
                 return View(checkoutModel);
             }
             catch (InvalidOperationException ex)
@@ -108,6 +114,44 @@ namespace ASI.Basecode.WebApp.Controllers
             if (string.IsNullOrEmpty(userId))
             {
                 return Json(new { success = false, message = "User session expired. Please login again." });
+            }
+
+            // Validate payment card selection for Credit or Debit Card payment method
+            if (model.PaymentMethod == "Credit or Debit Card")
+            {
+                if (!model.SelectedCardId.HasValue || model.SelectedCardId.Value <= 0)
+                {
+                    _logger.LogWarning("User {UserId} attempted to place order with Credit/Debit Card but no card selected", userId);
+                    return Json(new { 
+                        success = false, 
+                        message = "Please select a payment card or add a new card to continue.",
+                        redirectAddCard = true,
+                        addCardUrl = Url.Action("AddPaymentCard", "Settings", new { returnUrl = "/Checkout/Index" })
+                    });
+                }
+
+                // Verify the card exists and belongs to the user
+                try
+                {
+                    var selectedCard = _paymentCardService.GetCardById(model.SelectedCardId.Value);
+                    if (selectedCard == null || selectedCard.UserId != userId)
+                    {
+                        _logger.LogWarning("User {UserId} attempted to use invalid card {CardId}", userId, model.SelectedCardId.Value);
+                        return Json(new { success = false, message = "Invalid payment card selected." });
+                    }
+
+                    // Check if card is expired
+                    if (selectedCard.IsExpired)
+                    {
+                        _logger.LogWarning("User {UserId} attempted to use expired card {CardId}", userId, model.SelectedCardId.Value);
+                        return Json(new { success = false, message = "The selected payment card has expired. Please select a different card or add a new one." });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error validating payment card {CardId} for user {UserId}", model.SelectedCardId.Value, userId);
+                    return Json(new { success = false, message = "Error validating payment card." });
+                }
             }
 
             // Double-check delivery information before placing order

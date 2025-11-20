@@ -204,3 +204,5 @@ node_modules
 # But keep the uploads folder structure by adding this exception:
 !/ASI.Basecode.WebApp/wwwroot/uploads/.gitkeep
 /CART_IMPROVEMENTS_SUMMARY.md
+/CHECKOUT_REDIRECT_ENHANCEMENT.md
+/PAYMENT_CARD_VALIDATION_FIX.md
