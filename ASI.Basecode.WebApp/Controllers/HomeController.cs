@@ -15,6 +15,7 @@ namespace ASI.Basecode.WebApp.Controllers
     public class HomeController : ControllerBase<HomeController>
     {
         private readonly IMenuService _menuService;
+        private readonly IReviewService _reviewService;
 
         /// <summary>
         /// Constructor
@@ -25,13 +26,16 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <param name="localizer"></param>
         /// <param name="mapper"></param>
         /// <param name="menuService"></param>
+        /// <param name="reviewService"></param>
         public HomeController(IHttpContextAccessor httpContextAccessor,
                               ILoggerFactory loggerFactory,
                               IConfiguration configuration,
                               IMenuService menuService,
+                              IReviewService reviewService,
                               IMapper mapper = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             _menuService = menuService;
+            _reviewService = reviewService;
         }
 
         /// <summary>
@@ -59,6 +63,16 @@ namespace ASI.Basecode.WebApp.Controllers
                     .Take(3)
                     .ToList();
                 ViewBag.Categories = categories;
+
+                // Get featured reviews (top rated reviews with comments)
+                var allReviews = _reviewService.GetAllReviews();
+                var featuredReviews = allReviews.Reviews
+                    .Where(r => !string.IsNullOrEmpty(r.Comment) && r.Rating >= 4)
+                    .OrderByDescending(r => r.Rating)
+                    .ThenByDescending(r => r.ReviewDate)
+                    .Take(6)
+                    .ToList();
+                ViewBag.FeaturedReviews = featuredReviews;
             }
 
             return View();

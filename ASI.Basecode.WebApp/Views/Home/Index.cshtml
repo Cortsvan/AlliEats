@@ -9,6 +9,7 @@
     
     var featuredMenuItems = ViewBag.FeaturedMenuItems as List<MenuItemViewModel> ?? new List<MenuItemViewModel>();
     var categories = ViewBag.Categories as List<string> ?? new List<string>();
+    var featuredReviews = ViewBag.FeaturedReviews as List<UserReviewViewModel> ?? new List<UserReviewViewModel>();
     
     // Helper function to get icon based on category
     string GetCategoryIcon(string category)
@@ -39,6 +40,15 @@
     {
         if (string.IsNullOrEmpty(category)) return "";
         return category.Replace(" ", "-").ToLower();
+    }
+    
+    // Helper function to get initials from order number or generic initial
+    string GetCustomerInitials(string orderNumber)
+    {
+        if (string.IsNullOrEmpty(orderNumber)) return "??";
+        // Extract just letters from order number or use first 2 chars
+        var letters = new string(orderNumber.Where(char.IsLetter).Take(2).ToArray());
+        return string.IsNullOrEmpty(letters) ? "CU" : letters.ToUpper();
     }
 }
 
@@ -248,7 +258,7 @@
                                     @if (isOutOfStock)
                                     {
                                         <div class="out-of-stock-overlay">
-                                            <span class="out-of-stock-badge">Out of Stock</span>
+                                            <span class="out-of-stock-badge">Sold Out</span>
                                         </div>
                                     }
                                 </div>
@@ -328,6 +338,114 @@
                 <div class="alert alert-info text-center">
                     <i class="fas fa-info-circle me-2"></i>
                     No menu items available at the moment. Please check back later!
+                </div>
+            }
+
+            /* 5. Customer Testimonials Carousel Section */
+            @if (featuredReviews.Any())
+            {
+                <div class="testimonials-section">
+                    <div class="testimonials-header">
+                        <h2>What Our <span class="highlight">Customers</span> Say</h2>
+                        <p class="testimonials-subtitle">Real reviews from real customers who love our food!</p>
+                    </div>
+
+                    <div id="testimonialsCarousel" class="carousel slide testimonials-carousel" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            @for (int i = 0; i < featuredReviews.Count; i++)
+                            {
+                                <button type="button" 
+                                        data-bs-target="#testimonialsCarousel" 
+                                        data-bs-slide-to="@i" 
+                                        class="@(i == 0 ? "active" : "")"
+                                        aria-current="@(i == 0 ? "true" : "false")" 
+                                        aria-label="Slide @(i + 1)"></button>
+                            }
+                        </div>
+
+                        <div class="carousel-inner">
+                            @for (int i = 0; i < featuredReviews.Count; i++)
+                            {
+                                var review = featuredReviews[i];
+                                var customerInitials = GetCustomerInitials(review.OrderNumber);
+                                
+                                <div class="carousel-item @(i == 0 ? "active" : "")">
+                                    <div class="testimonial-card">
+                                        <div class="quote-icon">
+                                            <i class="fas fa-quote-left"></i>
+                                        </div>
+                                        
+                                        <div class="testimonial-rating">
+                                            @for (int j = 1; j <= 5; j++)
+                                            {
+                                                @if (j <= review.Rating)
+                                                {
+                                                    <i class="fas fa-star"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="far fa-star"></i>
+                                                }
+                                            }
+                                        </div>
+
+                                        <p class="testimonial-text">
+                                            "@review.Comment"
+                                        </p>
+
+                                        <div class="testimonial-items">
+                                            <div class="items-ordered">
+                                                @foreach (var item in review.OrderItems.Take(3))
+                                                {
+                                                    <div class="item-badge" title="@item.MenuItemName">
+                                                        @if (!string.IsNullOrEmpty(item.MenuItemImagePath))
+                                                        {
+                                                            <img src="@item.MenuItemImagePath" alt="@item.MenuItemName" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="fas fa-utensils"></i>
+                                                        }
+                                                    </div>
+                                                }
+                                                @if (review.OrderItems.Count > 3)
+                                                {
+                                                    <div class="item-badge more-items">
+                                                        <span>+@(review.OrderItems.Count - 3)</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div class="testimonial-footer">
+                                            <div class="customer-avatar">
+                                                <span>@customerInitials</span>
+                                            </div>
+                                            <div class="customer-info">
+                                                <h6 class="customer-name">Customer @review.OrderNumber.Substring(Math.Max(0, review.OrderNumber.Length - 4))</h6>
+                                                <p class="order-date">@review.ReviewDate.ToString("MMM dd, yyyy")</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <button class="carousel-control-prev" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+
+                    <div class="view-all-reviews-wrapper">
+                        <a asp-controller="Review" asp-action="AllReviews" class="btn-view-all-reviews">
+                            View All Reviews <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
             }
         }

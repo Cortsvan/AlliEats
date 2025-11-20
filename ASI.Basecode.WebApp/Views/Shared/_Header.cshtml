@@ -94,6 +94,9 @@
                                 <a class="nav-link @(currentController == "Menu" ? "active" : "")" asp-controller="Menu" asp-action="Browse">Menu</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link @(currentController == "Review" && currentAction == "AllReviews" ? "active" : "")" asp-controller="Review" asp-action="AllReviews">Reviews</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link @(currentController == "Order" ? "active" : "")" asp-controller="Order" asp-action="MyOrders">Orders</a>
                             </li>
                             <li class="nav-item position-relative mx-2">

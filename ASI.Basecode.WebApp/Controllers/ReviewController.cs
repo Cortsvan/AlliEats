@@ -257,25 +257,22 @@ namespace ASI.Basecode.WebApp.Controllers
             }
         }
 
-        // GET: Review/AllReviews - Admin only
+        // GET: Review/AllReviews - Accessible to all authenticated users
         public IActionResult AllReviews()
         {
             try
             {
-                // Restrict access to admin only
-                var userRole = HttpContext.Session.GetString("UserRole");
-                if (userRole != "Admin")
-                {
-                    TempData["ErrorMessage"] = "Access denied. Admin privileges required.";
-                    return RedirectToAction("Index", "Home");
-                }
-
                 var reviewsModel = _reviewService.GetAllReviews();
+                
+                // Check if user is admin to show different view/features
+                var userRole = HttpContext.Session.GetString("UserRole");
+                ViewBag.IsAdmin = userRole == "Admin";
+                
                 return View(reviewsModel);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving all reviews for admin");
+                _logger.LogError(ex, "Error occurred while retrieving all reviews");
                 TempData["ErrorMessage"] = "An error occurred while retrieving reviews.";
                 return RedirectToAction("Index", "Home");
             }

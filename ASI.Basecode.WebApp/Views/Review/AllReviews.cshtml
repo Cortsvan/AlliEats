@@ -1,15 +1,16 @@
 ﻿@model ASI.Basecode.Services.ServiceModels.MyReviewsViewModel
 
 @{
-    ViewData["Title"] = "All Customer Reviews";
+    ViewData["Title"] = ViewBag.IsAdmin ? "All Customer Reviews" : "Customer Reviews";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var isAdmin = ViewBag.IsAdmin ?? false;
 }
 
 <div class="container-fluid px-4 py-4">
     <!-- Header -->
-    <div class="admin-reviews-header text-center">
-        <h1 class="display-5 fw-bold"><i class="fas fa-star me-3"></i>All Customer Reviews</h1>
-        <p class="lead">Monitor and manage customer feedback and ratings</p>
+    <div class="@(isAdmin ? "admin-reviews-header" : "reviews-header") text-center">
+        <h1 class="display-5 fw-bold"><i class="fas fa-star me-3"></i>@(isAdmin ? "All Customer Reviews" : "Customer Reviews")</h1>
+        <p class="lead">@(isAdmin ? "Monitor and manage customer feedback and ratings" : "See what other customers are saying about our food")</p>
     </div>
 
     @if (TempData["SuccessMessage"] != null)
@@ -33,7 +34,7 @@
         <!-- Reviews Summary Stats -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card shadow-sm admin-stats-card">
+                <div class="card shadow-sm @(isAdmin ? "admin-stats-card" : "stats-card")">
                     <div class="card-body">
                         <div class="row text-center">
                             <div class="col-md-3 mb-3 mb-md-0">
@@ -115,7 +116,7 @@
                      data-date="@review.ReviewDate.ToString("yyyy-MM-dd")"
                      data-order="@review.OrderNumber.ToLower()"
                      data-comment="@(review.Comment?.ToLower())">
-                    <div class="card shadow-sm admin-review-card">
+                    <div class="card shadow-sm @(isAdmin ? "admin-review-card" : "review-card")">
                         <div class="card-body">
                             <!-- Review Header -->
                             <div class="review-header-info mb-3">
@@ -188,7 +189,7 @@
                                         </small>
                                     </div>
                                     <div class="order-total">
-                                        <span class="fw-bold text-success">@("P" + review.OrderTotal.ToString("F2"))</span>
+                                        <span class="fw-bold text-success">@("₱" + review.OrderTotal.ToString("F2"))</span>
                                     </div>
                                 </div>
                             </div>
@@ -205,16 +206,32 @@
                 <i class="fas fa-star fa-3x text-muted mb-3"></i>
                 <h5 class="text-muted mb-3">No Reviews Yet</h5>
                 <p class="text-muted mb-4">No customer reviews have been submitted yet. Reviews will appear here once customers start rating their orders.</p>
-                <a href="@Url.Action("ManageOrders", "AdminOrder")" class="btn btn-primary">
-                    <i class="fas fa-clipboard-list me-2"></i>Manage Orders
-                </a>
+                @if (isAdmin)
+                {
+                    <a href="@Url.Action("ManageOrders", "AdminOrder")" class="btn btn-primary">
+                        <i class="fas fa-clipboard-list me-2"></i>Manage Orders
+                    </a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Browse", "Menu")" class="btn btn-primary">
+                        <i class="fas fa-utensils me-2"></i>Browse Menu
+                    </a>
+                }
             </div>
         </div>
     }
 </div>
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/admin-reviews.css" />
+    @if (isAdmin)
+    {
+        <link rel="stylesheet" href="~/css/admin-reviews.css" />
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/css/review.css" />
+    }
 }
 
 @section Scripts {
