@@ -121,7 +121,57 @@ namespace ASI.Basecode.Services.Services
                     }).ToList() ?? new List<OrderItemViewModel>()
                 }).ToList();
 
-                return orderViewModels;
+                return orderViewModels.OrderByDescending(o => o.CreatedTime);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error retrieving all orders: {ex.Message}", ex);
+            }
+        }
+        //overload method to allow status check
+        public IEnumerable<OrderViewModel> GetAllOrders(string status)
+        {
+            try
+            {
+                var orders = _orderRepository.GetAllOrders().Where(o => o.Status == status).ToList(); ;
+
+                if (orders == null || !orders.Any())
+                {
+                    return new List<OrderViewModel>();
+                }
+
+                // Manual mapping to include menu item image paths and review status
+                var orderViewModels = orders.Select(order => new OrderViewModel
+                {
+                    Id = order.Id,
+                    UserId = order.UserId,
+                    OrderNumber = order.OrderNumber,
+                    TotalAmount = order.TotalAmount,
+                    PaymentMethod = order.PaymentMethod,
+                    Status = order.Status,
+                    Notes = order.Notes,
+                    CreatedTime = order.CreatedTime,
+                    UpdatedTime = order.UpdatedTime,
+                    HasReview = _reviewRepository.ReviewExists(order.Id),
+                    OrderItems = order.OrderItems?.Select(oi =>
+                    {
+                        var menuItem = _menuRepository.GetMenuItemById(oi.MenuItemId);
+                        return new OrderItemViewModel
+                        {
+                            Id = oi.Id,
+                            OrderId = oi.OrderId,
+                            MenuItemId = oi.MenuItemId,
+                            MenuItemName = oi.MenuItemName,
+                            Price = oi.Price,
+                            Quantity = oi.Quantity,
+                            TotalPrice = oi.TotalPrice,
+                            CreatedTime = oi.CreatedTime,
+                            MenuItemImagePath = menuItem?.ImagePath
+                        };
+                    }).ToList() ?? new List<OrderItemViewModel>()
+                }).ToList();
+
+                return orderViewModels.OrderByDescending(o => o.CreatedTime);
             }
             catch (Exception ex)
             {
@@ -299,6 +349,170 @@ namespace ASI.Basecode.Services.Services
         public bool OrderExists(int id)
         {
             return _orderRepository.OrderExists(id);
+        }
+
+        //dashboard methods
+        public int GetTodayOrdersCount()
+        {
+            try
+            {
+                var allOrders = GetAllOrders();
+                return allOrders.Count(o => o.CreatedTime.Date == DateTime.Today);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting today's orders count: {ex.Message}", ex);
+            }
+        }
+
+        public int GetActiveUsersCount()
+        {
+            try
+            {
+                var allOrders = GetAllOrders();
+                return allOrders.Select(o => o.UserId).Distinct().Count();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting active users count: {ex.Message}", ex);
+            }
+        }
+
+        public decimal GetTotalRevenue()
+        {
+            try
+            {
+                var allOrders = GetAllOrders();
+                return allOrders
+                    .Where(o => o.Status != "Cancelled" && o.Status != "Pending")
+                    .Sum(o => o.TotalAmount);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error calculating total revenue: {ex.Message}", ex);
+            }
+        }
+
+        //Validation Methods
+        public bool IsValidOrderStatus(string status)
+        {
+            var validStatuses = new[] { "Pending", "Confirmed", "Preparing", "Ready", "On the Way", "Received", "Cancelled" };
+            return validStatuses.Contains(status);
+        }
+
+        public IEnumerable<string> GetValidOrderStatuses()
+        {
+            return new[] { "Pending", "Confirmed", "Preparing", "Ready", "On the Way", "Received", "Cancelled" };
+        }
+
+        public (bool IsValid, string Message) ValidateStatusUpdate(int orderId, string newStatus)
+        {
+            try
+            {
+                if (!IsValidOrderStatus(newStatus))
+                {
+                    return (false, "Invalid status selected.");
+                }
+
+                var order = _orderRepository.GetOrderById(orderId);
+                if (order == null)
+                {
+                    return (false, "Order not found.");
+                }
+
+                if (order.Status == "Received" || order.Status == "Cancelled")
+                {
+                    return (false, "Cannot update status of completed or cancelled orders.");
+                }
+
+                return (true, "Status update is valid.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error validating status update for order {orderId}: {ex.Message}", ex);
+            }
+        }
+
+        public string GetStatusUpdateMessage(string status)
+        {
+            return status switch
+            {
+                "On the Way" => $"Order status updated to {status}. The order will be automatically marked as 'Received' after 2 hours if not confirmed by the customer.",
+                _ => $"Order status updated to {status} successfully."
+            };
+        }
+
+
+        // customer order validation methods
+        public bool ValidateOrderOwnership(int orderId, string userId)
+        {
+            try
+            {
+                var order = _orderRepository.GetOrderById(orderId);
+                return order != null && order.UserId == userId;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public (bool CanConfirm, string Message) ValidateReceiptConfirmation(int orderId, string userId)
+        {
+            try
+            {
+                var order = _orderRepository.GetOrderById(orderId);
+
+                if (order == null)
+                {
+                    return (false, "Order not found.");
+                }
+
+                if (order.UserId != userId)
+                {
+                    return (false, "Access denied.");
+                }
+
+                if (order.Status != "On the Way")
+                {
+                    return (false, $"Order cannot be confirmed at this time. Current status: {order.Status}");
+                }
+
+                return (true, "Order can be confirmed.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error validating receipt confirmation for order {orderId}: {ex.Message}", ex);
+            }
+        }
+
+        public (bool CanCancel, string Message) ValidateOrderCancellation(int orderId, string userId)
+        {
+            try
+            {
+                var order = _orderRepository.GetOrderById(orderId);
+
+                if (order == null)
+                {
+                    return (false, "Order not found.");
+                }
+
+                if (order.UserId != userId)
+                {
+                    return (false, "Access denied.");
+                }
+
+                if (order.Status != "Pending")
+                {
+                    return (false, $"Order cannot be cancelled at this time. Current status: {order.Status}. Orders can only be cancelled while pending.");
+                }
+
+                return (true, "Order can be cancelled.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error validating order cancellation for order {orderId}: {ex.Message}", ex);
+            }
         }
     }
 }

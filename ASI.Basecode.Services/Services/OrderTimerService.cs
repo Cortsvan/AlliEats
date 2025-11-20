@@ -67,8 +67,8 @@ namespace ASI.Basecode.Services.Services
 
             try
             {
-                var allOrders = orderService.GetAllOrders();
-                var onTheWayOrders = allOrders.Where(o => o.Status == "On the Way").ToList();
+                var allOrders = orderService.GetAllOrders("On the Way");
+                var onTheWayOrders = allOrders.ToList();
 
                 if (!onTheWayOrders.Any())
                 {

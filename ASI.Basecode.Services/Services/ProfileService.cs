@@ -20,7 +20,7 @@ namespace ASI.Basecode.Services.Services
 
         public ProfileViewModel GetProfile(string userId)
         {
-            var user = _userRepository.GetUserById(userId); // Use the new method
+            var user = _userRepository.GetUserById(userId);
             if (user == null)
             {
                 throw new InvalidOperationException("User not found.");
@@ -31,7 +31,7 @@ namespace ASI.Basecode.Services.Services
 
         public void UpdateProfile(ProfileViewModel profileModel)
         {
-            var user = _userRepository.GetUserById(profileModel.UserId); // Use the new method
+            var user = _userRepository.GetUserById(profileModel.UserId); 
             if (user == null)
             {
                 throw new InvalidOperationException("User not found.");

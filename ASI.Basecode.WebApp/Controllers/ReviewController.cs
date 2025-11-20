@@ -1,6 +1,7 @@
 ﻿using ASI.Basecode.Services.Interfaces;
 using ASI.Basecode.Services.ServiceModels;
 using ASI.Basecode.WebApp.Mvc;
+using ASI.Basecode.WebApp.Attributes;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,7 @@ using System;
 namespace ASI.Basecode.WebApp.Controllers
 {
     [Authorize]
+    [CustomerOnly] // Custom attribute handles customer-only access
     public class ReviewController : ControllerBase<ReviewController>
     {
         private readonly IReviewService _reviewService;
@@ -26,34 +28,28 @@ namespace ASI.Basecode.WebApp.Controllers
             _reviewService = reviewService;
         }
 
-        // GET: Review/Create/5
+        /// <summary>
+        /// GET: Review/Create/5
+        /// Displays the review creation form for a specific order
+        /// </summary>
         public IActionResult Create(int orderId)
         {
             try
             {
-                // Restrict admin access
-                var userRole = HttpContext.Session.GetString("UserRole");
-                if (userRole == "Admin")
-                {
-                    TempData["ErrorMessage"] = "Admins cannot create reviews.";
-                    return RedirectToAction("Index", "Home");
-                }
-
-                // Get userId from session
-                var userId = HttpContext.Session.GetString("UserId")
-                            ?? HttpContext.Session.GetString("UserName")
-                            ?? User.Identity.Name;
-
+                var userId = GetCurrentUserId();
                 if (string.IsNullOrEmpty(userId))
                 {
                     TempData["ErrorMessage"] = "User session expired. Please login again.";
                     return RedirectToAction("Login", "Account");
                 }
 
+                _logger.LogInformation("User {UserId} creating review for order {OrderId}", userId, orderId);
+
                 var reviewModel = _reviewService.GetReviewFormForOrder(orderId, userId);
 
                 if (reviewModel == null)
                 {
+                    _logger.LogWarning("User {UserId} attempted to review order {OrderId} - not found or access denied", userId, orderId);
                     TempData["ErrorMessage"] = "Order not found or access denied.";
                     return RedirectToAction("MyOrders", "Order");
                 }
@@ -62,11 +58,13 @@ namespace ASI.Basecode.WebApp.Controllers
                 {
                     if (reviewModel.HasReview)
                     {
+                        _logger.LogInformation("User {UserId} attempted to review order {OrderId} - already reviewed", userId, orderId);
                         TempData["InfoMessage"] = "You have already reviewed this order.";
                         return RedirectToAction("Details", "Order", new { id = orderId });
                     }
                     else
                     {
+                        _logger.LogWarning("User {UserId} attempted to review order {OrderId} - not eligible", userId, orderId);
                         TempData["ErrorMessage"] = "This order is not eligible for review at this time.";
                         return RedirectToAction("MyOrders", "Order");
                     }
@@ -82,7 +80,10 @@ namespace ASI.Basecode.WebApp.Controllers
             }
         }
 
-        // POST: Review/Create
+        /// <summary>
+        /// POST: Review/Create
+        /// Processes the review creation form submission
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(ReviewViewModel model)
@@ -95,26 +96,36 @@ namespace ASI.Basecode.WebApp.Controllers
                     return View(model);
                 }
 
-                // Get userId from session
-                var userId = HttpContext.Session.GetString("UserId")
-                            ?? HttpContext.Session.GetString("UserName")
-                            ?? User.Identity.Name;
-
+                var userId = GetCurrentUserId();
                 if (string.IsNullOrEmpty(userId))
                 {
                     TempData["ErrorMessage"] = "User session expired. Please login again.";
                     return RedirectToAction("Login", "Account");
                 }
 
+                _logger.LogInformation("User {UserId} submitting review for order {OrderId}", userId, model.OrderId);
+
+                // Validate using service layer
+                var validation = _reviewService.ValidateReviewSubmission(model, userId);
+                if (!validation.IsValid)
+                {
+                    _logger.LogWarning("Review submission validation failed for user {UserId}, order {OrderId}: {Message}",
+                        userId, model.OrderId, validation.Message);
+                    TempData["ErrorMessage"] = validation.Message;
+                    return View(model);
+                }
+
                 var success = _reviewService.SubmitReview(model, userId);
 
                 if (success)
                 {
+                    _logger.LogInformation("Review submitted successfully for user {UserId}, order {OrderId}", userId, model.OrderId);
                     TempData["SuccessMessage"] = "Thank you for your review! Your feedback helps us improve.";
                     return RedirectToAction("Details", "Order", new { id = model.OrderId });
                 }
                 else
                 {
+                    _logger.LogWarning("Review submission failed for user {UserId}, order {OrderId}", userId, model.OrderId);
                     TempData["ErrorMessage"] = "Unable to submit your review. Please try again.";
                     return View(model);
                 }
@@ -127,69 +138,65 @@ namespace ASI.Basecode.WebApp.Controllers
             }
         }
 
-        // GET: Review/MyReviews
+        /// <summary>
+        /// GET: Review/MyReviews
+        /// Displays the customer's review history
+        /// </summary>
         public IActionResult MyReviews()
         {
             try
             {
-                // Restrict admin access
-                var userRole = HttpContext.Session.GetString("UserRole");
-                if (userRole == "Admin")
-                {
-                    TempData["ErrorMessage"] = "Admins cannot access reviews.";
-                    return RedirectToAction("Index", "Home");
-                }
-
-                // Get userId from session
-                var userId = HttpContext.Session.GetString("UserId")
-                            ?? HttpContext.Session.GetString("UserName")
-                            ?? User.Identity.Name;
-
+                var userId = GetCurrentUserId();
                 if (string.IsNullOrEmpty(userId))
                 {
                     TempData["ErrorMessage"] = "User session expired. Please login again.";
                     return RedirectToAction("Login", "Account");
                 }
 
+                _logger.LogInformation("User {UserId} accessing their reviews", userId);
+
                 var reviewsModel = _reviewService.GetUserReviews(userId);
                 return View(reviewsModel);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving user reviews");
+                _logger.LogError(ex, "Error occurred while retrieving user reviews for user {UserId}", GetCurrentUserId());
                 TempData["ErrorMessage"] = "An error occurred while retrieving your reviews.";
                 return RedirectToAction("MyOrders", "Order");
             }
         }
 
-        // GET: Review/GetReviewForEdit
+        /// <summary>
+        /// GET: Review/GetReviewForEdit
+        /// AJAX endpoint to get review data for editing
+        /// </summary>
         [HttpGet]
         public IActionResult GetReviewForEdit(int orderId)
         {
             try
             {
-                // Restrict admin access
-                var userRole = HttpContext.Session.GetString("UserRole");
-                if (userRole == "Admin")
-                {
-                    return Json(new { success = false, message = "Admins cannot edit reviews." });
-                }
-
-                // Get userId from session
-                var userId = HttpContext.Session.GetString("UserId")
-                            ?? HttpContext.Session.GetString("UserName")
-                            ?? User.Identity.Name;
-
+                var userId = GetCurrentUserId();
                 if (string.IsNullOrEmpty(userId))
                 {
                     return Json(new { success = false, message = "User session expired. Please login again." });
+                }
+
+                _logger.LogInformation("User {UserId} loading review for edit, order {OrderId}", userId, orderId);
+
+                // Validate edit permission using service layer
+                var editValidation = _reviewService.ValidateReviewEdit(orderId, userId);
+                if (!editValidation.CanEdit)
+                {
+                    _logger.LogWarning("Review edit validation failed for user {UserId}, order {OrderId}: {Message}",
+                        userId, orderId, editValidation.Message);
+                    return Json(new { success = false, message = editValidation.Message });
                 }
 
                 var reviewModel = _reviewService.GetReviewForEdit(orderId, userId);
 
                 if (reviewModel == null)
                 {
-                    return Json(new { success = false, message = "Review not found or access denied." });
+                    return Json(new { success = false, message = "Review not found." });
                 }
 
                 return Json(new
@@ -210,43 +217,43 @@ namespace ASI.Basecode.WebApp.Controllers
             }
         }
 
-        // POST: Review/UpdateReview
+        /// <summary>
+        /// POST: Review/UpdateReview
+        /// AJAX endpoint to update an existing review
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult UpdateReview(int orderId, int rating, string comment)
         {
             try
             {
-                // Get userId from session
-                var userId = HttpContext.Session.GetString("UserId")
-                            ?? HttpContext.Session.GetString("UserName")
-                            ?? User.Identity.Name;
-
+                var userId = GetCurrentUserId();
                 if (string.IsNullOrEmpty(userId))
                 {
                     return Json(new { success = false, message = "User session expired. Please login again." });
                 }
 
-                // Validate rating
-                if (rating < 1 || rating > 5)
-                {
-                    return Json(new { success = false, message = "Rating must be between 1 and 5 stars." });
-                }
+                _logger.LogInformation("User {UserId} updating review for order {OrderId}", userId, orderId);
 
-                // Validate comment length
-                if (!string.IsNullOrEmpty(comment) && comment.Length > 1000)
+                // Validate using service layer
+                var validation = _reviewService.ValidateReviewUpdate(orderId, userId, rating, comment);
+                if (!validation.IsValid)
                 {
-                    return Json(new { success = false, message = "Comment cannot exceed 1000 characters." });
+                    _logger.LogWarning("Review update validation failed for user {UserId}, order {OrderId}: {Message}",
+                        userId, orderId, validation.Message);
+                    return Json(new { success = false, message = validation.Message });
                 }
 
                 var success = _reviewService.UpdateReview(orderId, userId, rating, comment);
 
                 if (success)
                 {
+                    _logger.LogInformation("Review updated successfully for user {UserId}, order {OrderId}", userId, orderId);
                     return Json(new { success = true, message = "Review updated successfully!" });
                 }
                 else
                 {
+                    _logger.LogWarning("Review update failed for user {UserId}, order {OrderId}", userId, orderId);
                     return Json(new { success = false, message = "Unable to update your review. Please try again." });
                 }
             }
@@ -257,17 +264,22 @@ namespace ASI.Basecode.WebApp.Controllers
             }
         }
 
-        // GET: Review/AllReviews - Accessible to all authenticated users
+        /// <summary>
+        /// GET: Review/AllReviews
+        /// Displays all reviews (accessible to all authenticated users)
+        /// </summary>
         public IActionResult AllReviews()
         {
             try
             {
+                _logger.LogInformation("User accessing all reviews page");
+
                 var reviewsModel = _reviewService.GetAllReviews();
-                
+
                 // Check if user is admin to show different view/features
                 var userRole = HttpContext.Session.GetString("UserRole");
                 ViewBag.IsAdmin = userRole == "Admin";
-                
+
                 return View(reviewsModel);
             }
             catch (Exception ex)
@@ -276,6 +288,16 @@ namespace ASI.Basecode.WebApp.Controllers
                 TempData["ErrorMessage"] = "An error occurred while retrieving reviews.";
                 return RedirectToAction("Index", "Home");
             }
+        }
+
+        /// <summary>
+        /// Helper method to get current user ID from multiple sources
+        /// </summary>
+        private string GetCurrentUserId()
+        {
+            return HttpContext.Session.GetString("UserId")
+                   ?? HttpContext.Session.GetString("UserName")
+                   ?? User.Identity.Name;
         }
     }
 }

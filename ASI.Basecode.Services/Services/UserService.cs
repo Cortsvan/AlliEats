@@ -197,7 +197,7 @@ namespace ASI.Basecode.Services.Services
                 var encryptedCurrentPassword = PasswordManager.EncryptPassword(currentPassword);
                 if (user.Password != encryptedCurrentPassword)
                 {
-                    return false; // Current password is incorrect
+                    return false;
                 }
 
                 // Update to new password
@@ -210,9 +210,70 @@ namespace ASI.Basecode.Services.Services
             }
             catch (Exception ex)
             {
-                // Log the exception if you have logging configured
                 return false;
             }
+        }
+
+        public (bool IsValid, string Message) ValidatePasswordChange(string email, string currentPassword, string newPassword)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(email))
+                {
+                    return (false, "Email is required.");
+                }
+
+                if (string.IsNullOrEmpty(currentPassword))
+                {
+                    return (false, "Current password is required.");
+                }
+
+                if (string.IsNullOrEmpty(newPassword))
+                {
+                    return (false, "New password is required.");
+                }
+
+                if (newPassword.Length < 8)
+                {
+                    return (false, "New password must be at least 8 characters long.");
+                }
+
+                if (currentPassword == newPassword)
+                {
+                    return (false, "New password must be different from the current password.");
+                }
+
+                var user = _repository.GetUserById(email);
+                if (user == null)
+                {
+                    return (false, "User not found.");
+                }
+
+                if (!user.IsEmailVerified)
+                {
+                    return (false, "Email is not verified.");
+                }
+
+                // Verify current password
+                var encryptedCurrentPassword = PasswordManager.EncryptPassword(currentPassword);
+                if (user.Password != encryptedCurrentPassword)
+                {
+                    return (false, "Current password is incorrect.");
+                }
+
+                return (true, "Password change is valid.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error validating password change: {ex.Message}", ex);
+            }
+        }
+
+        public bool ValidateUserSession(string sessionUserId, string requestUserId)
+        {
+            return !string.IsNullOrEmpty(sessionUserId) &&
+                   !string.IsNullOrEmpty(requestUserId) &&
+                   sessionUserId == requestUserId;
         }
     }
 }

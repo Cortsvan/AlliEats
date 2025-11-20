@@ -1,6 +1,5 @@
 ﻿using ASI.Basecode.Data.Models;
 using ASI.Basecode.Services.ServiceModels;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static ASI.Basecode.Resources.Constants.Enums;
@@ -20,5 +19,9 @@ namespace ASI.Basecode.Services.Interfaces
         bool ResetPassword(string email, string otp, string newPassword);
         bool ChangePassword(string email, string currentPassword, string newPassword);
         IQueryable<User> GetAllUsers();
+
+        // validation methods
+        (bool IsValid, string Message) ValidatePasswordChange(string email, string currentPassword, string newPassword);
+        bool ValidateUserSession(string sessionUserId, string requestUserId);
     }
 }

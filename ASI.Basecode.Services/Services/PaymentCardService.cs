@@ -165,5 +165,45 @@ namespace ASI.Basecode.Services.Services
                 _ => "Unknown"
             };
         }
+        public bool ValidateCardOwnership(int cardId, string userId)
+        {
+            try
+            {
+                var card = _paymentCardRepository.GetCardById(cardId);
+                return card != null && card.UserId == userId;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public (bool IsValid, string Message) ValidateCardData(PaymentCardViewModel model)
+        {
+            try
+            {
+                if (model == null)
+                {
+                    return (false, "Invalid card data.");
+                }
+
+                if (string.IsNullOrEmpty(model.UserId))
+                {
+                    return (false, "User authentication required.");
+                }
+
+                var userCards = GetCardsByUserId(model.UserId);
+                if (userCards.Count() >= 5)
+                {
+                    return (false, "Maximum number of payment cards (5) reached. Please remove an existing card before adding a new one.");
+                }
+
+                return (true, "Card data is valid.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error validating card data: {ex.Message}", ex);
+            }
+        }
     }
 }

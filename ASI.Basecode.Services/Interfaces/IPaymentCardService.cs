@@ -13,5 +13,9 @@ namespace ASI.Basecode.Services.Interfaces
         bool CardExists(int id);
         PaymentCardViewModel GetDefaultCard(string userId);
         void SetDefaultCard(string userId, int cardId);
+
+        // validation methods
+        bool ValidateCardOwnership(int cardId, string userId);
+        (bool IsValid, string Message) ValidateCardData(PaymentCardViewModel model);
     }
 }

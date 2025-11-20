@@ -170,5 +170,154 @@ namespace ASI.Basecode.Services.Services
                 }).ToList()
             };
         }
+
+        //dashboard methods
+        public MyReviewsViewModel GetFeaturedReviews(int count = 6)
+        {
+            try
+            {
+                var allReviewsResult = GetAllReviews();
+                var featuredReviews = allReviewsResult.Reviews
+                    .Where(r => !string.IsNullOrEmpty(r.Comment) && r.Rating >= 4)
+                    .OrderByDescending(r => r.Rating)
+                    .ThenByDescending(r => r.ReviewDate)
+                    .Take(count)
+                    .ToList();
+
+                return new MyReviewsViewModel
+                {
+                    Reviews = featuredReviews
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting featured reviews: {ex.Message}", ex);
+            }
+        }
+
+        public double GetAverageRating()
+        {
+            try
+            {
+                var allReviewsResult = GetAllReviews();
+                return allReviewsResult.Reviews.Any()
+                    ? allReviewsResult.Reviews.Average(r => r.Rating)
+                    : 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error calculating average rating: {ex.Message}", ex);
+            }
+        }
+
+
+        // review validation methods
+        public (bool IsValid, string Message) ValidateReviewSubmission(ReviewViewModel model, string userId)
+        {
+            try
+            {
+                if (model == null)
+                {
+                    return (false, "Invalid review data.");
+                }
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return (false, "User authentication required.");
+                }
+
+                if (model.Rating < 1 || model.Rating > 5)
+                {
+                    return (false, "Rating must be between 1 and 5 stars.");
+                }
+
+                if (!string.IsNullOrEmpty(model.Comment) && model.Comment.Length > 1000)
+                {
+                    return (false, "Comment cannot exceed 1000 characters.");
+                }
+
+                if (!_reviewRepository.CanUserReviewOrder(model.OrderId, userId))
+                {
+                    var existingReview = _reviewRepository.GetReviewByOrderId(model.OrderId);
+                    if (existingReview != null)
+                    {
+                        return (false, "You have already reviewed this order.");
+                    }
+                    return (false, "This order is not eligible for review at this time.");
+                }
+
+                return (true, "Review data is valid.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error validating review submission: {ex.Message}", ex);
+            }
+        }
+
+        public (bool IsValid, string Message) ValidateReviewUpdate(int orderId, string userId, int rating, string comment)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return (false, "User authentication required.");
+                }
+
+                if (rating < 1 || rating > 5)
+                {
+                    return (false, "Rating must be between 1 and 5 stars.");
+                }
+
+                if (!string.IsNullOrEmpty(comment) && comment.Length > 1000)
+                {
+                    return (false, "Comment cannot exceed 1000 characters.");
+                }
+
+                var existingReview = _reviewRepository.GetReviewByOrderId(orderId);
+                if (existingReview == null)
+                {
+                    return (false, "Review not found.");
+                }
+
+                if (existingReview.UserId != userId)
+                {
+                    return (false, "Access denied. This review does not belong to you.");
+                }
+
+                return (true, "Review update data is valid.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error validating review update: {ex.Message}", ex);
+            }
+        }
+
+        public (bool CanEdit, string Message) ValidateReviewEdit(int orderId, string userId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return (false, "User authentication required.");
+                }
+
+                var review = _reviewRepository.GetReviewByOrderId(orderId);
+                if (review == null)
+                {
+                    return (false, "Review not found.");
+                }
+
+                if (review.UserId != userId)
+                {
+                    return (false, "Access denied. This review does not belong to you.");
+                }
+
+                return (true, "Review can be edited.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error validating review edit: {ex.Message}", ex);
+            }
+        }
     }
 }

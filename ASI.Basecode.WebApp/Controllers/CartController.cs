@@ -1,5 +1,5 @@
 ﻿using ASI.Basecode.Services.Interfaces;
-using ASI.Basecode.Services.Services;
+using ASI.Basecode.WebApp.Attributes;
 using ASI.Basecode.WebApp.Mvc;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
     [Authorize]
+    [CustomerOnly] // Custom attribute handles customer-only access
     public class CartController : ControllerBase<CartController>
     {
         private readonly ICartService _cartService;
@@ -31,299 +31,292 @@ namespace ASI.Basecode.WebApp.Controllers
             _menuService = menuService;
         }
 
-        // GET: Cart/ViewCart
+        /// <summary>
+        /// GET: Cart/ViewCart
+        /// Displays the user's shopping cart
+        /// </summary>
         public IActionResult ViewCart()
         {
-            // Restrict admin access
-            var userRole = HttpContext.Session.GetString("UserRole");
-            if (userRole == "Admin")
+            try
             {
-                TempData["ErrorMessage"] = "Admins cannot access cart functionality.";
+                var userId = GetCurrentUserId();
+                if (string.IsNullOrEmpty(userId))
+                {
+                    TempData["ErrorMessage"] = "User session expired. Please login again.";
+                    return RedirectToAction("Login", "Account");
+                }
+
+                _logger.LogInformation("Displaying cart for user {UserId}", userId);
+
+                var cart = _cartService.GetCartByUserId(userId);
+                return View(cart);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while displaying cart");
+                TempData["ErrorMessage"] = "An error occurred while loading your cart.";
                 return RedirectToAction("Index", "Home");
             }
-
-            // Get userId from session - try multiple session keys
-            var userId = HttpContext.Session.GetString("UserId")
-                        ?? HttpContext.Session.GetString("UserName")
-                        ?? User.Identity.Name;
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                TempData["ErrorMessage"] = "User session expired. Please login again.";
-                return RedirectToAction("Login", "Account");
-            }
-
-            var cart = _cartService.GetCartByUserId(userId);
-            return View(cart);
         }
 
-        // POST: Cart/AddItem
+        /// <summary>
+        /// POST: Cart/AddItem
+        /// Adds an item to the user's cart
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddItem(int menuItemId, int quantity = 1)
         {
-            var userRole = HttpContext.Session.GetString("UserRole");
-            if (userRole == "Admin")
-            {
-                return Json(new { success = false, message = "Admins cannot add items to cart." });
-            }
-
             try
             {
-                // Get userId from session - try multiple session keys
-                var userId = HttpContext.Session.GetString("UserId")
-                            ?? HttpContext.Session.GetString("UserName")
-                            ?? User.Identity.Name;
-
+                var userId = GetCurrentUserId();
                 if (string.IsNullOrEmpty(userId))
                 {
                     return Json(new { success = false, message = "User session expired. Please login again." });
                 }
 
+                _logger.LogInformation("User {UserId} adding item {MenuItemId} (quantity: {Quantity}) to cart", userId, menuItemId, quantity);
+
                 _cartService.AddToCart(userId, menuItemId, quantity);
 
                 var itemCount = _cartService.GetCartItemCount(userId);
+                _logger.LogInformation("Item successfully added to cart. New cart count: {ItemCount}", itemCount);
+
                 return Json(new { success = true, message = "Item added to cart!", itemCount });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error adding item {MenuItemId} to cart", menuItemId);
                 return Json(new { success = false, message = ex.Message });
             }
         }
 
-        // POST: Cart/UpdateItem
+        /// <summary>
+        /// POST: Cart/UpdateItem
+        /// Updates the quantity of a cart item
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult UpdateItem(int cartItemId, int quantity)
         {
             try
             {
+                var userId = GetCurrentUserId();
+                if (string.IsNullOrEmpty(userId))
+                {
+                    TempData["ErrorMessage"] = "User session expired. Please login again.";
+                    return RedirectToAction("Login", "Account");
+                }
+
+                // Validate ownership
+                if (!_cartService.ValidateCartItemOwnership(cartItemId, userId))
+                {
+                    _logger.LogWarning("User {UserId} attempted to update cart item {CartItemId} they don't own", userId, cartItemId);
+                    TempData["ErrorMessage"] = "Access denied.";
+                    return RedirectToAction("ViewCart");
+                }
+
+                _logger.LogInformation("User {UserId} updating cart item {CartItemId} to quantity {Quantity}", userId, cartItemId, quantity);
+
                 _cartService.UpdateCartItem(cartItemId, quantity);
                 TempData["SuccessMessage"] = "Cart updated successfully!";
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error updating cart item {CartItemId}", cartItemId);
                 TempData["ErrorMessage"] = ex.Message;
             }
 
             return RedirectToAction("ViewCart");
         }
 
-        // POST: Cart/RemoveItem
+        /// <summary>
+        /// POST: Cart/RemoveItem
+        /// Removes an item from the cart
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult RemoveItem(int cartItemId)
         {
             try
             {
-                _cartService.RemoveFromCart(cartItemId);
-
-                // Check if this is an AJAX request
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                var userId = GetCurrentUserId();
+                if (string.IsNullOrEmpty(userId))
                 {
-                    return Json(new { success = true, message = "Item removed from cart!" });
+                    return HandleResponse(false, "User session expired. Please login again.");
                 }
 
-                TempData["SuccessMessage"] = "Item removed from cart!";
+                // Validate ownership
+                if (!_cartService.ValidateCartItemOwnership(cartItemId, userId))
+                {
+                    _logger.LogWarning("User {UserId} attempted to remove cart item {CartItemId} they don't own", userId, cartItemId);
+                    return HandleResponse(false, "Access denied.");
+                }
+
+                _logger.LogInformation("User {UserId} removing cart item {CartItemId}", userId, cartItemId);
+
+                _cartService.RemoveFromCart(cartItemId);
+
+                return HandleResponse(true, "Item removed from cart!");
             }
             catch (Exception ex)
             {
-                // Check if this is an AJAX request
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = ex.Message });
-                }
-
-                TempData["ErrorMessage"] = ex.Message;
+                _logger.LogError(ex, "Error removing cart item {CartItemId}", cartItemId);
+                return HandleResponse(false, ex.Message);
             }
-
-            return RedirectToAction("ViewCart");
         }
 
-        // POST: Cart/Clear
+        /// <summary>
+        /// POST: Cart/Clear
+        /// Clears all items from the cart
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Clear()
         {
             try
             {
-                // Get userId from session - try multiple session keys
-                var userId = HttpContext.Session.GetString("UserId")
-                            ?? HttpContext.Session.GetString("UserName")
-                            ?? User.Identity.Name;
-
+                var userId = GetCurrentUserId();
                 if (string.IsNullOrEmpty(userId))
                 {
-                    // Check if this is an AJAX request
-                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    {
-                        return Json(new { success = false, message = "User session expired. Please login again." });
-                    }
-
-                    TempData["ErrorMessage"] = "User session expired. Please login again.";
-                    return RedirectToAction("Login", "Account");
+                    return HandleResponse(false, "User session expired. Please login again.");
                 }
+
+                _logger.LogInformation("User {UserId} clearing entire cart", userId);
 
                 _cartService.ClearCart(userId);
 
-                // Check if this is an AJAX request
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = true, message = "Cart cleared successfully!" });
-                }
-
-                TempData["SuccessMessage"] = "Cart cleared successfully!";
+                return HandleResponse(true, "Cart cleared successfully!");
             }
             catch (Exception ex)
             {
-                // Check if this is an AJAX request
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = ex.Message });
-                }
-
-                TempData["ErrorMessage"] = ex.Message;
+                _logger.LogError(ex, "Error clearing cart for user {UserId}", GetCurrentUserId());
+                return HandleResponse(false, ex.Message);
             }
-
-            return RedirectToAction("ViewCart");
         }
+
+        /// <summary>
+        /// POST: Cart/CheckStockAvailability
+        /// AJAX endpoint to validate stock availability for cart items
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CheckStockAvailability()
         {
             try
             {
-                var userId = HttpContext.Session.GetString("UserId")
-                            ?? HttpContext.Session.GetString("UserName")
-                            ?? User.Identity.Name;
-
+                var userId = GetCurrentUserId();
                 if (string.IsNullOrEmpty(userId))
                 {
                     return Json(new { success = false, message = "User session expired. Please login again." });
                 }
 
-                var cart = _cartService.GetCartByUserId(userId);
-                if (cart == null || !cart.CartItems.Any())
-                {
-                    return Json(new { success = true, message = "Cart is empty.", stockIssues = new object[0] });
-                }
+                _logger.LogInformation("Checking stock availability for user {UserId}", userId);
 
-                var stockIssues = new List<object>();
-                var hasIssues = false;
-
-                foreach (var cartItem in cart.CartItems)
-                {
-                    var menuItem = _menuService.GetMenuItemById(cartItem.MenuItemId);
-                    if (menuItem == null || !menuItem.IsActive)
-                    {
-                        stockIssues.Add(new
-                        {
-                            cartItemId = cartItem.Id,
-                            menuItemId = cartItem.MenuItemId,
-                            itemName = cartItem.MenuItemName,
-                            requestedQuantity = cartItem.Quantity,
-                            availableStock = 0,
-                            issue = "unavailable",
-                            message = $"{cartItem.MenuItemName} is no longer available"
-                        });
-                        hasIssues = true;
-                    }
-                    else if (menuItem.Stock < cartItem.Quantity)
-                    {
-                        stockIssues.Add(new
-                        {
-                            cartItemId = cartItem.Id,
-                            menuItemId = cartItem.MenuItemId,
-                            itemName = cartItem.MenuItemName,
-                            requestedQuantity = cartItem.Quantity,
-                            availableStock = menuItem.Stock,
-                            issue = menuItem.Stock == 0 ? "out-of-stock" : "insufficient",
-                            message = menuItem.Stock == 0
-                                ? $"{cartItem.MenuItemName} is now out of stock"
-                                : $"Only {menuItem.Stock} {cartItem.MenuItemName} available (you have {cartItem.Quantity} in cart)"
-                        });
-                        hasIssues = true;
-                    }
-                }
+                var validationResult = _cartService.ValidateCartStock(userId);
 
                 return Json(new
                 {
                     success = true,
-                    hasIssues = hasIssues,
-                    stockIssues = stockIssues,
-                    message = hasIssues ? "Stock issues detected" : "All items are available"
+                    hasIssues = validationResult.HasIssues,
+                    stockIssues = validationResult.StockIssues.Select(issue => new
+                    {
+                        cartItemId = issue.CartItemId,
+                        menuItemId = issue.MenuItemId,
+                        itemName = issue.ItemName,
+                        requestedQuantity = issue.RequestedQuantity,
+                        availableStock = issue.AvailableStock,
+                        issue = issue.Issue,
+                        message = issue.Message
+                    }),
+                    message = validationResult.Message
                 });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error checking stock availability");
                 return Json(new { success = false, message = ex.Message });
             }
         }
 
-        // NEW: Auto-fix stock issues
+        /// <summary>
+        /// POST: Cart/AutoFixStockIssues
+        /// AJAX endpoint to automatically fix stock issues in the cart
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AutoFixStockIssues()
         {
             try
             {
-                var userId = HttpContext.Session.GetString("UserId")
-                            ?? HttpContext.Session.GetString("UserName")
-                            ?? User.Identity.Name;
-
+                var userId = GetCurrentUserId();
                 if (string.IsNullOrEmpty(userId))
                 {
                     return Json(new { success = false, message = "User session expired. Please login again." });
                 }
 
-                var cart = _cartService.GetCartByUserId(userId);
-                if (cart == null || !cart.CartItems.Any())
-                {
-                    return Json(new { success = true, message = "Cart is empty." });
-                }
+                _logger.LogInformation("Auto-fixing stock issues for user {UserId}", userId);
 
-                var fixedItems = new List<object>();
-                var removedItems = new List<object>();
-
-                foreach (var cartItem in cart.CartItems)
-                {
-                    var menuItem = _menuService.GetMenuItemById(cartItem.MenuItemId);
-
-                    if (menuItem == null || !menuItem.IsActive || menuItem.Stock == 0)
-                    {
-                        // Remove unavailable items
-                        _cartService.RemoveFromCart(cartItem.Id);
-                        removedItems.Add(new
-                        {
-                            name = cartItem.MenuItemName,
-                            reason = "no longer available"
-                        });
-                    }
-                    else if (menuItem.Stock < cartItem.Quantity)
-                    {
-                        // Adjust quantity to available stock
-                        _cartService.UpdateCartItem(cartItem.Id, menuItem.Stock);
-                        fixedItems.Add(new
-                        {
-                            name = cartItem.MenuItemName,
-                            oldQuantity = cartItem.Quantity,
-                            newQuantity = menuItem.Stock
-                        });
-                    }
-                }
+                var fixResult = _cartService.AutoFixStockIssues(userId);
 
                 return Json(new
                 {
-                    success = true,
-                    message = "Stock issues have been resolved",
-                    fixedItems = fixedItems,
-                    removedItems = removedItems
+                    success = fixResult.Success,
+                    message = fixResult.Message,
+                    fixedItems = fixResult.FixedItems.Select(item => new
+                    {
+                        name = item.Name,
+                        oldQuantity = item.OldQuantity,
+                        newQuantity = item.NewQuantity
+                    }),
+                    removedItems = fixResult.RemovedItems.Select(item => new
+                    {
+                        name = item.Name,
+                        reason = item.Reason
+                    })
                 });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error auto-fixing stock issues");
                 return Json(new { success = false, message = ex.Message });
             }
+        }
+
+        /// <summary>
+        /// Helper method to get current user ID from multiple sources
+        /// </summary>
+        private string GetCurrentUserId()
+        {
+            return HttpContext.Session.GetString("UserId")
+                   ?? HttpContext.Session.GetString("UserName")
+                   ?? User.Identity.Name;
+        }
+
+        /// <summary>
+        /// Helper method to handle both AJAX and regular responses
+        /// </summary>
+        private IActionResult HandleResponse(bool success, string message)
+        {
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new { success, message });
+            }
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = message;
+            }
+            else
+            {
+                if (message.Contains("session expired"))
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+                TempData["ErrorMessage"] = message;
+            }
+
+            return RedirectToAction("ViewCart");
         }
     }
 }

@@ -29,10 +29,8 @@ namespace ASI.Basecode.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            // Only configure if not already configured (for design-time scenarios)
             if (!optionsBuilder.IsConfigured)
             {
-                // Try to find and load configuration for design-time scenarios
                 var configuration = GetDesignTimeConfiguration();
                 if (configuration != null)
                 {
@@ -49,7 +47,6 @@ namespace ASI.Basecode.Data
         {
             try
             {
-                // Try multiple potential paths for the configuration file
                 var basePaths = new[]
                 {
                     Path.Combine(Directory.GetCurrentDirectory(), "..", "ASI.Basecode.WebApp"),
@@ -71,7 +68,6 @@ namespace ASI.Basecode.Data
             }
             catch
             {
-                // Ignore errors and return null
             }
             
             return null;

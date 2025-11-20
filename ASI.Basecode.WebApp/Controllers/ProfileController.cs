@@ -26,19 +26,18 @@ namespace ASI.Basecode.WebApp.Controllers
             _profileService = profileService;
         }
 
-        // GET: Profile
+        /// <summary>
+        /// GET: Profile
+        /// Displays the user's profile information
+        /// </summary>
         public IActionResult Index()
         {
             try
             {
-                // ✅ IMPROVED: First try to get the actual UserId (email) from session
-                var userId = HttpContext.Session.GetString("UserId");
-
-                // If not found, log the issue and redirect to login
+                var userId = GetCurrentUserId();
                 if (string.IsNullOrEmpty(userId))
                 {
-                    _logger.LogWarning("UserId not found in session. Session keys: {Keys}",
-                        string.Join(", ", HttpContext.Session.Keys));
+                    _logger.LogWarning("UserId not found in session for profile view");
                     TempData["ErrorMessage"] = "User session expired. Please login again.";
                     return RedirectToAction("Login", "Account");
                 }
@@ -55,28 +54,29 @@ namespace ASI.Basecode.WebApp.Controllers
             }
         }
 
-        // GET: Profile/Edit
+        /// <summary>
+        /// GET: Profile/Edit
+        /// Displays the profile edit form
+        /// </summary>
         public IActionResult Edit(string returnUrl = null)
         {
             try
             {
-                // ✅ IMPROVED: First try to get the actual UserId (email) from session
-                var userId = HttpContext.Session.GetString("UserId");
-
-                // If not found, log the issue and redirect to login
+                var userId = GetCurrentUserId();
                 if (string.IsNullOrEmpty(userId))
                 {
-                    _logger.LogWarning("UserId not found in session. Session keys: {Keys}",
-                        string.Join(", ", HttpContext.Session.Keys));
+                    _logger.LogWarning("UserId not found in session for profile edit");
                     TempData["ErrorMessage"] = "User session expired. Please login again.";
                     return RedirectToAction("Login", "Account");
                 }
 
+                _logger.LogInformation("User {UserId} accessing profile edit", userId);
+
                 var profile = _profileService.GetProfile(userId);
-                
+
                 // Store return URL in ViewBag for the form to use
                 ViewBag.ReturnUrl = returnUrl ?? Request.Headers["Referer"].ToString();
-                
+
                 return View(profile);
             }
             catch (Exception ex)
@@ -87,7 +87,10 @@ namespace ASI.Basecode.WebApp.Controllers
             }
         }
 
-        // POST: Profile/Edit
+        /// <summary>
+        /// POST: Profile/Edit
+        /// Processes profile update form submission
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(ProfileViewModel model, string returnUrl = null)
@@ -100,14 +103,14 @@ namespace ASI.Basecode.WebApp.Controllers
 
             try
             {
-                // ✅ IMPROVED: Get the actual UserId (email) from session
-                var userId = HttpContext.Session.GetString("UserId");
-
+                var userId = GetCurrentUserId();
                 if (string.IsNullOrEmpty(userId))
                 {
                     TempData["ErrorMessage"] = "User session expired. Please login again.";
                     return RedirectToAction("Login", "Account");
                 }
+
+                _logger.LogInformation("User {UserId} updating profile", userId);
 
                 model.UserId = userId;
                 _profileService.UpdateProfile(model);
@@ -115,24 +118,32 @@ namespace ASI.Basecode.WebApp.Controllers
                 // Update session name if changed
                 HttpContext.Session.SetString("UserName", model.Name);
 
+                _logger.LogInformation("Profile updated successfully for user {UserId}", userId);
                 TempData["SuccessMessage"] = "Profile updated successfully!";
-                
+
                 // Redirect to return URL if provided, otherwise go to Profile Index
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
                     return Redirect(returnUrl);
                 }
-                
+
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while updating profile");
+                _logger.LogError(ex, "Error occurred while updating profile for user {UserId}", GetCurrentUserId());
                 TempData["ErrorMessage"] = "An error occurred while updating your profile.";
                 ViewBag.ReturnUrl = returnUrl;
                 return View(model);
             }
         }
 
+        /// <summary>
+        /// Helper method to get current user ID from session
+        /// </summary>
+        private string GetCurrentUserId()
+        {
+            return HttpContext.Session.GetString("UserId");
+        }
     }
 }

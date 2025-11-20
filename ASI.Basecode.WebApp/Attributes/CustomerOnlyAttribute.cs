@@ -6,7 +6,7 @@ using System;
 
 namespace ASI.Basecode.WebApp.Attributes
 {
-    public class AdminOnlyAttribute : Attribute, IAuthorizationFilter
+    public class CustomerOnlyAttribute : Attribute, IAuthorizationFilter
     {
         public void OnAuthorization(AuthorizationFilterContext context)
         {
@@ -18,13 +18,24 @@ namespace ASI.Basecode.WebApp.Attributes
 
             if (context.HttpContext.User.IsInRole("Admin"))
             {
+                var tempData = context.HttpContext.RequestServices
+                    .GetService(typeof(Microsoft.AspNetCore.Mvc.ViewFeatures.ITempDataDictionaryFactory)) as
+                    Microsoft.AspNetCore.Mvc.ViewFeatures.ITempDataDictionaryFactory;
+
+                var tempDataDict = tempData?.GetTempData(context.HttpContext);
+                if (tempDataDict != null)
+                {
+                    tempDataDict["ErrorMessage"] = "Admins cannot access cart functionality.";
+                }
+
+                context.Result = new RedirectToActionResult("Index", "Home", null);
                 return;
             }
 
             var session = context.HttpContext.Session;
             var userRole = session.GetString("UserRole");
 
-            if (userRole != "Admin")
+            if (userRole == "Admin")
             {
                 var tempData = context.HttpContext.RequestServices
                     .GetService(typeof(Microsoft.AspNetCore.Mvc.ViewFeatures.ITempDataDictionaryFactory)) as
@@ -33,7 +44,7 @@ namespace ASI.Basecode.WebApp.Attributes
                 var tempDataDict = tempData?.GetTempData(context.HttpContext);
                 if (tempDataDict != null)
                 {
-                    tempDataDict["ErrorMessage"] = "Access denied. Admin privileges required.";
+                    tempDataDict["ErrorMessage"] = "Admins cannot access cart functionality.";
                 }
 
                 context.Result = new RedirectToActionResult("Index", "Home", null);

@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ASI.Basecode.Services.Interfaces;
-using System.Linq;
-using System;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -26,12 +24,11 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <param name="httpContextAccessor"></param>
         /// <param name="loggerFactory"></param>
         /// <param name="configuration"></param>
-        /// <param name="localizer"></param>
-        /// <param name="mapper"></param>
         /// <param name="menuService"></param>
         /// <param name="reviewService"></param>
         /// <param name="orderService"></param>
         /// <param name="userService"></param>
+        /// <param name="mapper"></param>
         public HomeController(IHttpContextAccessor httpContextAccessor,
                               ILoggerFactory loggerFactory,
                               IConfiguration configuration,
@@ -59,60 +56,20 @@ namespace ASI.Basecode.WebApp.Controllers
 
             if (isAuthenticated && isAdmin)
             {
-                // Fetch dashboard statistics for admin
-                var allOrders = _orderService.GetAllOrders();
-                var allUsers = _userService.GetAllUsers();
-                var allReviews = _reviewService.GetAllReviews();
-
-                // Today's orders
-                var todayOrders = allOrders.Count(o => o.CreatedTime.Date == DateTime.Today);
-                ViewBag.TodayOrders = todayOrders;
-
-                // Active users (users who have placed orders)
-                var activeUsers = allOrders.Select(o => o.UserId).Distinct().Count();
-                ViewBag.ActiveUsers = activeUsers;
-
-                // Total revenue
-                var totalRevenue = allOrders
-                    .Where(o => o.Status != "Cancelled" && o.Status != "Pending")
-                    .Sum(o => o.TotalAmount); ViewBag.TotalRevenue = totalRevenue;
-
-                // Average rating
-                var averageRating = allReviews.Reviews.Any() 
-                    ? allReviews.Reviews.Average(r => r.Rating) 
-                    : 0;
-                ViewBag.AverageRating = averageRating;
+                ViewBag.TodayOrders = _orderService.GetTodayOrdersCount();
+                ViewBag.ActiveUsers = _orderService.GetActiveUsersCount();
+                ViewBag.TotalRevenue = _orderService.GetTotalRevenue();
+                ViewBag.AverageRating = _reviewService.GetAverageRating();
             }
             else if (isAuthenticated && !isAdmin)
             {
-                // Only fetch menu items for authenticated non-admin users
-                var activeMenuItems = _menuService.GetActiveMenuItems();
-                // Take top 6 items for preview
-                var featuredItems = activeMenuItems.Take(6).ToList();
-                ViewBag.FeaturedMenuItems = featuredItems;
-
-                // Get distinct categories for the category section
-                var categories = activeMenuItems
-                    .Select(m => m.Category)
-                    .Distinct()
-                    .Take(3)
-                    .ToList();
-                ViewBag.Categories = categories;
-
-                // Get featured reviews (top rated reviews with comments)
-                var allReviews = _reviewService.GetAllReviews();
-                var featuredReviews = allReviews.Reviews
-                    .Where(r => !string.IsNullOrEmpty(r.Comment) && r.Rating >= 4)
-                    .OrderByDescending(r => r.Rating)
-                    .ThenByDescending(r => r.ReviewDate)
-                    .Take(6)
-                    .ToList();
-                ViewBag.FeaturedReviews = featuredReviews;
+                ViewBag.FeaturedMenuItems = _menuService.GetFeaturedMenuItems(6);
+                ViewBag.Categories = _menuService.GetTopCategories(3);
+                ViewBag.FeaturedReviews = _reviewService.GetFeaturedReviews(6).Reviews;
             }
-
             return View();
         }
-        
+
         public IActionResult Privacy()
         {
             return View();
