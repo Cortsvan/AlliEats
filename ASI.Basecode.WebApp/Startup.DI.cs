@@ -42,6 +42,7 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<IOtpService, OtpService>();
             this._services.AddScoped<IReviewService, ReviewService>();
             this._services.AddScoped<IPaymentCardService, PaymentCardService>();
+            this._services.AddScoped<IEmailNotificationService, EmailNotificationService>();
 
             // Background Services
             this._services.AddHostedService<OrderTimerService>();

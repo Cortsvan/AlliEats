@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -20,12 +21,14 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly ICartService _cartService;
         private readonly IProfileService _profileService;
         private readonly IPaymentCardService _paymentCardService;
+        private readonly IEmailNotificationService _emailNotificationService;
 
         public CheckoutController(
             IOrderService orderService,
             ICartService cartService,
             IProfileService profileService,
             IPaymentCardService paymentCardService,
+            IEmailNotificationService emailNotificationService,
             IHttpContextAccessor httpContextAccessor,
             ILoggerFactory loggerFactory,
             IConfiguration configuration,
@@ -35,6 +38,7 @@ namespace ASI.Basecode.WebApp.Controllers
             _cartService = cartService;
             _profileService = profileService;
             _paymentCardService = paymentCardService;
+            _emailNotificationService = emailNotificationService;
         }
 
         // GET: Checkout
@@ -98,7 +102,7 @@ namespace ASI.Basecode.WebApp.Controllers
         // POST: Checkout/PlaceOrder
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult PlaceOrder(CheckoutViewModel model)
+        public async Task<IActionResult> PlaceOrder(CheckoutViewModel model)
         {
             var userRole = HttpContext.Session.GetString("UserRole");
             if (userRole == "Admin")
@@ -189,6 +193,32 @@ namespace ASI.Basecode.WebApp.Controllers
                 _logger.LogInformation("Creating order for user: {UserId}", userId);
                 var order = _orderService.CreateOrderFromCart(userId, model);
                 _logger.LogInformation("Order created successfully: {OrderNumber}", order.OrderNumber);
+
+                // Send order confirmation email
+                try
+                {
+                    var userProfile = _profileService.GetProfile(userId);
+                    bool emailSent = await _emailNotificationService.SendOrderConfirmationEmailAsync(
+                        userId,
+                        userProfile.Name,
+                        order.OrderNumber,
+                        order.TotalAmount);
+
+                    if (!emailSent)
+                    {
+                        _logger.LogWarning("Order confirmation email failed for order {OrderNumber}", order.OrderNumber);
+                        // Don't fail the order if email fails, just log it
+                    }
+                    else
+                    {
+                        _logger.LogInformation("Order confirmation email sent for order {OrderNumber}", order.OrderNumber);
+                    }
+                }
+                catch (Exception emailEx)
+                {
+                    _logger.LogError(emailEx, "Error sending order confirmation email for order {OrderNumber}", order.OrderNumber);
+                    // Don't fail the order if email fails
+                }
 
                 return Json(new
                 {

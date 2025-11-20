@@ -8,23 +8,27 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
     [Authorize]
-    [AdminOnly]  // Custom attribute handles admin authorization centrally
+    [AdminOnly] 
     public class AdminOrderController : ControllerBase<AdminOrderController>
     {
         private readonly IOrderService _orderService;
+        private readonly IEmailNotificationService _emailNotificationService;
 
         public AdminOrderController(
             IOrderService orderService,
+            IEmailNotificationService emailNotificationService,
             IHttpContextAccessor httpContextAccessor,
             ILoggerFactory loggerFactory,
             IConfiguration configuration,
             IMapper mapper) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             _orderService = orderService;
+            _emailNotificationService = emailNotificationService;
         }
 
         /// <summary>
@@ -36,7 +40,7 @@ namespace ASI.Basecode.WebApp.Controllers
             try
             {
                 _logger.LogInformation("Admin accessing order management page");
-                
+
                 var orders = _orderService.GetAllOrders();
                 return View(orders);
             }
@@ -50,17 +54,25 @@ namespace ASI.Basecode.WebApp.Controllers
 
         /// <summary>
         /// POST: AdminOrder/UpdateStatus
-        /// Updates the status of an order with proper validation
+        /// Updates the status of an order with proper validation and sends email notification
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateStatus(int orderId, string status)
+        public async Task<IActionResult> UpdateStatus(int orderId, string status)
         {
             try
             {
                 _logger.LogInformation("Admin attempting to update order {OrderId} status to {Status}", orderId, status);
 
-                // Validate the status update using service layer
+                var currentOrder = _orderService.GetOrderById(orderId);
+                if (currentOrder == null)
+                {
+                    TempData["ErrorMessage"] = "Order not found.";
+                    return RedirectToAction("ManageOrders");
+                }
+
+                var oldStatus = currentOrder.Status;
+
                 var validation = _orderService.ValidateStatusUpdate(orderId, status);
                 if (!validation.IsValid)
                 {
@@ -68,14 +80,29 @@ namespace ASI.Basecode.WebApp.Controllers
                     return RedirectToAction("OrderDetails", new { id = orderId });
                 }
 
-                // Update the status
                 _orderService.UpdateOrderStatus(orderId, status);
 
-                // Get the appropriate success message from service
+                try
+                {
+                    var customerInfo = _orderService.GetOrderCustomerInfo(orderId);
+
+                    bool emailSent = await SendStatusUpdateEmail(customerInfo.Email, customerInfo.Name, currentOrder.OrderNumber, oldStatus, status);
+
+                    if (!emailSent)
+                    {
+                        _logger.LogWarning("Email notification failed for order {OrderId} status update", orderId);    
+                    }
+                }
+                catch (Exception emailEx)
+                {
+                    _logger.LogError(emailEx, "Error sending email notification for order {OrderId} status update", orderId);
+                    
+                }
+
                 var successMessage = _orderService.GetStatusUpdateMessage(status);
                 TempData["SuccessMessage"] = successMessage;
 
-                _logger.LogInformation("Order {OrderId} status successfully updated to {Status}", orderId, status);
+                _logger.LogInformation("Order {OrderId} status successfully updated from {OldStatus} to {NewStatus}", orderId, oldStatus, status);
             }
             catch (Exception ex)
             {
@@ -160,5 +187,28 @@ namespace ASI.Basecode.WebApp.Controllers
                 return Json(new { success = false, message = "Error validating status update" });
             }
         }
+
+        /// <summary>
+        /// Sends appropriate email notification based on order status
+        /// </summary>
+        private async Task<bool> SendStatusUpdateEmail(string email, string customerName, string orderNumber, string oldStatus, string newStatus)
+        {
+            try
+            {
+                return newStatus switch
+                {
+                    "Ready" => await _emailNotificationService.SendOrderReadyNotificationEmailAsync(email, customerName, orderNumber),
+                    "On the Way" => await _emailNotificationService.SendOrderDeliveredNotificationEmailAsync(email, customerName, orderNumber),
+                    "Cancelled" => await _emailNotificationService.SendOrderCancelledNotificationEmailAsync(email, customerName, orderNumber, "Order cancelled by restaurant"),
+                    _ => await _emailNotificationService.SendOrderStatusUpdateEmailAsync(email, customerName, orderNumber, oldStatus, newStatus)
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending status update email for order {OrderNumber}", orderNumber);
+                return false;
+            }
+        }
+
     }
 }

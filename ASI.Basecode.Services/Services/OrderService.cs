@@ -8,6 +8,7 @@ using Hangfire.Dashboard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ASI.Basecode.Services.Services
 {
@@ -18,13 +19,15 @@ namespace ASI.Basecode.Services.Services
         private readonly ICartService _cartService;
         private readonly IReviewRepository _reviewRepository;
         private readonly IMapper _mapper;
+        private readonly IUserRepository _userRepository;
 
-        public OrderService(IOrderRepository orderRepository, IMenuRepository menuRepository, ICartService cartService, IReviewRepository reviewRepository, IMapper mapper)
+        public OrderService(IOrderRepository orderRepository, IMenuRepository menuRepository, ICartService cartService, IReviewRepository reviewRepository, IUserRepository userRepository, IMapper mapper)
         {
             _orderRepository = orderRepository;
             _menuRepository = menuRepository;
             _cartService = cartService;
             _reviewRepository = reviewRepository;
+            _userRepository = userRepository;
             _mapper = mapper;
         }
 
@@ -512,6 +515,29 @@ namespace ASI.Basecode.Services.Services
             catch (Exception ex)
             {
                 throw new Exception($"Error validating order cancellation for order {orderId}: {ex.Message}", ex);
+            }
+        }
+        public (string Email, string Name) GetOrderCustomerInfo(int orderId)
+        {
+            try
+            {
+                var order = _orderRepository.GetOrderById(orderId);
+                if (order == null)
+                {
+                    throw new InvalidOperationException("Order not found.");
+                }
+
+                var user = _userRepository.GetUserById(order.UserId);
+                if (user == null)
+                {
+                    throw new InvalidOperationException("User not found for this order.");
+                }
+
+                return (user.UserId, user.Name); // UserId is the email
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting customer info for order {orderId}: {ex.Message}", ex);
             }
         }
     }

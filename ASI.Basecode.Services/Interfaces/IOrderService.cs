@@ -1,5 +1,6 @@
 ﻿using ASI.Basecode.Services.ServiceModels;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ASI.Basecode.Services.Interfaces
 {
@@ -31,5 +32,8 @@ namespace ASI.Basecode.Services.Interfaces
         bool ValidateOrderOwnership(int orderId, string userId);
         (bool CanConfirm, string Message) ValidateReceiptConfirmation(int orderId, string userId);
         (bool CanCancel, string Message) ValidateOrderCancellation(int orderId, string userId);
+
+        //methods for email notification for orders
+        (string Email, string Name) GetOrderCustomerInfo(int orderId);
     }
 }
