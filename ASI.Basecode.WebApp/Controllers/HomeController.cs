@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ASI.Basecode.Services.Interfaces;
 using System.Linq;
+using System;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -16,6 +17,8 @@ namespace ASI.Basecode.WebApp.Controllers
     {
         private readonly IMenuService _menuService;
         private readonly IReviewService _reviewService;
+        private readonly IOrderService _orderService;
+        private readonly IUserService _userService;
 
         /// <summary>
         /// Constructor
@@ -27,15 +30,21 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <param name="mapper"></param>
         /// <param name="menuService"></param>
         /// <param name="reviewService"></param>
+        /// <param name="orderService"></param>
+        /// <param name="userService"></param>
         public HomeController(IHttpContextAccessor httpContextAccessor,
                               ILoggerFactory loggerFactory,
                               IConfiguration configuration,
                               IMenuService menuService,
                               IReviewService reviewService,
+                              IOrderService orderService,
+                              IUserService userService,
                               IMapper mapper = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             _menuService = menuService;
             _reviewService = reviewService;
+            _orderService = orderService;
+            _userService = userService;
         }
 
         /// <summary>
@@ -48,9 +57,35 @@ namespace ASI.Basecode.WebApp.Controllers
             var isAuthenticated = user.Identity.IsAuthenticated;
             var isAdmin = user.IsInRole("Admin");
 
-            // Only fetch menu items for authenticated non-admin users
-            if (isAuthenticated && !isAdmin)
+            if (isAuthenticated && isAdmin)
             {
+                // Fetch dashboard statistics for admin
+                var allOrders = _orderService.GetAllOrders();
+                var allUsers = _userService.GetAllUsers();
+                var allReviews = _reviewService.GetAllReviews();
+
+                // Today's orders
+                var todayOrders = allOrders.Count(o => o.CreatedTime.Date == DateTime.Today);
+                ViewBag.TodayOrders = todayOrders;
+
+                // Active users (users who have placed orders)
+                var activeUsers = allOrders.Select(o => o.UserId).Distinct().Count();
+                ViewBag.ActiveUsers = activeUsers;
+
+                // Total revenue
+                var totalRevenue = allOrders
+                    .Where(o => o.Status != "Cancelled" && o.Status != "Pending")
+                    .Sum(o => o.TotalAmount); ViewBag.TotalRevenue = totalRevenue;
+
+                // Average rating
+                var averageRating = allReviews.Reviews.Any() 
+                    ? allReviews.Reviews.Average(r => r.Rating) 
+                    : 0;
+                ViewBag.AverageRating = averageRating;
+            }
+            else if (isAuthenticated && !isAdmin)
+            {
+                // Only fetch menu items for authenticated non-admin users
                 var activeMenuItems = _menuService.GetActiveMenuItems();
                 // Take top 6 items for preview
                 var featuredItems = activeMenuItems.Take(6).ToList();

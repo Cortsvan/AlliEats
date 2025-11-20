@@ -69,81 +69,100 @@
                 <i class="fas fa-chart-line welcome-decoration"></i>
             </div>
 
-            <div class="row g-4 mb-5">
-                <div class="col-6 col-md-3">
-                    <div class="stat-card-modern">
-                        <div class="stat-icon-wrapper">
-                            <i class="fas fa-shopping-bag"></i>
-                        </div>
-                        <div class="stat-details">
-                            <h6>Today's Orders</h6>
-                            <p class="stat-value">124</p>
-                        </div>
+            <!-- Dashboard Overview Section -->
+            <div class="admin-section-wrapper mb-5">
+                <div class="admin-section-header mb-4">
+                    <div>
+                        <h4 class="section-title mb-0">Dashboard Overview</h4>
+                        <p class="section-description text-muted mt-2 mb-0">Quick insights into your business performance</p>
                     </div>
                 </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card-modern">
-                        <div class="stat-icon-wrapper">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-details">
-                            <h6>Active Users</h6>
-                            <p class="stat-value">852</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card-modern">
-                        <div class="stat-icon-wrapper">
-                            <i class="fas fa-dollar-sign"></i>
-                        </div>
-                        <div class="stat-details">
-                            <h6>Revenue</h6>
-                            <p class="stat-value">$12k</p>
+                
+                <div class="row g-4">
+                    <div class="col-6 col-md-3">
+                        <div class="stat-card-modern">
+                            <div class="stat-icon-wrapper">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h6>Today's Orders</h6>
+                                <p class="stat-value">@ViewBag.TodayOrders</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card-modern">
-                        <div class="stat-icon-wrapper">
-                            <i class="fas fa-star"></i>
+                    <div class="col-6 col-md-3">
+                        <div class="stat-card-modern">
+                            <div class="stat-icon-wrapper">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h6>Active Users</h6>
+                                <p class="stat-value">@ViewBag.ActiveUsers</p>
+                            </div>
                         </div>
-                        <div class="stat-details">
-                            <h6>Rating</h6>
-                            <p class="stat-value">4.8</p>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stat-card-modern">
+                            <div class="stat-icon-wrapper">
+                                <i class="fas fa-peso-sign"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h6>Total Revenue</h6>
+                                <p class="stat-value">₱@(((decimal)ViewBag.TotalRevenue).ToString("N2"))</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stat-card-modern">
+                            <div class="stat-icon-wrapper">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h6>Avg Rating</h6>
+                                <p class="stat-value">@(((double)ViewBag.AverageRating).ToString("F1"))</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <h4 class="section-title">Management Tools</h4>
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="glass-card">
-                        <div class="action-card-body">
-                            <div class="action-icon-circle icon-menu">
-                                <i class="fas fa-utensils"></i>
-                            </div>
-                            <h5 class="action-title">Menu Management</h5>
-                            <p class="action-desc">Add new dishes, update prices, and organize categories.</p>
-                            <a asp-controller="AdminMenu" asp-action="ViewItems" class="btn btn-modern btn-modern-primary">
-                                Manage Menu
-                            </a>
-                        </div>
+            <!-- Management Tools Section -->
+            <div class="admin-section-wrapper">
+                <div class="admin-section-header mb-4">
+                    <div>
+                        <h4 class="section-title mb-0">Management Tools</h4>
+                        <p class="section-description text-muted mt-2 mb-0">Access key administrative functions and controls</p>
                     </div>
                 </div>
-
-                <div class="col-md-6">
-                    <div class="glass-card">
-                        <div class="action-card-body">
-                            <div class="action-icon-circle icon-orders">
-                                <i class="fas fa-clipboard-list"></i>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="glass-card">
+                            <div class="action-card-body">
+                                <div class="action-icon-circle icon-menu">
+                                    <i class="fas fa-utensils"></i>
+                                </div>
+                                <h5 class="action-title">Menu Management</h5>
+                                <p class="action-desc">Add new dishes, update prices, and organize categories.</p>
+                                <a asp-controller="AdminMenu" asp-action="ViewItems" class="btn btn-modern btn-modern-primary">
+                                    Manage Menu
+                                </a>
                             </div>
-                            <h5 class="action-title">Order Management</h5>
-                            <p class="action-desc">Track incoming orders, update status, and view history.</p>
-                            <a asp-controller="AdminOrder" asp-action="ManageOrders" class="btn btn-modern btn-modern-primary">
-                                Manage Orders
-                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="glass-card">
+                            <div class="action-card-body">
+                                <div class="action-icon-circle icon-orders">
+                                    <i class="fas fa-clipboard-list"></i>
+                                </div>
+                                <h5 class="action-title">Order Management</h5>
+                                <p class="action-desc">Track incoming orders, update status, and view history.</p>
+                                <a asp-controller="AdminOrder" asp-action="ManageOrders" class="btn btn-modern btn-modern-primary">
+                                    Manage Orders
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

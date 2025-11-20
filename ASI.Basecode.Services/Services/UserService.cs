@@ -39,6 +39,12 @@ namespace ASI.Basecode.Services.Services
 
             return user != null ? LoginResult.Success : LoginResult.Failed;
         }
+        
+        public IQueryable<User> GetAllUsers()
+        {
+            return _repository.GetUsers();
+        }
+        
         public async Task<bool> AddUserAsync(UserViewModel model)
         {
             var user = new User();
