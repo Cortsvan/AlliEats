@@ -5,148 +5,225 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid px-4 py-4">
-    <!-- Header -->
-    <div class="orders-header text-center">
-        <h1 class="display-5 fw-bold"><i class="fas fa-history me-3"></i>My Orders & Tracking</h1>
-        <p class="lead">View all your orders and track their status in real-time</p>
+<div class="orders-page-container">
+    <!-- Modern Header Section -->
+    <div class="orders-hero-header">
+        <div class="hero-content-wrapper">
+            <div class="hero-icon-circle">
+                <i class="fas fa-receipt"></i>
+            </div>
+            <div class="hero-text">
+                <h1 class="hero-title">My Orders & Tracking</h1>
+                <p class="hero-subtitle">Track your orders in real-time and view your complete order history</p>
+            </div>
+        </div>
     </div>
 
+    <!-- Alert Messages -->
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <div class="alert alert-success alert-dismissible fade show modern-alert success-alert" role="alert">
+            <div class="alert-icon-wrapper">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="alert-content">
+                <strong>Success!</strong>
+                <p>@TempData["SuccessMessage"]</p>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
     @if (TempData["ErrorMessage"] != null)
     {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+        <div class="alert alert-danger alert-dismissible fade show modern-alert danger-alert" role="alert">
+            <div class="alert-icon-wrapper">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="alert-content">
+                <strong>Error!</strong>
+                <p>@TempData["ErrorMessage"]</p>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
-    <div class="row">
-        <div class="col-12">
-            @if (Model != null && Model.Any())
+    @if (Model != null && Model.Any())
+    {
+        <!-- Orders Header Bar -->
+        <div class="orders-control-bar">
+            <div class="orders-count-badge">
+                <i class="fas fa-list-ul me-2"></i>
+                <span class="count-number">@Model.Count()</span>
+                <span class="count-label">Total Orders</span>
+            </div>
+            <a href="@Url.Action("Browse", "Menu")" class="btn-order-more">
+                <i class="fas fa-plus-circle me-2"></i>
+                Order More Food
+            </a>
+        </div>
+
+        <!-- Orders List -->
+        <div class="orders-list-container">
+            @foreach (var order in Model)
             {
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="mb-0">Order History (@Model.Count() orders)</h4>
-                    <div>
-                        <a href="@Url.Action("Browse", "Menu")" class="btn btn-checkout">
-                            <i class="fas fa-utensils me-2"></i>Order More Food
-                        </a>
-                    </div>
-                </div>
-
-                <div>
-                    @foreach (var order in Model)
-                    {
-                        <div class="order-card mb-4">
-                            <div class="order-card-header">
-                                <div class="row align-items-center">
-                                    <div class="col-md-3">
-                                        <div class="order-number">
-                                            <strong>Order #@order.OrderNumber</strong>
-                                        </div>
-                                        <div class="order-date">
-                                            @order.CreatedTime.ToString("MMM dd, yyyy h:mm tt")
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2 text-center">
-                                        <span class="items-badge">@order.TotalItems items</span>
-                                    </div>
-                                    <div class="col-md-2 text-center">
-                                        <span class="total-amount">@("P" + order.TotalAmount.ToString("F2"))</span>
-                                    </div>
-                                    <div class="col-md-2 text-center">
-                                        <span class="payment-method">@order.PaymentMethod</span>
-                                    </div>
-                                    <div class="col-md-2 text-center">
-                                        <span class="badge @order.StatusBadgeClass status-badge">@order.Status</span>
-                                        @if (order.Status == "Ready")
-                                        {
-                                            <div class="status-note text-warning">
-                                                <small><i class="fas fa-bell"></i> Ready for courier pickup!</small>
-                                            </div>
-                                        }
-                                        else if (order.Status == "Preparing")
-                                        {
-                                            <div class="status-note text-primary">
-                                                <small><i class="fas fa-utensils"></i> Being prepared...</small>
-                                            </div>
-                                        }
-                                        else if (order.Status.ToLower() == "received" && !order.HasReview)
-                                        {
-                                            <div class="status-note review-section">
-                                                <div class="review-prompt-card">
-                                                    <div class="review-prompt-content">
-                                                        <i class="fas fa-star-half-alt text-warning me-1"></i>
-                                                        <small class="text-muted">How was your experience?</small>
-                                                    </div>
-                                                    <a href="@Url.Action("Create", "Review", new { orderId = order.Id })"
-                                                       class="btn-review">
-                                                        <i class="fas fa-star me-1"></i>Leave Review
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        }
-                                        else if (order.Status.ToLower() == "received" && order.HasReview)
-                                        {
-                                            <div class="status-note">
-                                                <div class="review-completed">
-                                                    <i class="fas fa-check-circle"></i> Review completed
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                    <div class="col-md-1 text-center">
-                                        <a href="@Url.Action("Details", "Order", new { id = order.Id })"
-                                           class="btn btn-outline-primary btn-sm track-btn">
-                                            <i class="fas fa-eye me-1"></i>Track
-                                        </a>
-                                    </div>
+                <div class="order-card-modern">
+                    <!-- Order Header -->
+                    <div class="order-card-header-modern">
+                        <div class="order-main-info">
+                            <div class="order-id-section">
+                                <div class="order-number-badge">
+                                    <i class="fas fa-hashtag"></i>
+                                    <span>@order.OrderNumber</span>
                                 </div>
-                            </div>
-
-                            <!-- Expandable Order Items (Initially Hidden) -->
-                            <div class="order-items-preview collapse" id="orderItems@order.Id">
-                                <div class="order-items-container">
-                                    <h6 class="mb-3"><i class="fas fa-list me-2"></i>Order Items:</h6>
-                                    @foreach (var item in order.OrderItems.Take(3))
-                                    {
-                                        <div class="preview-item">
-                                            <span class="item-name">@item.MenuItemName</span>
-                                            <span class="item-details">x@item.Quantity - @("P" + item.TotalPrice.ToString("F2"))</span>
-                                        </div>
-                                    }
-                                    @if (order.OrderItems.Count() > 3)
-                                    {
-                                        <div class="preview-item text-muted">
-                                            <small>and @(order.OrderItems.Count() - 3) more items...</small>
-                                        </div>
-                                    }
+                                <div class="order-timestamp">
+                                    <i class="far fa-clock me-1"></i>
+                                    @order.CreatedTime.ToString("MMM dd, yyyy h:mm tt")
                                 </div>
                             </div>
                         </div>
+                        
+                        <div class="order-status-section">
+                            <span class="badge order-status-badge @order.StatusBadgeClass">
+                                @order.Status
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Order Details Grid -->
+                    <div class="order-details-grid">
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Items</span>
+                                <span class="detail-value">@order.TotalItems</span>
+                            </div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-peso-sign"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Total Amount</span>
+                                <span class="detail-value">@("P" + order.TotalAmount.ToString("F2"))</span>
+                            </div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Payment</span>
+                                <span class="detail-value">@order.PaymentMethod</span>
+                            </div>
+                        </div>
+
+                        <div class="detail-item detail-item-full">
+                            <a href="@Url.Action("Details", "Order", new { id = order.Id })" 
+                               class="btn-track-order">
+                                <i class="fas fa-eye me-2"></i>
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Status Messages -->
+                    @if (order.Status == "Ready")
+                    {
+                        <div class="order-status-message ready-message">
+                            <i class="fas fa-bell"></i>
+                            <span>Your order is ready for courier pickup!</span>
+                        </div>
                     }
-                </div>
-            }
-            else
-            {
-                <div class="empty-orders-container">
-                    <div class="empty-icon"><i class="fas fa-shopping-bag"></i></div>
-                    <h3 class="mt-4">No Orders Yet</h3>
-                    <p class="text-muted">You haven't placed any orders yet. Start by browsing our delicious menu!</p>
-                    <a href="@Url.Action("Browse", "Menu")" class="btn btn-checkout btn-lg mt-3">
-                        <i class="fas fa-utensils me-2"></i>Browse Menu
-                    </a>
+                    else if (order.Status == "Preparing")
+                    {
+                        <div class="order-status-message preparing-message">
+                            <i class="fas fa-utensils"></i>
+                            <span>Your order is being prepared...</span>
+                        </div>
+                    }
+                    else if (order.Status.ToLower() == "received" && !order.HasReview)
+                    {
+                        <div class="review-section-modern">
+                            <div class="review-prompt">
+                                <div class="review-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="review-text">
+                                    <h6>How was your experience?</h6>
+                                    <p>Share your feedback and help others</p>
+                                </div>
+                            </div>
+                            <a href="@Url.Action("Create", "Review", new { orderId = order.Id })"
+                               class="btn-leave-review">
+                                <i class="fas fa-pen me-2"></i>
+                                Leave a Review
+                            </a>
+                        </div>
+                    }
+                    else if (order.Status.ToLower() == "received" && order.HasReview)
+                    {
+                        <div class="order-status-message completed-message">
+                            <i class="fas fa-check-double"></i>
+                            <span>Review completed - Thank you for your feedback!</span>
+                        </div>
+                    }
+
+                    <!-- Expandable Order Items -->
+                    <div class="order-items-preview collapse" id="orderItems@order.Id">
+                        <div class="items-preview-header">
+                            <i class="fas fa-list-ul me-2"></i>
+                            <span>Order Items</span>
+                        </div>
+                        <div class="items-preview-list">
+                            @foreach (var item in order.OrderItems.Take(3))
+                            {
+                                <div class="preview-item-row">
+                                    <div class="item-info">
+                                        <span class="item-name-text">@item.MenuItemName</span>
+                                        <span class="item-quantity-badge">×@item.Quantity</span>
+                                    </div>
+                                    <span class="item-price-text">@("P" + item.TotalPrice.ToString("F2"))</span>
+                                </div>
+                            }
+                            @if (order.OrderItems.Count() > 3)
+                            {
+                                <div class="preview-item-row more-items">
+                                    <span class="text-muted">
+                                        <i class="fas fa-plus-circle me-2"></i>
+                                        and @(order.OrderItems.Count() - 3) more items...
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </div>
             }
         </div>
-    </div>
+    }
+    else
+    {
+        <!-- Empty State -->
+        <div class="empty-state-container">
+            <div class="empty-state-content">
+                <div class="empty-icon-circle">
+                    <i class="fas fa-receipt"></i>
+                </div>
+                <h3 class="empty-title">No Orders Yet</h3>
+                <p class="empty-description">
+                    You haven't placed any orders yet. Start exploring our delicious menu and place your first order!
+                </p>
+                <a href="@Url.Action("Browse", "Menu")" class="btn-browse-menu">
+                    <i class="fas fa-utensils me-2"></i>
+                    Browse Menu
+                </a>
+            </div>
+        </div>
+    }
 </div>
 
 @section Scripts {
