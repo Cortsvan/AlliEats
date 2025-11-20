@@ -6,244 +6,318 @@
     var userName = Context.Session.GetString("UserName");
 }
 
-<div class="container-fluid px-4 py-4">
-    <!-- Header -->
-    <div class="admin-menu-header text-center mb-4">
-        <h1 class="display-5 fw-bold"><i class="fas fa-utensils me-3"></i>Menu Management</h1>
-        <p class="lead">Manage your restaurant's menu items efficiently</p>
+<div class="admin-menu-container">
+    <!-- Modern Header Section -->
+    <div class="admin-hero-header">
+        <div class="hero-content">
+            <div class="header-icon-wrapper">
+                <i class="fas fa-utensils"></i>
+            </div>
+            <div class="header-text">
+                <h1 class="hero-title">Menu Management</h1>
+                <p class="hero-subtitle">Organize and manage your restaurant's menu with ease</p>
+            </div>
+        </div>
     </div>
 
+    <!-- Alert Messages -->
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <div class="alert modern-alert success-alert" role="alert">
+            <div class="alert-icon-box success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="alert-content">
+                <strong>Success!</strong>
+                <p>@TempData["SuccessMessage"]</p>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
     @if (TempData["ErrorMessage"] != null)
     {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+        <div class="alert modern-alert danger-alert" role="alert">
+            <div class="alert-icon-box danger-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="alert-content">
+                <strong>Error!</strong>
+                <p>@TempData["ErrorMessage"]</p>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card admin-menu-card">
-                <div class="card-header admin-card-header">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0">
-                            <i class="fas fa-list me-2"></i>Menu Items (<span id="itemCount">@Model.Count()</span> total)
-                        </h4>
-                        <a href="@Url.Action("AddItem", "AdminMenu")" class="btn btn-admin-primary">
-                            <i class="fas fa-plus me-2"></i>Add New Item
-                        </a>
-                    </div>
-                </div>
+    <!-- Main Content Card -->
+    <div class="admin-content-card">
+        <!-- Card Header with Actions -->
+        <div class="content-card-header">
+            <div class="header-info">
+                <h3 class="card-title">
+                    <i class="fas fa-list-ul me-2"></i>
+                    All Menu Items
+                </h3>
+                <p class="card-subtitle">Total: <span class="count-badge" id="itemCount">@Model.Count()</span> items</p>
+            </div>
+            <a href="@Url.Action("AddItem", "AdminMenu")" class="btn btn-add-new">
+                <i class="fas fa-plus-circle me-2"></i>Add New Item
+            </a>
+        </div>
 
-                <!-- Search and Filter Section -->
-                <div class="card-body border-bottom">
-                    <div class="row g-3">
-                        <!-- Search Bar -->
-                        <div class="col-md-6">
-                            <div class="search-container">
-                                <i class="fas fa-search search-icon"></i>
-                                <input type="text" id="searchInput" class="form-control search-input" placeholder="Search by name or description...">
-                                <button type="button" id="clearSearch" class="btn btn-sm btn-outline-secondary clear-btn" style="display: none;">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Category Filter -->
-                        <div class="col-md-3">
-                            <select id="categoryFilter" class="form-select">
-                                <option value="all">All Categories</option>
-                                @foreach (var category in Model.Select(x => x.Category).Distinct().OrderBy(x => x))
-                                {
-                                    <option value="@category">@category</option>
-                                }
-                            </select>
-                        </div>
-
-                        <!-- Status Filter -->
-                        <div class="col-md-3">
-                            <select id="statusFilter" class="form-select">
-                                <option value="all">All Status</option>
-                                <option value="active">Active Only</option>
-                                <option value="inactive">Inactive Only</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Filter Results Info -->
-                    <div id="filterInfo" class="filter-info mt-2" style="display: none;">
-                        <small class="text-muted">
-                            <i class="fas fa-info-circle me-1"></i>
-                            Showing <span id="visibleCount">0</span> of @Model.Count() items
-                        </small>
-                        <button type="button" id="clearFilters" class="btn btn-sm btn-link p-0 ms-2">
-                            Clear all filters
+        <!-- Filters Section -->
+        <div class="filters-section">
+            <div class="section-label">
+                <i class="fas fa-filter me-2"></i>Filter & Search
+            </div>
+            
+            <div class="filters-grid">
+                <!-- Search Bar -->
+                <div class="filter-group search-group">
+                    <label class="filter-label">Search Items</label>
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon-left"></i>
+                        <input type="text" 
+                               id="searchInput" 
+                               class="filter-input search-input" 
+                               placeholder="Search by name or description...">
+                        <button type="button" 
+                                id="clearSearch" 
+                                class="clear-search-btn" 
+                                style="display: none;">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="card-body p-0">
-                    @if (Model.Any())
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-hover admin-table mb-0">
-                                <thead class="admin-table-header">
-                                    <tr>
-                                        <th class="text-center" width="80">Image</th>
-                                        <th>Name</th>
-                                        <th width="120">Category</th>
-                                        <th width="100">Price</th>
-                                        <th>Description</th>
-                                        <th width="100" class="text-center">Status</th>
-                                        <th width="120" class="text-center">Actions</th>
-                                        <th width="100" class="text-center">Stock</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="menuItemsTable">
-                                    @foreach (var item in Model)
-                                    {
-                                        <tr class="admin-table-row menu-item-row"
-                                            data-name="@item.Name.ToLower()"
-                                            data-category="@item.Category"
-                                            data-description="@(item.Description?.ToLower() ?? "")"
-                                            data-status="@(item.IsActive ? "active" : "inactive")">
-                                            <td class="text-center">
-                                                <div class="menu-image-container">
-                                                    @if (!string.IsNullOrEmpty(item.ImagePath))
-                                                    {
-                                                        <img src="@item.ImagePath" alt="@item.Name" class="menu-item-img">
-                                                    }
-                                                    else
-                                                    {
-                                                        <div class="menu-placeholder">
-                                                            <i class="fas fa-image"></i>
-                                                        </div>
-                                                    }
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="item-name">@item.Name</div>
-                                            </td>
-                                            <td>
-                                                <span class="category-badge">@item.Category</span>
-                                            </td>
-                                            <td>
-                                                <span class="price-text">@("P" + item.Price.ToString("F2"))</span>
-                                            </td>
-                                            <td>
-                                                <div class="description-text">
-                                                    @(string.IsNullOrEmpty(item.Description) ? "No description" : item.Description)
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                @if (item.IsActive)
-                                                {
-                                                    <span class="status-badge active">
-                                                        <i class="fas fa-check-circle"></i> Active
-                                                    </span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="status-badge inactive">
-                                                        <i class="fas fa-pause-circle"></i> Inactive
-                                                    </span>
-                                                }
-                                            </td>
-                                            <td class="text-center">
-                                                <div class="stock-info">
-                                                    <span class="stock-number @(item.Stock == 0 ? "text-danger" : item.Stock <= 5 ? "text-warning" : "text-success")">
-                                                        @item.Stock
-                                                    </span>
-                                                    <div class="stock-status">
-                                                        @if (item.Stock == 0)
-                                                        {
-                                                            <span class="badge bg-danger">Out of Stock</span>
-                                                        }
-                                                        else if (item.Stock <= 5)
-                                                        {
-                                                            <span class="badge bg-warning">Low Stock</span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="badge bg-success">In Stock</span>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div class="action-buttons">
-                                                    <a href="@Url.Action("EditItem", "AdminMenu", new { id = item.Id })"
-                                                       class="btn btn-sm btn-edit" title="Edit">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    @if (item.IsActive)
-                                                    {
-                                                        <button type="button" class="btn btn-sm btn-delete"
-                                                                onclick="confirmDelete(@item.Id, '@item.Name')" title="Delete">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    }
-                                                </div>
-                                            </td>
-                                        </tr>
+                <!-- Category Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">Category</label>
+                    <div class="select-wrapper">
+                        <select id="categoryFilter" class="filter-select">
+                            <option value="all">All Categories</option>
+                            @foreach (var category in Model.Select(x => x.Category).Distinct().OrderBy(x => x))
+                            {
+                                <option value="@category">@category</option>
+                            }
+                        </select>
+                        <i class="fas fa-chevron-down select-icon"></i>
+                    </div>
+                </div>
 
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- No Results Message -->
-                        <div id="noResults" class="no-results" style="display: none;">
-                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No items found</h5>
-                            <p class="text-muted">Try adjusting your search or filter criteria.</p>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="empty-state">
-                            <i class="fas fa-utensils fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No menu items found</h5>
-                            <p class="text-muted">Get started by adding your first menu item.</p>
-                            <a href="@Url.Action("AddItem", "AdminMenu")" class="btn btn-admin-primary">
-                                <i class="fas fa-plus me-2"></i>Add First Item
-                            </a>
-                        </div>
-                    }
+                <!-- Status Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <div class="select-wrapper">
+                        <select id="statusFilter" class="filter-select">
+                            <option value="all">All Status</option>
+                            <option value="active">Active Only</option>
+                            <option value="inactive">Inactive Only</option>
+                        </select>
+                        <i class="fas fa-chevron-down select-icon"></i>
+                    </div>
                 </div>
             </div>
+
+            <!-- Filter Results Info -->
+            <div id="filterInfo" class="filter-results-info" style="display: none;">
+                <i class="fas fa-info-circle me-2"></i>
+                Showing <strong id="visibleCount">0</strong> of @Model.Count() items
+                <button type="button" id="clearFilters" class="btn-clear-filters">
+                    <i class="fas fa-times me-1"></i>Clear Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- Menu Items Table -->
+        <div class="table-section">
+            @if (Model.Any())
+            {
+                <div class="table-wrapper">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th class="col-image">IMAGE</th>
+                                <th class="col-name">ITEM NAME</th>
+                                <th class="col-category">CATEGORY</th>
+                                <th class="col-price">PRICE</th>
+                                <th class="col-description">DESCRIPTION</th>
+                                <th class="col-stock">STOCK</th>
+                                <th class="col-status">STATUS</th>
+                                <th class="col-actions">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="menuItemsTable">
+                            @foreach (var item in Model)
+                            {
+                                <tr class="table-row menu-item-row"
+                                    data-name="@item.Name.ToLower()"
+                                    data-category="@item.Category"
+                                    data-description="@(item.Description?.ToLower() ?? "")"
+                                    data-status="@(item.IsActive ? "active" : "inactive")">
+                                    
+                                    <!-- Image -->
+                                    <td class="cell-image">
+                                        <div class="item-image-box">
+                                            @if (!string.IsNullOrEmpty(item.ImagePath))
+                                            {
+                                                <img src="@item.ImagePath" alt="@item.Name" class="item-img">
+                                            }
+                                            else
+                                            {
+                                                <div class="img-placeholder">
+                                                    <i class="fas fa-image"></i>
+                                                </div>
+                                            }
+                                        </div>
+                                    </td>
+
+                                    <!-- Name -->
+                                    <td class="cell-name">
+                                        <span class="item-name-text">@item.Name</span>
+                                    </td>
+
+                                    <!-- Category -->
+                                    <td class="cell-category">
+                                        <span class="category-pill">
+                                            <i class="fas fa-circle category-dot"></i>
+                                            @item.Category
+                                        </span>
+                                    </td>
+
+                                    <!-- Price with HTML entity -->
+                                    <td class="cell-price">
+                                        <span class="price-amount">&#8369;@item.Price.ToString("N2")</span>
+                                    </td>
+
+                                    <!-- Description -->
+                                    <td class="cell-description">
+                                        <span class="description-text">
+                                            @(string.IsNullOrEmpty(item.Description) ? "No description" : item.Description)
+                                        </span>
+                                    </td>
+
+                                    <!-- Stock (Number beside status) -->
+                                    <td class="cell-stock">
+                                        <div class="stock-inline">
+                                            @if (item.Stock == 0)
+                                            {
+                                                <span class="stock-badge badge-danger">
+                                                    <i class="fas fa-times-circle"></i>
+                                                    <strong>@item.Stock</strong> Out of Stock
+                                                </span>
+                                            }
+                                            else if (item.Stock <= 5)
+                                            {
+                                                <span class="stock-badge badge-warning">
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                    <strong>@item.Stock</strong> Low Stock
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="stock-badge badge-success">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <strong>@item.Stock</strong> In Stock
+                                                </span>
+                                            }
+                                        </div>
+                                    </td>
+
+                                    <!-- Status (Aligned) -->
+                                    <td class="cell-status">
+                                        @if (item.IsActive)
+                                        {
+                                            <span class="status-pill active-pill">
+                                                <i class="fas fa-circle status-dot"></i>
+                                                Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-pill inactive-pill">
+                                                <i class="fas fa-circle status-dot"></i>
+                                                Inactive
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <!-- Actions (Aligned) -->
+                                    <td class="cell-actions">
+                                        <div class="action-buttons-inline">
+                                            <a href="@Url.Action("EditItem", "AdminMenu", new { id = item.Id })"
+                                               class="btn-action btn-edit"
+                                               title="Edit Item">
+                                                <i class="fas fa-pen"></i>
+                                            </a>
+                                            @if (item.IsActive)
+                                            {
+                                                <button type="button" 
+                                                        class="btn-action btn-delete"
+                                                        onclick="confirmDelete(@item.Id, '@item.Name')" 
+                                                        title="Delete Item">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- No Results Message -->
+                <div id="noResults" class="no-results-state" style="display: none;">
+                    <div class="no-results-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h4 class="no-results-title">No items found</h4>
+                    <p class="no-results-text">Try adjusting your search or filter criteria.</p>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h4 class="empty-state-title">No menu items yet</h4>
+                    <p class="empty-state-text">Get started by adding your first menu item to your restaurant.</p>
+                    <a href="@Url.Action("AddItem", "AdminMenu")" class="btn btn-get-started">
+                        <i class="fas fa-plus-circle me-2"></i>Add First Item
+                    </a>
+                </div>
+            }
         </div>
     </div>
 </div>
 
-<!-- Simple Delete Modal -->
+<!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="deleteModalLabel">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion
-                </h5>
+        <div class="modal-content modern-modal">
+            <div class="modal-header modal-header-danger">
+                <div class="modal-header-content">
+                    <div class="modal-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete <strong id="itemName"></strong>?</p>
-                <p class="text-muted small">This action cannot be undone.</p>
+                <p class="modal-message">Are you sure you want to delete <strong id="itemName"></strong>?</p>
+                <p class="modal-warning">This action cannot be undone and will permanently remove this item.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-modal-cancel" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </button>
                 <form id="deleteForm" method="post" class="d-inline">
                     @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash me-2"></i>Delete
+                    <button type="submit" class="btn btn-modal-delete">
+                        <i class="fas fa-trash-alt me-2"></i>Delete Item
                     </button>
                 </form>
             </div>
