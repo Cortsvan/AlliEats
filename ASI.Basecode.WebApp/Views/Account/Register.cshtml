@@ -4,6 +4,18 @@
 @section styles {
     <link rel="stylesheet" href="~/css/login.css" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .back-link {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+        .back-link:hover {
+            text-decoration: none;
+        }
+    </style>
 }
 @{
     ViewBag.LoginView = true;

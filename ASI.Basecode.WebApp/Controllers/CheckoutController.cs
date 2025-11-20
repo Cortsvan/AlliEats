@@ -68,7 +68,7 @@ namespace ASI.Basecode.WebApp.Controllers
                     _logger.LogInformation("User {UserId} attempted checkout without complete delivery information", userId);
                     TempData["ErrorMessage"] = "Please complete your delivery information before checkout.";
                     TempData["MissingDeliveryInfo"] = GetMissingDeliveryFields(userProfile);
-                    return RedirectToAction("Edit", "Profile");
+                    return RedirectToAction("Edit", "Profile", new { returnUrl = "/Checkout/Index" });
                 }
 
                 var checkoutModel = _orderService.PrepareCheckout(userId);

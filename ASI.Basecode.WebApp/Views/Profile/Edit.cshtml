@@ -41,6 +41,11 @@
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.UserId)
 
+        @if (!string.IsNullOrEmpty(ViewBag.ReturnUrl as string))
+        {
+            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+        }
+
         <div class="row">
             <!-- Personal Information -->
             <div class="col-lg-6">
@@ -147,9 +152,18 @@
         <div class="row">
             <div class="col-12">
                 <div class="d-flex justify-content-between">
-                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Back to Profile
-                    </a>
+                    @if (!string.IsNullOrEmpty(ViewBag.ReturnUrl as string))
+                    {
+                        <a href="@ViewBag.ReturnUrl" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Profile
+                        </a>
+                    }
                     <button type="submit" class="btn btn-checkout">
                         <i class="fas fa-save me-2"></i>Save Changes
                     </button>

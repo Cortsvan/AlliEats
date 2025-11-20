@@ -1,0 +1,232 @@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    var user = HttpContextAccessor.HttpContext.User;
+    var isAuthenticated = user.Identity.IsAuthenticated;
+    var isAdmin = user.IsInRole("Admin");
+    
+    // Get current controller and action to hide footer on account pages
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var isAccountPage = controller == "Account" && 
+                       (action == "Login" || 
+                        action == "Register" || 
+                        action == "ForgotPassword" || 
+                        action == "ResetPassword" || 
+                        action == "VerifyEmail");
+}
+
+@if (isAuthenticated && !isAccountPage)
+{
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="container-fluid px-lg-4">
+                <div class="row g-4">
+                    
+                    <!-- About AlliEats Section -->
+                    <div class="col-lg-3 col-md-6">
+                        <div class="footer-section">
+                            <div class="footer-brand">
+                                <i class="fas fa-utensils footer-brand-icon"></i>
+                                <span class="footer-brand-text">AlliEats</span>
+                            </div>
+                            <p class="footer-description">
+                                Order now and taste the delicious food from AlliEats.
+                            </p>
+                            <div class="footer-meta">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>UC Banilad Campus</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (isAdmin)
+                    {
+                        <!-- Admin Quick Links -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="footer-section">
+                                <h5 class="footer-heading">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Admin Panel
+                                </h5>
+                                <ul class="footer-links">
+                                    <li>
+                                        <a href="@Url.Action("Index", "Home")" class="footer-link">
+                                            <i class="fas fa-chart-line"></i>
+                                            <span>Dashboard</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("ViewItems", "AdminMenu")" class="footer-link">
+                                            <i class="fas fa-utensils"></i>
+                                            <span>Menu Management</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("ManageOrders", "AdminOrder")" class="footer-link">
+                                            <i class="fas fa-clipboard-list"></i>
+                                            <span>Orders</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Admin Resources -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="footer-section">
+                                <h5 class="footer-heading">
+                                    <i class="fas fa-star me-2"></i>Management
+                                </h5>
+                                <ul class="footer-links">
+                                    <li>
+                                        <a href="@Url.Action("AllReviews", "Review")" class="footer-link">
+                                            <i class="fas fa-comments"></i>
+                                            <span>Reviews</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Privacy", "Home")" class="footer-link">
+                                            <i class="fas fa-shield-alt"></i>
+                                            <span>Privacy Policy</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Admin Account -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="footer-section">
+                                <h5 class="footer-heading">
+                                    <i class="fas fa-user-shield me-2"></i>Account
+                                </h5>
+                                <ul class="footer-links">
+                                    <li>
+                                        <a href="@Url.Action("SignOutUser", "Account")" class="footer-link text-danger-emphasis">
+                                            <i class="fas fa-sign-out-alt"></i>
+                                            <span>Logout</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- User Quick Links -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="footer-section">
+                                <h5 class="footer-heading">
+                                    <i class="fas fa-compass me-2"></i>Quick Links
+                                </h5>
+                                <ul class="footer-links">
+                                    <li>
+                                        <a href="@Url.Action("Index", "Home")" class="footer-link">
+                                            <i class="fas fa-home"></i>
+                                            <span>Home</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Browse", "Menu")" class="footer-link">
+                                            <i class="fas fa-utensils"></i>
+                                            <span>Menu</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("ViewCart", "Cart")" class="footer-link">
+                                            <i class="fas fa-shopping-cart"></i>
+                                            <span>Cart</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("MyOrders", "Order")" class="footer-link">
+                                            <i class="fas fa-receipt"></i>
+                                            <span>Orders</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- User Activity -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="footer-section">
+                                <h5 class="footer-heading">
+                                    <i class="fas fa-star me-2"></i>Activity
+                                </h5>
+                                <ul class="footer-links">
+                                    <li>
+                                        <a href="@Url.Action("AllReviews", "Review")" class="footer-link">
+                                            <i class="fas fa-comments"></i>
+                                            <span>All Reviews</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("MyReviews", "Review")" class="footer-link">
+                                            <i class="fas fa-comment-dots"></i>
+                                            <span>My Reviews</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- User Account Section -->
+                        <div class="col-lg-3 col-md-6">
+                            <div class="footer-section">
+                                <h5 class="footer-heading">
+                                    <i class="fas fa-user-circle me-2"></i>Account
+                                </h5>
+                                <ul class="footer-links">
+                                    <li>
+                                        <a href="@Url.Action("Index", "Profile")" class="footer-link">
+                                            <i class="fas fa-id-card"></i>
+                                            <span>Profile</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index", "Settings")" class="footer-link">
+                                            <i class="fas fa-cog"></i>
+                                            <span>Settings</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("PaymentMethods", "Settings")" class="footer-link">
+                                            <i class="fas fa-credit-card"></i>
+                                            <span>Payments</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Privacy", "Home")" class="footer-link">
+                                            <i class="fas fa-shield-alt"></i>
+                                            <span>Privacy</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("SignOutUser", "Account")" class="footer-link text-danger-emphasis">
+                                            <i class="fas fa-sign-out-alt"></i>
+                                            <span>Logout</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+
+                <!-- Footer Bottom Bar -->
+                <div class="footer-bottom">
+                    <div class="footer-divider"></div>
+                    <div class="footer-bottom-content">
+                        <p class="footer-copyright">
+                            <i class="far fa-copyright"></i>
+                            @DateTime.Now.Year AlliEats - University of Cebu Banilad. All rights reserved.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </footer>
+}

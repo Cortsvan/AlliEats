@@ -91,7 +91,7 @@
                     </div>
 
                     <div class="action-wrapper">
-                        <a href="@Url.Action("Edit", "Profile")" class="btn btn-action-subtle settings-action-btn">
+                        <a href="@Url.Action("Edit", "Profile", new { returnUrl = Context.Request.Path })" class="btn btn-action-subtle settings-action-btn">
                             Update
                         </a>
                     </div>

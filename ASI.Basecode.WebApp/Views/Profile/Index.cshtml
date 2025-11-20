@@ -38,7 +38,7 @@
                         <h4 class="card-title mb-0">
                             <i class="fas fa-user me-2"></i>Profile Information
                         </h4>
-                        <a href="@Url.Action("Edit")" class="btn btn-checkout">
+                        <a href="@Url.Action("Edit", new { returnUrl = Context.Request.Path })" class="btn btn-checkout">
                             <i class="fas fa-edit me-2"></i>Edit Profile
                         </a>
                     </div>
@@ -132,7 +132,7 @@
                     @if (!Model.IsProfileComplete)
                     {
                         <p class="text-muted small mb-3">Complete your profile to get better delivery experience!</p>
-                        <a href="@Url.Action("Edit")" class="btn btn-outline-primary btn-sm">
+                        <a href="@Url.Action("Edit", new { returnUrl = Context.Request.Path })" class="btn btn-outline-primary btn-sm">
                             <i class="fas fa-plus me-2"></i>Complete Profile
                         </a>
                     }

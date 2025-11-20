@@ -7,6 +7,9 @@
     var isAuthenticated = user.Identity.IsAuthenticated;
     var isAdmin = user.IsInRole("Admin");
     
+    // Get the actual user's full name from session (updated when profile is edited)
+    var userName = HttpContextAccessor.HttpContext.Session.GetString("UserName") ?? user.Identity.Name;
+    
     var featuredMenuItems = ViewBag.FeaturedMenuItems as List<MenuItemViewModel> ?? new List<MenuItemViewModel>();
     var categories = ViewBag.Categories as List<string> ?? new List<string>();
     var featuredReviews = ViewBag.FeaturedReviews as List<UserReviewViewModel> ?? new List<UserReviewViewModel>();
@@ -178,7 +181,7 @@
                     <div class="welcome-avatar-wrapper">
                         <i class="fas fa-user-circle"></i>
                     </div>
-                    <h1 class="display-5 fw-bold mb-1">Hello, @user.Identity.Name!</h1>
+                    <h1 class="display-5 fw-bold mb-1">Hello, @userName!</h1>
                     <p class="mb-0 opacity-75">Ready to order some delicious food?</p>
                 </div>
                 <i class="fas fa-hamburger welcome-decoration"></i>

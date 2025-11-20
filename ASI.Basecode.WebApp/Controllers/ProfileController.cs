@@ -56,7 +56,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         // GET: Profile/Edit
-        public IActionResult Edit()
+        public IActionResult Edit(string returnUrl = null)
         {
             try
             {
@@ -73,6 +73,10 @@ namespace ASI.Basecode.WebApp.Controllers
                 }
 
                 var profile = _profileService.GetProfile(userId);
+                
+                // Store return URL in ViewBag for the form to use
+                ViewBag.ReturnUrl = returnUrl ?? Request.Headers["Referer"].ToString();
+                
                 return View(profile);
             }
             catch (Exception ex)
@@ -86,10 +90,11 @@ namespace ASI.Basecode.WebApp.Controllers
         // POST: Profile/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(ProfileViewModel model)
+        public IActionResult Edit(ProfileViewModel model, string returnUrl = null)
         {
             if (!ModelState.IsValid)
             {
+                ViewBag.ReturnUrl = returnUrl;
                 return View(model);
             }
 
@@ -111,12 +116,20 @@ namespace ASI.Basecode.WebApp.Controllers
                 HttpContext.Session.SetString("UserName", model.Name);
 
                 TempData["SuccessMessage"] = "Profile updated successfully!";
+                
+                // Redirect to return URL if provided, otherwise go to Profile Index
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+                
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while updating profile");
                 TempData["ErrorMessage"] = "An error occurred while updating your profile.";
+                ViewBag.ReturnUrl = returnUrl;
                 return View(model);
             }
         }
