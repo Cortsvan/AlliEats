@@ -1,8 +1,15 @@
 ﻿// Admin Order Details functionality
 
+let currentQuickAction = {
+    orderId: null,
+    status: null,
+    button: null
+};
+
 document.addEventListener('DOMContentLoaded', function () {
     initializeTooltips();
     initializeAnimations();
+    initializeCountdown();
 });
 
 function initializeTooltips() {
@@ -142,53 +149,135 @@ function getAdminAllowedTransitions(currentStatus) {
     }
 }
 
+function getStatusInfo(status) {
+    const statusMap = {
+        'Confirmed': {
+            icon: 'fa-check-circle',
+            color: '#17a2b8',
+            bgColor: 'rgba(23, 162, 184, 0.1)',
+            description: 'The order will be marked as confirmed and the kitchen will be notified.',
+            action: 'Confirm this order'
+        },
+        'Preparing': {
+            icon: 'fa-utensils',
+            color: 'var(--primary-color)',
+            bgColor: 'rgba(139, 94, 60, 0.1)',
+            description: 'The order status will change to "Preparing" and the kitchen will start working on it.',
+            action: 'Start preparing this order'
+        },
+        'Ready': {
+            icon: 'fa-bell',
+            color: '#28a745',
+            bgColor: 'rgba(40, 167, 69, 0.1)',
+            description: 'The order will be marked as ready for pickup or delivery.',
+            action: 'Mark this order as ready'
+        },
+        'On the Way': {
+            icon: 'fa-shipping-fast',
+            color: '#fd7e14',
+            bgColor: 'rgba(253, 126, 20, 0.1)',
+            description: 'The order will be marked as out for delivery. Customer will have 2 hours to confirm receipt.',
+            action: 'Send this order out for delivery'
+        }
+    };
+
+    return statusMap[status] || {
+        icon: 'fa-question-circle',
+        color: '#6c757d',
+        bgColor: 'rgba(108, 117, 125, 0.1)',
+        description: 'Update the order status.',
+        action: 'Update this order'
+    };
+}
+
 function updateStatus(orderId, status) {
-    if (confirm(`Are you sure you want to update this order to ${status}?`)) {
-        // Show loading state
-        const button = event.target.closest('button');
-        const originalContent = button.innerHTML;
+    const button = event.target.closest('button');
+    const statusInfo = getStatusInfo(status);
+    
+    // Store current action details
+    currentQuickAction = {
+        orderId: orderId,
+        status: status,
+        button: button
+    };
+
+    // Populate modal with status information
+    document.getElementById('quickActionOrderId').value = orderId;
+    document.getElementById('quickActionStatus').value = status;
+    
+    const modalIcon = document.getElementById('quickActionIcon');
+    const modalTitle = document.getElementById('quickActionTitle');
+    const modalDescription = document.getElementById('quickActionDescription');
+    const modalHeader = document.querySelector('#quickActionModal .modal-header');
+    
+    modalIcon.className = `fas ${statusInfo.icon}`;
+    modalIcon.style.color = statusInfo.color;
+    modalTitle.textContent = statusInfo.action;
+    modalDescription.textContent = statusInfo.description;
+    modalHeader.style.background = `linear-gradient(135deg, ${statusInfo.bgColor}, ${statusInfo.bgColor})`;
+    modalHeader.style.borderBottom = `3px solid ${statusInfo.color}`;
+
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('quickActionModal'));
+    modal.show();
+}
+
+function confirmQuickAction() {
+    const orderId = document.getElementById('quickActionOrderId').value;
+    const status = document.getElementById('quickActionStatus').value;
+    const button = currentQuickAction.button;
+    const submitBtn = document.getElementById('confirmQuickActionBtn');
+
+    // Show loading state on submit button
+    const originalBtnContent = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+    submitBtn.disabled = true;
+
+    // Show loading state on original button
+    if (button) {
         button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating...';
         button.disabled = true;
-
-        // Create and submit form
-        var form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '/AdminOrder/UpdateStatus';
-
-        // Add CSRF token
-        var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-        var tokenInput = document.createElement('input');
-        tokenInput.type = 'hidden';
-        tokenInput.name = '__RequestVerificationToken';
-        tokenInput.value = token;
-        form.appendChild(tokenInput);
-
-        // Add order ID
-        var orderIdInput = document.createElement('input');
-        orderIdInput.type = 'hidden';
-        orderIdInput.name = 'orderId';
-        orderIdInput.value = orderId;
-        form.appendChild(orderIdInput);
-
-        // Add status
-        var statusInput = document.createElement('input');
-        statusInput.type = 'hidden';
-        statusInput.name = 'status';
-        statusInput.value = status;
-        form.appendChild(statusInput);
-
-        document.body.appendChild(form);
-        form.submit();
     }
+
+    // Create and submit form
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/AdminOrder/UpdateStatus';
+
+    // Add CSRF token
+    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    const tokenInput = document.createElement('input');
+    tokenInput.type = 'hidden';
+    tokenInput.name = '__RequestVerificationToken';
+    tokenInput.value = token;
+    form.appendChild(tokenInput);
+
+    // Add order ID
+    const orderIdInput = document.createElement('input');
+    orderIdInput.type = 'hidden';
+    orderIdInput.name = 'orderId';
+    orderIdInput.value = orderId;
+    form.appendChild(orderIdInput);
+
+    // Add status
+    const statusInput = document.createElement('input');
+    statusInput.type = 'hidden';
+    statusInput.name = 'status';
+    statusInput.value = status;
+    form.appendChild(statusInput);
+
+    document.body.appendChild(form);
+    form.submit();
 }
 
 function refreshPage() {
     // Show loading state
     const refreshBtn = document.querySelector('[onclick="refreshPage()"]');
-    const originalContent = refreshBtn.innerHTML;
-
-    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Refreshing...';
-    refreshBtn.disabled = true;
+    if (refreshBtn) {
+        const originalContent = refreshBtn.innerHTML;
+        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Refreshing...';
+        refreshBtn.disabled = true;
+    }
 
     // Refresh page
     setTimeout(() => {
@@ -262,7 +351,7 @@ style.textContent = adminRippleCSS;
 document.head.appendChild(style);
 
 // Countdown timer for "On the Way" orders
-document.addEventListener('DOMContentLoaded', function () {
+function initializeCountdown() {
     const countdownDisplay = document.querySelector('.countdown-display');
     if (countdownDisplay) {
         const remainingSeconds = parseInt(countdownDisplay.getAttribute('data-remaining'));
@@ -270,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function () {
             startCountdown(remainingSeconds);
         }
     }
-});
+}
 
 function startCountdown(seconds) {
     const countdownElement = document.querySelector('.countdown-time');
@@ -287,17 +376,17 @@ function startCountdown(seconds) {
             const alert = document.querySelector('.timer-alert');
             alert.className = 'alert alert-warning timer-alert';
             alert.innerHTML = `
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <div>
-                                <strong>Auto-Receipt Timer</strong>
-                                <div>⚠️ This order is now overdue and will be automatically marked as "Received" shortly.</div>
-                                <button onclick="location.reload()" class="btn btn-sm btn-warning mt-2">
-                                    <i class="fas fa-sync-alt me-1"></i>Refresh Page
-                                </button>
-                            </div>
-                        </div>
-                    `;
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <div>
+                        <strong>Auto-Receipt Timer</strong>
+                        <div>⚠️ This order is now overdue and will be automatically marked as "Received" shortly.</div>
+                        <button onclick="location.reload()" class="btn btn-sm btn-warning mt-2">
+                            <i class="fas fa-sync-alt me-1"></i>Refresh Page
+                        </button>
+                    </div>
+                </div>
+            `;
             return;
         }
 
@@ -313,6 +402,23 @@ function startCountdown(seconds) {
     }, 1000);
 }
 
-function refreshPage() {
-    location.reload();
-}
+// Reset modal when closed
+document.addEventListener('DOMContentLoaded', function() {
+    const quickActionModal = document.getElementById('quickActionModal');
+    if (quickActionModal) {
+        quickActionModal.addEventListener('hidden.bs.modal', function () {
+            const submitBtn = document.getElementById('confirmQuickActionBtn');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-check me-2"></i>Yes, Update Status';
+                submitBtn.disabled = false;
+            }
+            
+            // Reset the stored action
+            currentQuickAction = {
+                orderId: null,
+                status: null,
+                button: null
+            };
+        });
+    }
+});

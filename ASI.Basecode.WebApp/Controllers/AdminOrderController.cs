@@ -69,7 +69,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 if (!validStatuses.Contains(status))
                 {
                     TempData["ErrorMessage"] = "Invalid status selected.";
-                    return RedirectToAction("ManageOrders");
+                    return RedirectToAction("OrderDetails", new { id = orderId });
                 }
 
                 _orderService.UpdateOrderStatus(orderId, status);
@@ -90,7 +90,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 TempData["ErrorMessage"] = "An error occurred while updating order status.";
             }
 
-            return RedirectToAction("ManageOrders");
+            return RedirectToAction("OrderDetails", new { id = orderId });
         }
 
         // GET: AdminOrder/OrderDetails/5

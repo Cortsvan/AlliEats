@@ -5,280 +5,330 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid px-4 py-4">
-    <!-- Header -->
-    <div class="admin-order-header text-center mb-4">
-        <h1 class="display-5 fw-bold"><i class="fas fa-clipboard-list me-3"></i>Order Management</h1>
-        <p class="lead">Monitor and manage customer orders in real-time</p>
+<div class="admin-orders-wrapper">
+    <!-- Page Header -->
+    <div class="admin-orders-header">
+        <div class="header-content">
+            <div class="header-icon-wrapper">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <div class="header-text">
+                <h1 class="header-title">Order Management</h1>
+                <p class="header-subtitle">Monitor and manage customer orders in real-time</p>
+            </div>
+        </div>
     </div>
 
+    <!-- Alert Messages -->
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <div class="alert alert-success alert-dismissible fade show modern-alert" role="alert">
+            <div class="alert-icon-wrapper success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="alert-content">
+                <strong>Success!</strong>
+                <p>@TempData["SuccessMessage"]</p>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
     @if (TempData["ErrorMessage"] != null)
     {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+        <div class="alert alert-danger alert-dismissible fade show modern-alert" role="alert">
+            <div class="alert-icon-wrapper error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="alert-content">
+                <strong>Error!</strong>
+                <p>@TempData["ErrorMessage"]</p>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
     @if (Model.Any())
     {
-        <!-- Order Statistics -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card admin-stats-card">
-                    <div class="card-header admin-card-header">
-                        <h5 class="mb-0">
-                            <i class="fas fa-chart-bar me-2"></i>Order Statistics
-                        </h5>
+        <!-- Order Statistics Section -->
+        <div class="statistics-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Order Statistics
+                </h2>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card stat-pending">
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-clock"></i>
                     </div>
-                    <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-lg col-md-4 col-sm-6">
-                                <div class="stat-card pending">
-                                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
-                                    <div class="stat-info">
-                                        <div class="stat-number">@Model.Count(o => o.Status == "Pending")</div>
-                                        <div class="stat-label">Pending</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg col-md-4 col-sm-6">
-                                <div class="stat-card confirmed">
-                                    <div class="stat-icon"><i class="fas fa-check"></i></div>
-                                    <div class="stat-info">
-                                        <div class="stat-number">@Model.Count(o => o.Status == "Confirmed")</div>
-                                        <div class="stat-label">Confirmed</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg col-md-4 col-sm-6">
-                                <div class="stat-card preparing">
-                                    <div class="stat-icon"><i class="fas fa-utensils"></i></div>
-                                    <div class="stat-info">
-                                        <div class="stat-number">@Model.Count(o => o.Status == "Preparing")</div>
-                                        <div class="stat-label">Preparing</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg col-md-4 col-sm-6">
-                                <div class="stat-card ready">
-                                    <div class="stat-icon"><i class="fas fa-bell"></i></div>
-                                    <div class="stat-info">
-                                        <div class="stat-number">@Model.Count(o => o.Status == "Ready")</div>
-                                        <div class="stat-label">Ready</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg col-md-4 col-sm-6">
-                                <div class="stat-card ontheway">
-                                    <div class="stat-icon"><i class="fas fa-shipping-fast"></i></div>
-                                    <div class="stat-info">
-                                        <div class="stat-number">@Model.Count(o => o.Status == "On the Way")</div>
-                                        <div class="stat-label">On the Way</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg col-md-4 col-sm-6">
-                                <div class="stat-card completed">
-                                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
-                                    <div class="stat-info">
-                                        <div class="stat-number">@Model.Count(o => o.Status == "Received")</div>
-                                        <div class="stat-label">Completed</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg col-md-4 col-sm-6">
-                                <div class="stat-card cancelled">
-                                    <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
-                                    <div class="stat-info">
-                                        <div class="stat-number">@Model.Count(o => o.Status == "Cancelled")</div>
-                                        <div class="stat-label">Cancelled</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="stat-details">
+                        <div class="stat-value">@Model.Count(o => o.Status == "Pending")</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card stat-confirmed">
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="stat-details">
+                        <div class="stat-value">@Model.Count(o => o.Status == "Confirmed")</div>
+                        <div class="stat-label">Confirmed</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card stat-preparing">
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="stat-details">
+                        <div class="stat-value">@Model.Count(o => o.Status == "Preparing")</div>
+                        <div class="stat-label">Preparing</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card stat-ready">
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="stat-details">
+                        <div class="stat-value">@Model.Count(o => o.Status == "Ready")</div>
+                        <div class="stat-label">Ready</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card stat-ontheway">
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <div class="stat-details">
+                        <div class="stat-value">@Model.Count(o => o.Status == "On the Way")</div>
+                        <div class="stat-label">On the Way</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card stat-completed">
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-details">
+                        <div class="stat-value">@Model.Count(o => o.Status == "Received")</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card stat-cancelled">
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stat-details">
+                        <div class="stat-value">@Model.Count(o => o.Status == "Cancelled")</div>
+                        <div class="stat-label">Cancelled</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Orders Table -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card admin-order-card">
-                    <div class="card-header admin-card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">
-                                <i class="fas fa-shopping-bag me-2"></i>Customer Orders (<span id="orderCount">@Model.Count()</span> total)
-                            </h5>
-                            <button type="button" class="btn btn-sm btn-outline-light" onclick="refreshOrders()">
-                                <i class="fas fa-sync-alt me-1"></i>Refresh
-                            </button>
-                        </div>
+        <!-- Orders Table Section -->
+        <div class="orders-table-section">
+            <div class="orders-card">
+                <!-- Card Header -->
+                <div class="orders-card-header">
+                    <div class="header-left">
+                        <h2 class="card-title">
+                            <i class="fas fa-shopping-bag"></i>
+                            Customer Orders
+                        </h2>
+                        <span class="order-count-badge">
+                            <span id="orderCount">@Model.Count()</span> total
+                        </span>
                     </div>
+                    <button type="button" class="btn-refresh" onclick="refreshOrders()">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh
+                    </button>
+                </div>
 
-                    <!-- Search and Filter Section -->
-                    <div class="card-body border-bottom">
-                        <div class="row g-3">
-                            <!-- Search Bar -->
-                            <div class="col-lg-3 col-md-6">
-                                <div class="search-container">
-                                    <i class="fas fa-search search-icon"></i>
-                                    <input type="text" id="searchInput" class="form-control search-input" placeholder="Search by order number...">
-                                    <button type="button" id="clearSearch" class="btn btn-sm btn-outline-secondary clear-btn" style="display: none;">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Status Filter -->
-                            <div class="col-lg-2 col-md-6">
-                                <select id="statusFilter" class="form-select">
-                                    <option value="all">All Status</option>
-                                    <option value="Pending">Pending</option>
-                                    <option value="Confirmed">Confirmed</option>
-                                    <option value="Preparing">Preparing</option>
-                                    <option value="Ready">Ready</option>
-                                    <option value="On the Way">On the Way</option>
-                                </select>
-                            </div>
-
-                            <!-- Date Filter -->
-                            <div class="col-lg-2 col-md-6">
-                                <select id="dateFilter" class="form-select">
-                                    <option value="all">All Dates</option>
-                                    <option value="today">Today</option>
-                                    <option value="yesterday">Yesterday</option>
-                                    <option value="week">This Week</option>
-                                    <option value="month">This Month</option>
-                                </select>
-                            </div>
-
-                            <!-- Payment Method Filter -->
-                            <div class="col-lg-2 col-md-6">
-                                <select id="paymentFilter" class="form-select">
-                                    <option value="all">All Payments</option>
-                                    @foreach (var payment in Model.Select(x => x.PaymentMethod).Distinct().OrderBy(x => x))
-                                    {
-                                        <option value="@payment">@payment</option>
-                                    }
-                                </select>
-                            </div>
-
-                            <!-- Amount Filter -->
-                            <div class="col-lg-2 col-md-6">
-                                <select id="amountFilter" class="form-select">
-                                    <option value="all">All Amounts</option>
-                                    <option value="0-50">P0 - P50</option>
-                                    <option value="51-100">P51 - P100</option>
-                                    <option value="101-200">P101 - P200</option>
-                                    <option value="201+">P201+</option>
-                                </select>
-                            </div>
-
-                            <!-- Clear Filters -->
-                            <div class="col-lg-1 col-md-6">
-                                <button type="button" id="clearFilters" class="btn btn-outline-secondary w-100" title="Clear All Filters">
-                                    <i class="fas fa-eraser"></i>
+                <!-- Filters Section -->
+                <div class="filters-section">
+                    <div class="filters-grid">
+                        <!-- Search Bar -->
+                        <div class="filter-item filter-search">
+                            <label class="filter-label">
+                                <i class="fas fa-search"></i>
+                                Search Order
+                            </label>
+                            <div class="search-input-wrapper">
+                                <input type="text" id="searchInput" class="filter-input" placeholder="Enter order number...">
+                                <button type="button" id="clearSearch" class="btn-clear-search" style="display: none;">
+                                    <i class="fas fa-times"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Filter Results Info -->
-                        <div id="filterInfo" class="filter-info mt-2" style="display: none;">
-                            <small class="text-muted">
-                                <i class="fas fa-info-circle me-1"></i>
-                                Showing <span id="visibleCount">0</span> of @Model.Count() orders
-                            </small>
+                        <!-- Status Filter -->
+                        <div class="filter-item">
+                            <label class="filter-label">
+                                <i class="fas fa-filter"></i>
+                                Status
+                            </label>
+                            <select id="statusFilter" class="filter-select">
+                                <option value="all">All Status</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Preparing">Preparing</option>
+                                <option value="Ready">Ready</option>
+                                <option value="On the Way">On the Way</option>
+                            </select>
+                        </div>
+
+                        <!-- Date Filter -->
+                        <div class="filter-item">
+                            <label class="filter-label">
+                                <i class="fas fa-calendar"></i>
+                                Date
+                            </label>
+                            <select id="dateFilter" class="filter-select">
+                                <option value="all">All Dates</option>
+                                <option value="today">Today</option>
+                                <option value="yesterday">Yesterday</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                            </select>
+                        </div>
+
+                        <!-- Payment Filter -->
+                        <div class="filter-item">
+                            <label class="filter-label">
+                                <i class="fas fa-credit-card"></i>
+                                Payment
+                            </label>
+                            <select id="paymentFilter" class="filter-select">
+                                <option value="all">All Payments</option>
+                                @foreach (var payment in Model.Select(x => x.PaymentMethod).Distinct().OrderBy(x => x))
+                                {
+                                    <option value="@payment">@payment</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Amount Filter -->
+                        <div class="filter-item">
+                            <label class="filter-label">
+                                <i class="fas fa-peso-sign"></i>
+                                Amount
+                            </label>
+                            <select id="amountFilter" class="filter-select">
+                                <option value="all">All Amounts</option>
+                                <option value="0-50">₱0 - ₱50</option>
+                                <option value="51-100">₱51 - ₱100</option>
+                                <option value="101-200">₱101 - ₱200</option>
+                                <option value="201+">₱201+</option>
+                            </select>
+                        </div>
+
+                        <!-- Clear Filters Button -->
+                        <div class="filter-item filter-actions">
+                            <label class="filter-label">&nbsp;</label>
+                            <button type="button" id="clearFilters" class="btn-clear-filters" title="Clear All Filters">
+                                <i class="fas fa-eraser"></i>
+                                Clear
+                            </button>
                         </div>
                     </div>
 
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover admin-table mb-0">
-                                <thead class="admin-table-header">
-                                    <tr>
-                                        <th width="120">Order #</th>
-                                        <th width="150">Customer</th>
-                                        <th width="130">Date & Time</th>
-                                        <th width="80">Items</th>
-                                        <th width="100">Total</th>
-                                        <th width="100">Payment</th>
-                                        <th width="120">Status</th>
-                                        <th width="120" class="text-center">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="ordersTable">
-                                    @foreach (var order in Model.OrderByDescending(o => o.CreatedTime))
-                                    {
-                                        <tr class="admin-table-row order-row"
-                                            data-order-number="@order.OrderNumber.ToLower()"
-                                            data-customer="@order.UserId.ToLower()"
-                                            data-status="@order.Status"
-                                            data-payment="@order.PaymentMethod"
-                                            data-amount="@order.TotalAmount"
-                                            data-date="@order.CreatedTime.ToString("yyyy-MM-dd")">
-                                            <td>
-                                                <div class="order-number">#@order.OrderNumber</div>
-                                            </td>
-                                            <td>
-                                                <div class="customer-info">@order.UserId</div>
-                                            </td>
-                                            <td>
-                                                <div class="order-date">@order.CreatedTime.ToString("MMM dd, yyyy")</div>
-                                                <div class="order-time">@order.CreatedTime.ToString("h:mm tt")</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="items-badge">@order.TotalItems</span>
-                                            </td>
-                                            <td>
-                                                <div class="order-total">@("P" + order.TotalAmount.ToString("F2"))</div>
-                                            </td>
-                                            <td>
-                                                <div class="payment-method">@order.PaymentMethod</div>
-                                            </td>
-                                            <td>
-                                                <span class="status-badge-new @order.Status.ToLower().Replace(" ", "-")">
-                                                    <i class="fas @GetStatusIcon(order.Status)"></i>
-                                                    @order.Status
-                                                </span>
-                                            </td>
-                                            <td class="text-center">
-                                                <div class="action-buttons">
-                                                    <a href="@Url.Action("OrderDetails", "AdminOrder", new { id = order.Id })"
-                                                       class="btn btn-sm btn-view" title="View Details">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    @if (order.Status != "Received" && order.Status != "Cancelled")
-                                                    {
-                                                        <button type="button" class="btn btn-sm btn-update"
-                                                                onclick="showUpdateStatusModal(@order.Id, '@order.OrderNumber', '@order.Status')"
-                                                                title="Update Status">
-                                                            <i class="fas fa-edit"></i>
-                                                        </button>
-                                                    }
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                    <!-- Filter Results Info -->
+                    <div id="filterInfo" class="filter-info-banner" style="display: none;">
+                        <i class="fas fa-info-circle"></i>
+                        Showing <strong><span id="visibleCount">0</span></strong> of <strong>@Model.Count()</strong> orders
+                    </div>
+                </div>
 
-                        <!-- No Results Message -->
-                        <div id="noResults" class="no-results" style="display: none;">
-                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No orders found</h5>
-                            <p class="text-muted">Try adjusting your search or filter criteria.</p>
+                <!-- Table Container -->
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Date & Time</th>
+                                    <th class="text-center">Items</th>
+                                    <th>Total</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTable">
+                                @foreach (var order in Model.OrderByDescending(o => o.CreatedTime))
+                                {
+                                    <tr class="order-row"
+                                        data-order-number="@order.OrderNumber.ToLower()"
+                                        data-customer="@order.UserId.ToLower()"
+                                        data-status="@order.Status"
+                                        data-payment="@order.PaymentMethod"
+                                        data-amount="@order.TotalAmount"
+                                        data-date="@order.CreatedTime.ToString("yyyy-MM-dd")">
+                                        <td>
+                                            <div class="order-number">#@order.OrderNumber</div>
+                                        </td>
+                                        <td>
+                                            <div class="customer-name">@order.UserId</div>
+                                        </td>
+                                        <td>
+                                            <div class="order-datetime">
+                                                <div class="date-text">@order.CreatedTime.ToString("MMM dd, yyyy")</div>
+                                                <div class="time-text">@order.CreatedTime.ToString("h:mm tt")</div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="items-badge">@order.TotalItems</span>
+                                        </td>
+                                        <td>
+                                            <div class="order-total">₱@order.TotalAmount.ToString("N2")</div>
+                                        </td>
+                                        <td>
+                                            <div class="payment-method">@order.PaymentMethod</div>
+                                        </td>
+                                        <td>
+                                            <span class="status-pill status-@order.Status.ToLower().Replace(" ", "-")">
+                                                <i class="fas @GetStatusIcon(order.Status)"></i>
+                                                @order.Status
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="action-buttons">
+                                                <a href="@Url.Action("OrderDetails", "AdminOrder", new { id = order.Id })"
+                                                   class="btn-action btn-view" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                @if (order.Status != "Received" && order.Status != "Cancelled")
+                                                {
+                                                    <button type="button" class="btn-action btn-update"
+                                                            onclick="showUpdateStatusModal(@order.Id, '@order.OrderNumber', '@order.Status')"
+                                                            title="Update Status">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- No Results Message -->
+                    <div id="noResults" class="no-results-state" style="display: none;">
+                        <div class="no-results-icon">
+                            <i class="fas fa-search"></i>
                         </div>
+                        <h3>No orders found</h3>
+                        <p>Try adjusting your search or filter criteria.</p>
                     </div>
                 </div>
             </div>
@@ -286,72 +336,78 @@
     }
     else
     {
-        <div class="row">
-            <div class="col-12">
-                <div class="empty-state">
-                    <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
-                    <h5 class="text-muted">No Orders Found</h5>
-                    <p class="text-muted">No customer orders have been placed yet.</p>
+        <!-- Empty State -->
+        <div class="empty-state-container">
+            <div class="empty-state-content">
+                <div class="empty-icon">
+                    <i class="fas fa-shopping-bag"></i>
                 </div>
+                <h2 class="empty-title">No Orders Found</h2>
+                <p class="empty-description">No customer orders have been placed yet.</p>
             </div>
         </div>
     }
 </div>
 
-<!-- Enhanced Update Status Modal -->
+<!-- Update Status Modal -->
 <div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header update-modal-header">
+        <div class="modal-content modern-modal">
+            <div class="modal-header modern-modal-header">
                 <h5 class="modal-title" id="updateStatusModalLabel">
-                    <i class="fas fa-edit me-2"></i>Update Order Status
+                    <i class="fas fa-edit"></i>
+                    Update Order Status
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form id="updateStatusForm" method="post" action="@Url.Action("UpdateStatus", "AdminOrder")">
                 @Html.AntiForgeryToken()
-                <div class="modal-body">
+                <div class="modal-body modern-modal-body">
                     <input type="hidden" id="orderId" name="orderId" />
 
-                    <div class="mb-3">
-                        <label for="orderNumber" class="form-label fw-bold">
-                            <i class="fas fa-hashtag me-1"></i>Order Number
+                    <div class="form-group">
+                        <label for="orderNumber" class="form-label">
+                            <i class="fas fa-hashtag"></i>
+                            Order Number
                         </label>
-                        <input type="text" id="orderNumber" class="form-control form-control-enhanced" readonly />
+                        <input type="text" id="orderNumber" class="form-control modern-input" readonly />
                     </div>
 
-                    <div class="mb-3">
-                        <label for="currentStatus" class="form-label fw-bold">
-                            <i class="fas fa-info-circle me-1"></i>Current Status
+                    <div class="form-group">
+                        <label for="currentStatus" class="form-label">
+                            <i class="fas fa-info-circle"></i>
+                            Current Status
                         </label>
-                        <input type="text" id="currentStatus" class="form-control form-control-enhanced" readonly />
+                        <input type="text" id="currentStatus" class="form-control modern-input" readonly />
                     </div>
 
-                    <div class="mb-3">
-                        <label for="status" class="form-label fw-bold">
-                            <i class="fas fa-arrow-right me-1"></i>New Status
+                    <div class="form-group">
+                        <label for="status" class="form-label">
+                            <i class="fas fa-arrow-right"></i>
+                            New Status
                         </label>
-                        <select id="status" name="status" class="form-select form-control-enhanced" required>
+                        <select id="status" name="status" class="form-select modern-select" required>
                             <option value="">-- Select New Status --</option>
                         </select>
                     </div>
 
-                    <div class="status-flow-guide">
-                        <small class="text-muted">
-                            <i class="fas fa-lightbulb me-1"></i>
+                    <div class="status-guide-box">
+                        <i class="fas fa-lightbulb"></i>
+                        <div class="guide-content">
                             <strong>Admin Flow:</strong> Pending → Confirmed → Preparing → Ready → On the Way
                             <br>
-                            <i class="fas fa-info-circle me-1"></i>
-                            <strong>Note:</strong> Only customers can confirm receipt or cancel orders
-                        </small>
+                            <small>Only customers can confirm receipt or cancel orders</small>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary btn-action" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i>Cancel
+                <div class="modal-footer modern-modal-footer">
+                    <button type="button" class="btn-modal btn-modal-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i>
+                        Cancel
                     </button>
-                    <button type="submit" class="btn btn-admin-primary btn-action">
-                        <i class="fas fa-save me-2"></i>Update Status
+                    <button type="submit" class="btn-modal btn-modal-primary">
+                        <i class="fas fa-save"></i>
+                        Update Status
                     </button>
                 </div>
             </form>

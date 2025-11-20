@@ -7,14 +7,14 @@
 
 <div class="container-fluid px-4 py-4">
     <!-- Header -->
-    <div class="admin-order-header text-center mb-4">
-        <h1 class="display-5 fw-bold"><i class="fas fa-receipt me-3"></i>Order Details</h1>
-        <p class="lead">Complete order information and management tools</p>
+    <div class="admin-order-header">
+        <h1><i class="fas fa-receipt me-3"></i>Order Details</h1>
+        <p class="lead mb-0">Complete order information and management tools</p>
     </div>
 
     @if (TempData["ErrorMessage"] != null)
     {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
             <i class="fas fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
@@ -22,19 +22,19 @@
 
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
             <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
-    <div class="row">
+    <div class="row g-4">
         <!-- Order Information -->
         <div class="col-lg-8">
             <!-- Order Summary Card -->
             <div class="card order-summary-card mb-4">
                 <div class="card-header order-card-header">
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                         <h5 class="mb-0">
                             <i class="fas fa-hashtag me-2"></i>Order #@Model.OrderNumber
                         </h5>
@@ -48,25 +48,25 @@
                     <div class="order-info-grid">
                         <div class="order-info-item">
                             <span class="order-info-label">
-                                <i class="fas fa-user me-1"></i>Customer
+                                <i class="fas fa-user"></i>Customer
                             </span>
                             <span class="order-info-value">@Model.UserId</span>
                         </div>
                         <div class="order-info-item">
                             <span class="order-info-label">
-                                <i class="fas fa-calendar me-1"></i>Order Date
+                                <i class="fas fa-calendar"></i>Order Date
                             </span>
                             <span class="order-info-value">@Model.CreatedTime.ToString("MMM dd, yyyy")</span>
                         </div>
                         <div class="order-info-item">
                             <span class="order-info-label">
-                                <i class="fas fa-clock me-1"></i>Order Time
+                                <i class="fas fa-clock"></i>Order Time
                             </span>
                             <span class="order-info-value">@Model.CreatedTime.ToString("h:mm tt")</span>
                         </div>
                         <div class="order-info-item">
                             <span class="order-info-label">
-                                <i class="fas fa-sync-alt me-1"></i>Last Updated
+                                <i class="fas fa-sync-alt"></i>Last Updated
                             </span>
                             <span class="order-info-value">
                                 @(Model.UpdatedTime?.ToString("MMM dd, yyyy h:mm tt") ?? "Not updated")
@@ -74,15 +74,15 @@
                         </div>
                         <div class="order-info-item">
                             <span class="order-info-label">
-                                <i class="fas fa-credit-card me-1"></i>Payment Method
+                                <i class="fas fa-credit-card"></i>Payment Method
                             </span>
                             <span class="order-info-value payment-method-badge">@Model.PaymentMethod</span>
                         </div>
                         <div class="order-info-item">
                             <span class="order-info-label">
-                                <i class="fas fa-peso-sign me-1"></i>Total Amount
+                                <i class="fas fa-peso-sign"></i>Total Amount
                             </span>
-                            <span class="order-info-value order-total-amount">@("P" + Model.TotalAmount.ToString("F2"))</span>
+                            <span class="order-info-value order-total-amount">@("₱" + Model.TotalAmount.ToString("F2"))</span>
                         </div>
                     </div>
 
@@ -92,26 +92,27 @@
                         var remainingTime = TimeSpan.FromHours(2) - timeSinceUpdate;
                         var isOverdue = remainingTime.TotalMinutes <= 0;
 
-                        <div class="timer-info-section mt-3">
-                            <div class="alert @(isOverdue ? "alert-warning" : "alert-info") timer-alert">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas @(isOverdue ? "fa-exclamation-triangle" : "fa-hourglass-half") me-2"></i>
+                        <div class="timer-info-section">
+                            <div class="alert @(isOverdue ? "alert-warning" : "alert-info") timer-alert mb-0">
+                                <div class="d-flex align-items-start">
+                                    <i class="fas @(isOverdue ? "fa-exclamation-triangle" : "fa-hourglass-half") me-3"></i>
                                     <div class="flex-grow-1">
-                                        <strong>Auto-Receipt Timer</strong>
+                                        <strong class="d-block mb-2">Auto-Receipt Timer</strong>
                                         <div class="timer-details">
                                             @if (isOverdue)
                                             {
-                                                <span class="text-warning">⚠️ This order is overdue and will be automatically marked as "Received" shortly.</span>
+                                                <span class="text-warning d-block mb-2">⚠️ This order is overdue and will be automatically marked as "Received" shortly.</span>
                                             }
                                             else
                                             {
-                                                <span>This order will be automatically marked as "Received" in:</span>
+                                                <span class="d-block mb-2">This order will be automatically marked as "Received" in:</span>
                                                 <div class="countdown-display" data-remaining="@remainingTime.TotalSeconds">
                                                     <span class="countdown-time">@(remainingTime.Hours)h @(remainingTime.Minutes)m</span>
                                                 </div>
                                             }
                                         </div>
-                                        <small class="text-muted">
+                                        <small class="text-muted d-block mt-2">
+                                            <i class="fas fa-clock me-1"></i>
                                             Started: @((Model.UpdatedTime ?? Model.CreatedTime).ToString("MMM dd, yyyy h:mm tt"))
                                         </small>
                                     </div>
@@ -124,7 +125,7 @@
                     {
                         <div class="customer-notes-section">
                             <div class="notes-header">
-                                <i class="fas fa-sticky-note me-2"></i>Customer Notes
+                                <i class="fas fa-sticky-note"></i>Customer Notes
                             </div>
                             <div class="notes-content">
                                 @Model.Notes
@@ -148,13 +149,13 @@
                             <div class="order-item-row">
                                 <div class="item-info">
                                     <div class="item-name">@item.MenuItemName</div>
-                                    <div class="item-price">@("P" + item.Price.ToString("F2")) each</div>
+                                    <div class="item-price">@("₱" + item.Price.ToString("F2")) each</div>
                                 </div>
                                 <div class="item-quantity">
                                     <span class="quantity-badge">×@item.Quantity</span>
                                 </div>
                                 <div class="item-total">
-                                    @("P" + item.TotalPrice.ToString("F2"))
+                                    @("₱" + item.TotalPrice.ToString("F2"))
                                 </div>
                             </div>
                         }
@@ -167,7 +168,7 @@
                         </div>
                         <div class="summary-row total-row">
                             <span class="summary-label">Grand Total:</span>
-                            <span class="summary-value total-amount">@("P" + Model.TotalAmount.ToString("F2"))</span>
+                            <span class="summary-value total-amount">@("₱" + Model.TotalAmount.ToString("F2"))</span>
                         </div>
                     </div>
                 </div>
@@ -188,20 +189,19 @@
                     {
                         <div class="action-section">
                             <h6 class="action-section-title">
-                                <i class="fas fa-edit me-1"></i>Update Status
+                                <i class="fas fa-edit"></i>Update Status
                             </h6>
-                            <button type="button" class="btn btn-admin-primary w-100 mb-3"
+                            <button type="button" class="btn btn-admin-primary w-100"
                                     onclick="showUpdateStatusModal(@Model.Id, '@Model.OrderNumber', '@Model.Status')">
-                                <i class="fas fa-edit me-2"></i>Change Status
+                                <i class="fas fa-edit me-2"></i>Change Order Status
                             </button>
                         </div>
 
-                        @* Only show Quick Actions if there are actual quick actions available *@
                         @if (Model.Status == "Pending" || Model.Status == "Confirmed" || Model.Status == "Preparing" || Model.Status == "Ready")
                         {
                             <div class="action-section">
                                 <h6 class="action-section-title">
-                                    <i class="fas fa-bolt me-1"></i>Quick Actions
+                                    <i class="fas fa-bolt"></i>Quick Actions
                                 </h6>
                                 <div class="quick-actions">
                                     @if (Model.Status == "Pending")
@@ -240,7 +240,7 @@
                     <!-- Status Information -->
                     <div class="action-section">
                         <h6 class="action-section-title">
-                            <i class="fas fa-info-circle me-1"></i>Status Information
+                            <i class="fas fa-info-circle"></i>Status Information
                         </h6>
 
                         @if (Model.Status == "On the Way")
@@ -250,7 +250,7 @@
                                 <div>
                                     <strong>Waiting for Customer</strong>
                                     <p>Order is out for delivery. Customer will confirm receipt or it will be auto-confirmed after 2 hours.</p>
-                                    <small class="text-muted">
+                                    <small>
                                         <i class="fas fa-clock me-1"></i>
                                         Timer started: @((Model.UpdatedTime ?? Model.CreatedTime).ToString("h:mm tt"))
                                     </small>
@@ -313,7 +313,7 @@
             <!-- Navigation Card -->
             <div class="card navigation-card">
                 <div class="card-body">
-                    <div class="d-grid gap-2">
+                    <div class="d-grid gap-3">
                         <a href="@Url.Action("ManageOrders", "AdminOrder")" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left me-2"></i>Back to Order Management
                         </a>
@@ -327,6 +327,48 @@
     </div>
 </div>
 
+<!-- Quick Action Confirmation Modal -->
+<div class="modal fade" id="quickActionModal" tabindex="-1" aria-labelledby="quickActionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header quick-action-modal-header">
+                <h5 class="modal-title" id="quickActionModalLabel">
+                    <i id="quickActionIcon" class="fas fa-bolt me-2"></i>
+                    <span id="quickActionTitle">Confirm Action</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="quickActionOrderId" />
+                <input type="hidden" id="quickActionStatus" />
+
+                <div class="quick-action-confirmation">
+                    <div class="confirmation-icon-wrapper">
+                        <div class="confirmation-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                    </div>
+                    <p class="confirmation-message" id="quickActionDescription">
+                        Are you sure you want to proceed with this action?
+                    </p>
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <small>This action will update the order status immediately.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-action" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-admin-primary btn-action" id="confirmQuickActionBtn" onclick="confirmQuickAction()">
+                    <i class="fas fa-check me-2"></i>Yes, Update Status
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Enhanced Update Status Modal -->
 <div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -335,7 +377,7 @@
                 <h5 class="modal-title" id="updateStatusModalLabel">
                     <i class="fas fa-edit me-2"></i>Update Order Status
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="updateStatusForm" method="post" action="@Url.Action("UpdateStatus", "AdminOrder")">
                 @Html.AntiForgeryToken()
