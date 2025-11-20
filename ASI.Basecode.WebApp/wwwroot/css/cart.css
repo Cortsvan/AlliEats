@@ -9,7 +9,10 @@
     --success-color: #28a745;
     --danger-color: #dc3545;
     --warning-color: #ffc107;
-    --info-color: #17a2b8;
+    
+    /* UPDATED: Changed from #17a2b8 (Blue/Cyan) to your Brown */
+    --info-color: #8B5E3C; 
+
     /* Backgrounds */
     --bg-body: #FAF3E8;
     --bg-light: #f8f5f2;
@@ -23,7 +26,7 @@
     --border-radius-md: 12px;
     --border-radius-lg: 16px;
     --border-radius-pill: 50px;
-    /* Shadows */
+    /* Shadows - Note: 139, 94, 60 is the RGB of #8B5E3C */
     --shadow-sm: 0 2px 8px rgba(139, 94, 60, 0.08);
     --shadow-md: 0 8px 24px rgba(139, 94, 60, 0.12);
     --shadow-lg: 0 12px 32px rgba(139, 94, 60, 0.15);
@@ -45,9 +48,9 @@ html {
 
 body {
     margin-bottom: 60px;
-    background-color: var(--bg-body); /* KEPT ORIGINAL */
+    background-color: var(--bg-body);
     color: var(--secondary-color);
-    font-family: var(--font-family-sans-serif); /* UPDATED to Poppins for consistency */
+    font-family: var(--font-family-sans-serif);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
 }
@@ -59,12 +62,13 @@ body {
 /* Buttons */
 .btn {
     font-weight: 500;
-    border-radius: var(--border-radius-pill); /* Modern pill shape */
+    border-radius: var(--border-radius-pill);
     padding: 0.5rem 1.25rem;
     transition: var(--transition-base);
 }
 
     .btn:focus, .btn:active:focus {
+        /* Using the RGB values of #8B5E3C */
         box-shadow: 0 0 0 3px rgba(139, 94, 60, 0.2);
     }
 
@@ -105,6 +109,7 @@ body {
 
     .form-control:focus, .form-select:focus {
         border-color: var(--primary-color);
+        /* Using the RGB values of #8B5E3C */
         box-shadow: 0 0 0 4px rgba(139, 94, 60, 0.1);
         background-color: var(--bg-white);
     }
@@ -525,4 +530,40 @@ body {
     .cart-item-row {
         padding: 1rem !important;
     }
+}
+
+/* Override Bootstrap blue utilities within the cart view to use the brown primary color */
+.cart-wrapper .text-primary,
+.cart-wrapper a.text-primary,
+.cart-wrapper .text-info {
+    color: var(--primary-color) !important;
+}
+
+.cart-wrapper a.text-primary:hover {
+    color: var(--primary-hover-color) !important;
+    text-decoration: none;
+}
+
+/* Ensure price and totals use the primary brown color where .text-primary was used */
+.cart-wrapper .item-total,
+.cart-wrapper #summary-total {
+    color: var(--primary-color) !important;
+}
+
+/* Replace any info/links colored blue within the cart to match the theme */
+.cart-wrapper .text-info,
+.cart-wrapper a.text-info {
+    color: var(--primary-color) !important;
+}
+
+/* Specific link under card footer (Continue Shopping) */
+.card-footer .text-primary {
+    color: var(--primary-color) !important;
+}
+
+/* Tweak badge/link focus and hover walnut tint */
+.cart-wrapper .text-primary:focus,
+.cart-wrapper a.text-primary:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(139,94,60,0.12);
 }
