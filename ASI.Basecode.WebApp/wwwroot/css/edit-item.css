@@ -1,354 +1,543 @@
-﻿/* Edit Item Form Styles - Extends add-item styles */
+﻿/* =========================================
+   EDIT ITEM - MODERN & CLEAN DESIGN
+   Extends add-item.css with edit-specific styles
+   ========================================= */
 
-/* Import the base add-item styles */
+/* Import base styles if you have them, otherwise these styles stand alone */
 @import url('add-item.css');
 
-/* Additional styles specific to edit form */
-
-/* Current Image Display */
-.current-image-container {
-    position: relative;
-    background: white;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    padding: 1rem;
-    text-align: center;
-    margin-bottom: 1rem;
+/* Override/extend form control heights for consistency */
+.form-control-modern,
+.form-select.form-control-modern {
+    height: 46px; /* Fixed height for alignment */
 }
 
-.current-image {
-    max-width: 100%;
-    max-height: 200px;
-    border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
-    cursor: pointer;
+textarea.form-control-modern {
+    height: auto; /* Allow textarea to have different height */
 }
 
-    .current-image:hover {
-        transform: scale(1.02);
-    }
-
-.image-overlay {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    opacity: 0;
-    transition: opacity 0.2s ease;
+.input-group {
+    height: 46px;
 }
 
-.current-image-container:hover .image-overlay {
-    opacity: 1;
+.input-group .form-control-modern {
+    height: 46px;
 }
 
-.no-image-placeholder {
-    padding: 2rem;
-    color: var(--secondary-color);
-    background: var(--light-background);
-    border-radius: 6px;
-    border: 2px dashed #e9ecef;
+/* CRITICAL: Remove validation background icons completely */
+.form-control-modern.is-invalid,
+.form-control-modern.is-valid,
+.input-group .form-control-modern.is-invalid,
+.input-group .form-control-modern.is-valid {
+    background-image: none !important;
+    padding-right: 1rem !important;
+    border-color: var(--danger-color);
 }
 
-    .no-image-placeholder i {
-        font-size: 2rem;
-        color: var(--primary-color);
-        margin-bottom: 0.5rem;
-        display: block;
-    }
-
-/* Enhanced Form Check */
-.form-check-container {
-    background: var(--light-background);
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    padding: 1rem;
-    transition: all 0.2s ease;
+.form-control-modern.is-valid,
+.input-group .form-control-modern.is-valid {
+    border-color: var(--success-color);
 }
 
-    .form-check-container:hover {
-        border-color: var(--primary-color);
-        background-color: white;
-    }
-
-.form-check-enhanced {
-    width: 1.2em;
-    height: 1.2em;
-    margin-right: 0.75rem;
+/* Validation message styling - ensure proper display */
+.text-danger.small {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #dc3545 !important;
+    clear: both;
+    background: none !important;
+    padding: 0 !important;
+    font-weight: 500;
 }
 
-    .form-check-enhanced:checked {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-    }
+/* Remove number input spinners (inherit from add-item.css but ensure coverage) */
+.form-control-modern.no-spinner::-webkit-outer-spin-button,
+.form-control-modern.no-spinner::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
 
-.form-check-label {
-    color: var(--dark-text-color);
-    cursor: pointer;
+.form-control-modern.no-spinner[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Stock input specific */
+.stock-input-main {
+    height: 46px;
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+/* =========================================
+   STATUS BADGES (Header) - BROWN THEME
+   ========================================= */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.6rem 1.25rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border: 2px solid transparent;
+}
+
+.badge-out-of-stock {
+    background: #dc3545;
+    color: white;
+    border-color: #c82333;
+}
+
+.badge-low-stock {
+    background: #ffc107;
+    color: #000;
+    border-color: #e0a800;
+    font-weight: 800;
+}
+
+.badge-in-stock {
+    background: #28a745;
+    color: white;
+    border-color: #218838;
+}
+
+/* =========================================
+   FORM LABELS - IMPROVED READABILITY
+   ========================================= */
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
     display: flex;
     align-items: center;
 }
 
-    .form-check-label i {
-        color: var(--primary-color);
-    }
-
-/* Image Size Toggle */
-.current-image.full-size {
-    max-height: none;
-    max-width: 90vw;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 9999;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+.form-label i {
+    color: var(--primary-color);
+    font-size: 0.9rem;
 }
 
+/* =========================================
+   SECTION HEADINGS - IMPROVED CONTRAST
+   ========================================= */
+.section-heading {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.section-heading i {
+    color: var(--primary-color);
+    font-size: 1rem;
+}
+
+/* =========================================
+   STOCK MANAGEMENT - BROWN THEME
+   ========================================= */
+.stock-quick-adjust {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.stock-quick-adjust .small.text-muted {
+    color: #6c757d !important;
+    font-weight: 500;
+}
+
+.stock-quick-adjust .btn {
+    border-radius: 6px;
+    padding: 0.4rem 0.75rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    min-width: 60px;
+    border-width: 2px;
+}
+
+.stock-quick-adjust .btn-outline-danger {
+    border-color: #dc3545;
+    color: #dc3545;
+    background: white;
+}
+
+.stock-quick-adjust .btn-outline-danger:hover {
+    background: #dc3545;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.stock-quick-adjust .btn-outline-success {
+    border-color: #28a745;
+    color: #28a745;
+    background: white;
+}
+
+.stock-quick-adjust .btn-outline-success:hover {
+    background: #28a745;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.stock-quick-adjust .btn.btn-feedback {
+    transform: scale(0.95);
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* =========================================
+   STOCK ALERTS - WARM COLORS
+   ========================================= */
+.alert-compact {
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    border: none;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.alert-warning.alert-compact {
+    background: #fff3cd;
+    color: #856404;
+    border-left: 4px solid #ffc107;
+}
+
+.alert-info.alert-compact {
+    background: #fff8e1;
+    color: #8B5E3C;
+    border-left: 4px solid var(--primary-color);
+}
+
+/* =========================================
+   STOCK INFO CARD - WARM THEME
+   ========================================= */
+.stock-info-card {
+    background: linear-gradient(135deg, #fff8f0, #f8f5f2);
+    border: 2px solid #e9d5c3;
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    margin-top: 1rem;
+    box-shadow: 0 2px 8px rgba(139, 94, 60, 0.08);
+}
+
+.stock-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(139, 94, 60, 0.1);
+}
+
+.stock-info-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.stock-info-row:first-child {
+    padding-top: 0;
+}
+
+.stock-info-label {
+    font-weight: 600;
+    color: #6c584c;
+    font-size: 0.9rem;
+}
+
+.stock-info-value {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 0.95rem;
+}
+
+.stock-info-value.updated {
+    color: var(--primary-hover);
+    animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Form text helper */
+.form-text.small {
+    color: #6c757d !important;
+    font-weight: 500;
+}
+
+/* =========================================
+   VISIBILITY SETTINGS - WARM THEME
+   ========================================= */
+.form-check-modern {
+    background: #fff8f0;
+    border: 2px solid #e9d5c3;
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    transition: all 0.2s ease;
+}
+
+.form-check-modern:hover {
+    border-color: var(--primary-color);
+    background: white;
+}
+
+.form-check-modern .form-check-input {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.25rem;
+    cursor: pointer;
+    border: 2px solid var(--primary-color);
+}
+
+.form-check-modern .form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.form-check-modern .form-check-label {
+    cursor: pointer;
+    margin-left: 0.75rem;
+    user-select: none;
+    color: #2c3e50;
+}
+
+.form-check-modern .form-check-label strong {
+    color: var(--primary-color);
+}
+
+.form-check-modern .text-muted {
+    color: #6c757d !important;
+}
+
+/* =========================================
+   CURRENT IMAGE DISPLAY
+   ========================================= */
+.current-image-section {
+    margin-bottom: 1.5rem;
+}
+
+.current-image-display {
+    position: relative;
+    border: 2px solid #e9d5c3;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+}
+
+.current-image-preview {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: contain;
+    display: block;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.current-image-preview:hover {
+    transform: scale(1.02);
+}
+
+.btn-view-full {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    background: rgba(139, 94, 60, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.current-image-display:hover .btn-view-full {
+    opacity: 1;
+}
+
+.btn-view-full:hover {
+    background: var(--primary-color);
+    transform: scale(1.1);
+}
+
+/* No Image State */
+.no-image-display {
+    background: #fff8f0;
+    border: 2px dashed #e9d5c3;
+    border-radius: var(--radius-md);
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.no-image-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, #f8f5f2, #e9d5c3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    font-size: 2.5rem;
+}
+
+.no-image-text {
+    color: #6c584c;
+    font-size: 0.95rem;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* =========================================
+   UPLOAD NEW IMAGE SECTION - WARM THEME
+   ========================================= */
+.upload-new-section {
+    margin-top: 1.5rem;
+}
+
+.image-upload-zone.compact {
+    padding: 2rem 1.5rem;
+    border-color: #e9d5c3;
+}
+
+.image-upload-zone.compact:hover {
+    border-color: var(--primary-color);
+    background: #fff8f0;
+}
+
+.upload-icon-sm {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 0.75rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.75rem;
+}
+
+.upload-text-sm {
+    font-size: 0.95rem;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.upload-text-sm strong {
+    color: var(--primary-color);
+}
+
+.upload-hint-sm {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* New Image Preview - Warm accent */
+.image-preview-box.new-image {
+    border-color: var(--primary-color);
+}
+
+.preview-overlay.new {
+    background: linear-gradient(to top, rgba(139, 94, 60, 0.95), transparent);
+}
+
+/* =========================================
+   FULL SIZE IMAGE VIEW
+   ========================================= */
 .image-backdrop {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.9);
     z-index: 9998;
     display: none;
+    backdrop-filter: blur(5px);
 }
 
-    .image-backdrop.show {
-        display: block;
-    }
-
-/* New Image Preview for Edit */
-#newImagePreview {
-    border: 2px solid var(--warning-color);
-    background: #fff8e1;
+.image-backdrop.show {
+    display: block;
+    animation: fadeIn 0.3s ease;
 }
 
-    #newImagePreview .preview-image {
-        border: 2px solid var(--warning-color);
-    }
-
-/* Status indicator */
-.status-indicator {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-weight: 500;
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
+.current-image-preview.full-size {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 90vw;
+    max-height: 90vh;
+    z-index: 9999;
+    border-radius: var(--radius-md);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    cursor: zoom-out;
 }
 
-    .status-indicator.active {
-        background: rgba(40, 167, 69, 0.1);
-        color: var(--success-color);
-    }
-
-    .status-indicator.inactive {
-        background: rgba(108, 117, 125, 0.1);
-        color: #6c757d;
-    }
-
-/* NEW: Stock Management Styles */
-
-/* Stock Status Badge in Header */
-.stock-status-badge .badge {
-    font-size: 0.8rem;
-    padding: 6px 10px;
-    font-weight: 600;
-}
-
-/* Stock Input Group */
-.stock-input-group {
-    position: relative;
-}
-
-.stock-input {
-    border-radius: 6px 6px 0 0;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.stock-quick-actions {
-    display: flex;
-    gap: 2px;
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-top: none;
-    border-radius: 0 0 6px 6px;
-    padding: 4px;
-    justify-content: center;
-}
-
-    .stock-quick-actions .btn {
-        padding: 3px 8px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        border-radius: 4px;
-        transition: all 0.15s ease;
-        min-width: 35px;
-    }
-
-        .stock-quick-actions .btn:hover {
-            transform: translateY(-1px);
-        }
-
-        .stock-quick-actions .btn.btn-feedback {
-            transform: scale(0.95);
-            background-color: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-/* Stock Summary Card */
-.stock-summary-card {
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    border: 1px solid #e9ecef;
-    border-radius: 10px;
-    padding: 15px;
-    margin-top: 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.stock-summary-title {
-    margin: 0 0 12px 0;
-    font-size: 0.9rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #dee2e6;
-    padding-bottom: 8px;
-}
-
-.stock-summary-content {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.stock-summary-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.85rem;
-    padding: 4px 0;
-}
-
-.summary-label {
-    font-weight: 500;
-    color: #6c757d;
-    flex: 1;
-}
-
-.summary-value {
-    font-weight: 600;
-    color: var(--dark-text-color);
-    text-align: right;
-    flex: 0 0 auto;
-}
-
-/* Stock Warnings */
-.stock-warnings {
-    margin-top: 1rem;
-}
-
-.alert-sm {
-    padding: 10px 12px;
-    margin-bottom: 8px;
-    font-size: 0.85rem;
-    border-radius: 6px;
-}
-
-    .alert-sm i {
-        margin-right: 6px;
-    }
-
-/* Stock Preview Text */
-#stock-preview-text {
-    color: #6c757d;
-    font-style: italic;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-}
-
-/* Enhanced transitions for stock changes */
-.stock-input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(139, 94, 60, 0.25);
-}
-
-.stock-summary-item .summary-value {
-    transition: all 0.3s ease;
-}
-
-    .stock-summary-item .summary-value.updated {
-        color: var(--primary-color);
-        font-weight: 700;
-    }
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .current-image-container {
-        padding: 0.75rem;
-    }
-
-    .current-image {
-        max-height: 150px;
-    }
-
-    .image-overlay {
-        position: static;
-        opacity: 1;
-        margin-top: 1rem;
-    }
-
-    .current-image.full-size {
-        max-width: 95vw;
-        max-height: 80vh;
-    }
-
-    /* Stock management mobile adjustments */
-    .stock-quick-actions {
-        flex-wrap: wrap;
-        gap: 4px;
-        padding: 6px;
-    }
-
-        .stock-quick-actions .btn {
-            flex: 1;
-            min-width: auto;
-        }
-
-    .stock-summary-card {
-        padding: 12px;
-        margin-top: 10px;
-    }
-
-    .stock-summary-item {
-        font-size: 0.8rem;
-    }
-
-    .stock-status-badge .badge {
-        font-size: 0.7rem;
-        padding: 4px 6px;
+/* =========================================
+   RESPONSIVE ADJUSTMENTS
+   ========================================= */
+@media (max-width: 991px) {
+    .status-badge {
+        margin-bottom: 1rem;
     }
 }
 
-/* Dark mode considerations (if you implement it later) */
-@media (prefers-color-scheme: dark) {
-    .stock-summary-card {
-        background: linear-gradient(135deg, #2d3748, #4a5568);
-        border-color: #4a5568;
-        color: #e2e8f0;
+@media (max-width: 767px) {
+    .stock-quick-adjust {
+        justify-content: center;
     }
 
-    .summary-label {
-        color: #a0aec0;
+    .stock-quick-adjust .btn {
+        flex: 1;
+        min-width: 70px;
     }
 
-    .summary-value {
-        color: #e2e8f0;
+    .stock-info-card {
+        padding: 1rem;
+    }
+
+    .stock-info-row {
+        font-size: 0.85rem;
+    }
+
+    .current-image-preview {
+        max-height: 200px;
+    }
+
+    .image-upload-zone.compact {
+        padding: 1.5rem 1rem;
+    }
+
+    .upload-icon-sm {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
     }
 }

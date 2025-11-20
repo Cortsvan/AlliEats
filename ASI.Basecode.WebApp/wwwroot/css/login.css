@@ -26,8 +26,7 @@
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     border-radius: 28px;
-    box-shadow: 0 25px 80px rgba(93, 64, 55, 0.2), 
-                0 8px 32px rgba(93, 64, 55, 0.1);
+    box-shadow: 0 25px 80px rgba(93, 64, 55, 0.2), 0 8px 32px rgba(93, 64, 55, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.8);
     overflow: hidden;
     width: 100%;
@@ -37,11 +36,10 @@
     z-index: 1;
 }
 
-.auth-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 35px 100px rgba(93, 64, 55, 0.25), 
-                0 12px 48px rgba(93, 64, 55, 0.15);
-}
+    .auth-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 35px 100px rgba(93, 64, 55, 0.25), 0 12px 48px rgba(93, 64, 55, 0.15);
+    }
 
 /* Left Side (Form) Layout */
 .auth-card-body {
@@ -54,14 +52,21 @@
     position: relative;
 }
 
-/* Logo Animation */
-.auth-logo, .auth-card-body img[alt="AlliEats"] {
-    animation: logoFadeIn 0.8s ease-out;
-}
+    /* Logo Animation */
+    .auth-logo, .auth-card-body img[alt="AlliEats"] {
+        animation: logoFadeIn 0.8s ease-out;
+    }
 
 @keyframes logoFadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Header Typography */
@@ -80,8 +85,15 @@
 }
 
 @keyframes titleSlideIn {
-    from { opacity: 0; transform: translateX(-30px); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .auth-subtitle {
@@ -94,24 +106,44 @@
 }
 
 @keyframes subtitleFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
-/* Form Inputs - Enhanced with Icons */
+/* Form Inputs */
 .form-group {
     margin-bottom: 1.5rem;
     position: relative;
     animation: formSlideUp 0.5s ease-out both;
 }
 
-.form-group:nth-child(1) { animation-delay: 0.5s; }
-.form-group:nth-child(2) { animation-delay: 0.6s; }
-.form-group:nth-child(3) { animation-delay: 0.7s; }
+    .form-group:nth-child(1) {
+        animation-delay: 0.5s;
+    }
+
+    .form-group:nth-child(2) {
+        animation-delay: 0.6s;
+    }
+
+    .form-group:nth-child(3) {
+        animation-delay: 0.7s;
+    }
 
 @keyframes formSlideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .form-label {
@@ -137,26 +169,25 @@
     font-family: 'Inter', sans-serif;
 }
 
-.form-control:hover {
-    border-color: rgba(93, 64, 55, 0.25);
-    background-color: #fff;
-}
+    .form-control:hover {
+        border-color: rgba(93, 64, 55, 0.25);
+        background-color: #fff;
+    }
 
-.form-control:focus {
-    background-color: #fff;
-    border-color: var(--primary-maroon);
-    box-shadow: 0 0 0 4px rgba(93, 64, 55, 0.1), 
-                0 4px 12px rgba(93, 64, 55, 0.08);
-    outline: none;
-    transform: translateY(-2px);
-}
+    .form-control:focus {
+        background-color: #fff;
+        border-color: var(--primary-maroon);
+        box-shadow: 0 0 0 4px rgba(93, 64, 55, 0.1), 0 4px 12px rgba(93, 64, 55, 0.08);
+        outline: none;
+        transform: translateY(-2px);
+    }
 
-.form-control::placeholder {
-    color: #BDBDBD;
-    font-weight: 400;
-}
+    .form-control::placeholder {
+        color: #BDBDBD;
+        font-weight: 400;
+    }
 
-/* Button Styling - Enhanced */
+/* Button Styling */
 .gradient-custom-2 {
     background: linear-gradient(135deg, var(--primary-maroon) 0%, #6D4C41 50%, #8B5E3C 100%);
     background-size: 200% 100%;
@@ -167,25 +198,25 @@
     transition: all 0.4s ease;
 }
 
-.gradient-custom-2::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #8B5E3C 0%, var(--accent-gold) 100%);
-    z-index: -1;
-    transition: left 0.5s ease;
-}
+    .gradient-custom-2::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #8B5E3C 0%, var(--accent-gold) 100%);
+        z-index: -1;
+        transition: left 0.5s ease;
+    }
 
-.gradient-custom-2:hover::before {
-    left: 0;
-}
+    .gradient-custom-2:hover::before {
+        left: 0;
+    }
 
-.gradient-custom-2:hover {
-    background-position: 100% 0;
-}
+    .gradient-custom-2:hover {
+        background-position: 100% 0;
+    }
 
 .login-btn {
     width: 100%;
@@ -200,15 +231,15 @@
     text-transform: uppercase;
 }
 
-.login-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 18px 36px rgba(93, 64, 55, 0.35);
-}
+    .login-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 18px 36px rgba(93, 64, 55, 0.35);
+    }
 
-.login-btn:active {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 16px rgba(93, 64, 55, 0.25);
-}
+    .login-btn:active {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 16px rgba(93, 64, 55, 0.25);
+    }
 
 /* Auth Link Styling */
 .auth-link {
@@ -219,41 +250,24 @@
     position: relative;
 }
 
-.auth-link::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--accent-gold);
-    transition: width 0.3s ease;
-}
+    .auth-link::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--accent-gold);
+        transition: width 0.3s ease;
+    }
 
-.auth-link:hover::after {
-    width: 100%;
-}
+    .auth-link:hover::after {
+        width: 100%;
+    }
 
-.auth-link:hover {
-    color: #8B5E3C;
-}
-
-/* Back Link */
-.back-link {
-    color: var(--text-muted);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    margin-top: 1.5rem;
-    transition: all 0.3s ease;
-}
-
-.back-link:hover {
-    color: var(--primary-maroon);
-    transform: translateX(5px);
-}
+    .auth-link:hover {
+        color: #8B5E3C;
+    }
 
 /* Outline Button Styling */
 .btn-outline-primary {
@@ -265,14 +279,14 @@
     transition: all 0.3s ease;
 }
 
-.btn-outline-primary:hover {
-    background: var(--primary-maroon);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(93, 64, 55, 0.2);
-}
+    .btn-outline-primary:hover {
+        background: var(--primary-maroon);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(93, 64, 55, 0.2);
+    }
 
-/* Right Side Branding - Enhanced with Animation */
+/* Right Side Branding */
 .auth-image-side {
     background: linear-gradient(135deg, var(--primary-maroon) 0%, #6D4C41 50%, #4E3629 100%);
     display: flex;
@@ -285,21 +299,38 @@
     overflow: hidden;
 }
 
-/* Animated Pattern Overlay */
-.auth-image-side::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: 
-        repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,0.03) 35px, rgba(255,255,255,0.03) 70px),
-        repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(255,255,255,0.03) 35px, rgba(255,255,255,0.03) 70px);
-    animation: patternMove 20s linear infinite;
-}
+    /* ========================================= */
+    /* FIX: SEAMLESS WAFFLE ANIMATION STARTS HERE */
+    /* ========================================= */
+    .auth-image-side::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        /* 1. Ensure pattern repeats infinitely */
+        background-repeat: repeat;
+        /* 2. Define a specific tile size (50px x 50px) */
+        background-size: 50px 50px;
+        /* 3. Create the waffle grid using linear-gradients */
+        /* This draws an 'X' in the 50px box. When tiled, 'X's connect to form the diamond grid. */
+        background-image: linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.05) 48%, rgba(255,255,255,0.05) 52%, transparent 52%), linear-gradient(-45deg, transparent 48%, rgba(255,255,255,0.05) 48%, rgba(255,255,255,0.05) 52%, transparent 52%);
+        /* 4. Animate background-position smoothly */
+        animation: patternMove 15s linear infinite;
+    }
 
 @keyframes patternMove {
-    0% { transform: translate(0, 0); }
-    100% { transform: translate(70px, 70px); }
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        /* Move exactly one tile size (50px) to loop perfectly */
+        /* Positive X = Right, Negative Y = Up */
+        /* This moves the pattern diagonally Up-Right, preventing the "falling" look */
+        background-position: 50px -50px;
+    }
 }
+/* ========================================= */
 
 /* Glowing Orbs */
 .auth-image-side::after {
@@ -315,8 +346,15 @@
 }
 
 @keyframes orbGlow {
-    0%, 100% { opacity: 0.3; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.2); }
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
 }
 
 .auth-brand-content {
@@ -336,8 +374,13 @@
 }
 
 @keyframes brandPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.02); }
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
 }
 
 .auth-tagline {
@@ -365,8 +408,13 @@
 }
 
 @keyframes iconFloat {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-10px) rotate(5deg); }
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(5deg);
+    }
 }
 
 .icon-circle span {
@@ -374,8 +422,13 @@
 }
 
 @keyframes iconBounce {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
 }
 
 /* Validation Styles */
@@ -388,9 +441,17 @@
 }
 
 @keyframes errorShake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
+    0%, 100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
 }
 
 /* Responsive Adjustments */

@@ -39,8 +39,9 @@ namespace ASI.Basecode.Data.Repositories
             var menuItem = GetMenuItemById(id);
             if (menuItem != null)
             {
-                menuItem.IsActive = false;
-                UpdateMenuItem(menuItem);
+                // Permanently delete the menu item from the database
+                this.GetDbSet<MenuItem>().Remove(menuItem);
+                UnitOfWork.SaveChanges();
             }
         }
 

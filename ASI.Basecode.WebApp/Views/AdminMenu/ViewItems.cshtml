@@ -250,15 +250,12 @@
                                                title="Edit Item">
                                                 <i class="fas fa-pen"></i>
                                             </a>
-                                            @if (item.IsActive)
-                                            {
-                                                <button type="button" 
-                                                        class="btn-action btn-delete"
-                                                        onclick="confirmDelete(@item.Id, '@item.Name')" 
-                                                        title="Delete Item">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                </button>
-                                            }
+                                            <button type="button" 
+                                                    class="btn-action btn-delete"
+                                                    onclick="confirmDelete(@item.Id, '@item.Name')" 
+                                                    title="Delete Item">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -273,7 +270,6 @@
                         <i class="fas fa-search"></i>
                     </div>
                     <h4 class="no-results-title">No items found</h4>
-                    <p class="no-results-text">Try adjusting your search or filter criteria.</p>
                 </div>
             }
             else
@@ -307,8 +303,8 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p class="modal-message">Are you sure you want to delete <strong id="itemName"></strong>?</p>
-                <p class="modal-warning">This action cannot be undone and will permanently remove this item.</p>
+                <p class="modal-message">Are you sure you want to <strong>permanently delete</strong> <strong id="itemName"></strong>?</p>
+                <p class="modal-warning">?? This action cannot be undone and will permanently remove this item from the database.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-modal-cancel" data-bs-dismiss="modal">
