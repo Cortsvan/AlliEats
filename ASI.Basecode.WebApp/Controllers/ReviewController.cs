@@ -13,7 +13,6 @@ using System;
 namespace ASI.Basecode.WebApp.Controllers
 {
     [Authorize]
-    [CustomerOnly] // Custom attribute handles customer-only access
     public class ReviewController : ControllerBase<ReviewController>
     {
         private readonly IReviewService _reviewService;
