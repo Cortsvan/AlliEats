@@ -49,11 +49,11 @@ function previewImage(input) {
 
 function removeImage() {
     const input = document.getElementById('imageInput');
-    const preview = document.getElementById('imagePreview');
+    const previewDiv = document.getElementById('imagePreview');
     const uploadContainer = document.querySelector('.image-upload-container');
 
     input.value = '';
-    preview.style.display = 'none';
+    previewDiv.style.display = 'none';
     uploadContainer.style.display = 'block';
 }
 
