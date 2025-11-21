@@ -16,10 +16,12 @@
 /* ==================== MAIN FOOTER CONTAINER ==================== */
 .site-footer {
     background-color: var(--footer-bg);
-    margin-top: 3rem;
+    margin-top: auto;
     border-top: 1px solid var(--footer-border);
     box-shadow: var(--footer-shadow);
     position: relative;
+    flex-shrink: 0;
+    width: 100%;
 }
 
 .footer-content {

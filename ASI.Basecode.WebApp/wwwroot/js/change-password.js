@@ -1,5 +1,5 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
-    // Initialize password functionality
+    // Initialize all password functionality
     initializePasswordToggles();
     initializePasswordStrength();
     initializePasswordValidation();
@@ -8,7 +8,7 @@
 
     // Function to initialize password toggle buttons
     function initializePasswordToggles() {
-        const passwordToggles = document.querySelectorAll('.password-toggle');
+        const passwordToggles = document.querySelectorAll('.input-toggle');
 
         passwordToggles.forEach(toggle => {
             toggle.addEventListener('click', function () {
@@ -36,14 +36,20 @@
     // Function to initialize password strength indicator
     function initializePasswordStrength() {
         const newPasswordInput = document.getElementById('NewPassword');
-        const strengthBar = document.querySelector('.password-strength-fill');
-        const strengthText = document.querySelector('.password-strength-text');
+        const strengthBar = document.querySelector('.strength-fill');
+        const strengthText = document.querySelector('.strength-text');
 
         if (newPasswordInput && strengthBar && strengthText) {
             newPasswordInput.addEventListener('input', function () {
                 const password = this.value;
-                const strength = calculatePasswordStrength(password);
+                
+                if (password.length === 0) {
+                    strengthBar.style.width = '0';
+                    strengthText.textContent = 'Enter password to check strength';
+                    return;
+                }
 
+                const strength = calculatePasswordStrength(password);
                 updateStrengthIndicator(strength, strengthBar, strengthText);
                 updateRequirements(password);
             });
@@ -55,21 +61,26 @@
         let score = 0;
         let feedback = '';
 
+        // Length scoring
         if (password.length >= 8) score += 20;
         if (password.length >= 12) score += 10;
+        if (password.length >= 16) score += 5;
+
+        // Character type scoring
         if (/[a-z]/.test(password)) score += 20;
         if (/[A-Z]/.test(password)) score += 20;
         if (/[0-9]/.test(password)) score += 15;
         if (/[^A-Za-z0-9]/.test(password)) score += 15;
 
-        if (score < 30) {
-            feedback = 'Weak password';
+        // Determine feedback
+        if (score < 40) {
+            feedback = 'Weak password - Add more characters';
         } else if (score < 60) {
-            feedback = 'Fair password';
+            feedback = 'Fair password - Could be stronger';
         } else if (score < 80) {
-            feedback = 'Good password';
+            feedback = 'Good password - Almost there';
         } else {
-            feedback = 'Strong password';
+            feedback = 'Strong password - Excellent!';
         }
 
         return { score: Math.min(score, 100), feedback };
@@ -81,16 +92,18 @@
         strengthText.textContent = strength.feedback;
 
         // Update color based on strength
-        if (strength.score < 30) {
+        if (strength.score < 40) {
             strengthBar.style.background = '#dc3545';
         } else if (strength.score < 60) {
             strengthBar.style.background = '#ffc107';
+        } else if (strength.score < 80) {
+            strengthBar.style.background = '#17a2b8';
         } else {
             strengthBar.style.background = '#28a745';
         }
     }
 
-    // Function to update requirements
+    // Function to update requirements checklist
     function updateRequirements(password) {
         const requirements = {
             length: password.length >= 8,
@@ -112,18 +125,16 @@
         });
     }
 
-    // Function to initialize password validation (SIMPLIFIED)
+    // Function to initialize password validation
     function initializePasswordValidation() {
         const newPassword = document.getElementById('NewPassword');
         const confirmPassword = document.getElementById('ConfirmNewPassword');
 
-        // Only add basic validation without interfering with form submission
         if (confirmPassword && newPassword) {
+            // Real-time validation for confirm password
             confirmPassword.addEventListener('input', function () {
-                // Remove any existing validation classes
                 this.classList.remove('is-valid', 'is-invalid');
 
-                // Only show validation if both fields have values
                 if (this.value && newPassword.value) {
                     if (this.value === newPassword.value) {
                         this.classList.add('is-valid');
@@ -132,10 +143,23 @@
                     }
                 }
             });
+
+            // Update confirm password validation when new password changes
+            newPassword.addEventListener('input', function () {
+                if (confirmPassword.value) {
+                    confirmPassword.classList.remove('is-valid', 'is-invalid');
+                    
+                    if (confirmPassword.value === this.value) {
+                        confirmPassword.classList.add('is-valid');
+                    } else {
+                        confirmPassword.classList.add('is-invalid');
+                    }
+                }
+            });
         }
     }
 
-    // Function to initialize form submission (SIMPLIFIED)
+    // Function to initialize form submission
     function initializeFormSubmission() {
         const form = document.getElementById('changePasswordForm');
         const submitBtn = document.getElementById('changePasswordBtn');
@@ -145,58 +169,82 @@
                 const newPassword = document.getElementById('NewPassword').value;
                 const confirmPassword = document.getElementById('ConfirmNewPassword').value;
 
-                // Only prevent submission if passwords don't match
+                // Validate password match
                 if (newPassword !== confirmPassword) {
                     e.preventDefault();
+                    
+                    // Show error message
                     if (typeof toastr !== 'undefined') {
                         toastr.error('New password and confirm password must match.');
+                    } else {
+                        alert('New password and confirm password must match.');
                     }
+                    
                     return false;
                 }
 
-                // Show loading state but allow form to submit
+                // Show loading state
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Changing Password...';
-
-                // Don't prevent default - let the form submit normally
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating Password...';
+                
+                // Add loading class to card
+                const passwordCard = document.querySelector('.password-card');
+                if (passwordCard) {
+                    passwordCard.classList.add('is-loading');
+                }
             });
         }
     }
 
-    // Function to initialize animations
+    // Function to initialize page animations
     function initializeAnimations() {
-        const cards = document.querySelectorAll('.password-form-card, .password-requirements-card, .security-tips-card');
-
-        cards.forEach((card, index) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(30px)';
-
-            setTimeout(() => {
-                card.style.transition = 'all 0.5s ease';
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, index * 200);
-        });
-
-        // Auto-focus current password field
+        // Card entrance animations are handled via CSS
+        
+        // Auto-focus on current password field with a delay
         const currentPasswordInput = document.getElementById('CurrentPassword');
         if (currentPasswordInput) {
             setTimeout(() => {
                 currentPasswordInput.focus();
-            }, 600);
+            }, 500);
+        }
+
+        // Smooth scroll to validation errors if present
+        const firstError = document.querySelector('.validation-message');
+        if (firstError && firstError.textContent.trim()) {
+            setTimeout(() => {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
         }
     }
 
-    // REMOVED: TempData toast handling to prevent duplicate toasts
-    // The page will handle TempData messages through server-side alerts instead
+    // Handle alert dismissal with fade out
+    const alerts = document.querySelectorAll('.alert-modern');
+    alerts.forEach(alert => {
+        const closeBtn = alert.querySelector('.btn-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function () {
+                alert.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    alert.remove();
+                }, 300);
+            });
+        }
+    });
 });
 
-// Add CSS for shake animation
+// Add shake animation CSS dynamically
 const shakeCSS = `
     @keyframes shake {
         0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-5px); }
-        75% { transform: translateX(5px); }
+        25% { transform: translateX(-8px); }
+        50% { transform: translateX(8px); }
+        75% { transform: translateX(-8px); }
+    }
+    
+    .shake {
+        animation: shake 0.4s ease-in-out;
     }
 `;
 
